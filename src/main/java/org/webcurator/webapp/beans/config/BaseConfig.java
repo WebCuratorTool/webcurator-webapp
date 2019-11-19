@@ -97,6 +97,9 @@ public class BaseConfig {
     @Value("${hibernate.dialect}")
     private String hibernateDialect;
 
+    @Value("${hibernate.show_sql}")
+    private String hibernateShowSql;
+
     @Value("${hibernate.default_schema}")
     private String hibernateDefaultSchema;
 
@@ -277,7 +280,7 @@ public class BaseConfig {
         bean.setPackagesToScan(new String[]{"org.webcurator.domain.model"});
         Properties hibernateProperties = new Properties();
         hibernateProperties.setProperty("hibernate.dialect", hibernateDialect);
-        hibernateProperties.setProperty("hibernate.show_sql", "false");
+        hibernateProperties.setProperty("hibernate.show_sql", hibernateShowSql);
         //hibernateProperties.setProperty("hibernate.default_schema", hibernateDefaultSchema);
         hibernateProperties.setProperty("hibernate.transaction.factory_class",
                 "org.hibernate.transaction.JDBCTransactionFactory");
