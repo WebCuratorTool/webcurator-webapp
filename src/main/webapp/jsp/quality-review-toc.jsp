@@ -88,6 +88,13 @@
 			<td colspan="2" class="tableRowSep"><img src="images/x.gif" alt="" width="1" height="1" border="0" /></td>
 		</tr>
 		<tr>
+			<td width="30%"><a href="spa/tools/treetool.html?loadTree=<c:out value="${command.harvestResultId}"/>&targetInstanceOid=<c:out value="${targetInstanceOid}"/>&logFileName=aqa-report(<c:out value="${command.harvestNumber}"/>).xml" target="_blank">Visualization View</a></td>
+            <td width="70%">Graphical view of harvested data.</td>
+        </tr>
+        <tr>
+            <td colspan="2" class="tableRowSep"><img src="images/x.gif" alt="" width="1" height="1" border="0" /></td>
+        </tr>
+		<tr>
 			<td colsapan="2">&nbsp;</td>
 		</tr>	
 		<tr class="tableRowLite">
