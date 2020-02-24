@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+  <title>Target Instance</title>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="../dist/font/fontawesome-free.min.css">
+  <!-- IonIcons -->
+  <link rel="stylesheet" href="../dist/font/ionicons.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../dist/adminlte/css/adminlte.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <link rel="stylesheet" href="common.css">
+</head>
+<!--
+BODY TAG OPTIONS:
+=================
+Apply one or more of the following classes to to the body tag
+to get the desired effect
+|---------------------------------------------------------|
+|LAYOUT OPTIONS | sidebar-collapse                        |
+|               | sidebar-mini                            |
+|---------------------------------------------------------|
+-->
+<body class="hold-transition sidebar-mini sidebar-collapse">
+<div class="wrapper">
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="../images/icon-target-instances.gif" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block">Web Curator Tool</a>
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+          <li class="nav-item">
+            <a href="networkmap.html" class="nav-link active" target="iframe-content">
+              <i class="nav-icon fas fa-th"></i>
+              <p>Overview<span class="right badge badge-danger"></span></p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="harvestreview.html" class="nav-link" target="iframe-content">
+              <i class="nav-icon fas fa-eye"></i>
+              <p>Review<span class="right badge badge-danger"><i class="nav-icon fas fa-check"></i></span></p>
+            </a>
+          </li>
+
+          <li class="nav-item has-treeview menu-open">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-life-ring"></i>
+              <p>
+                Logs
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="./index.html" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Crawler.log</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./index2.html" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Report.txt</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./index3.html" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Qa.report</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-copy"></i>
+              <p>
+                Browse
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="pages/layout/top-nav.html" class="nav-link">
+                  <i class="far fa-circle nav-icon text-success"></i>
+                  <p>Local</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="pages/layout/boxed.html" class="nav-link">
+                  <i class="far fa-circle nav-icon text-danger"></i>
+                  <p>Live</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="pages/layout/fixed-sidebar.html" class="nav-link">
+                  <i class="far fa-circle nav-icon text-warning"></i>
+                  <p>Wayback</p>
+                </a>
+              </li>
+            </ul>
+          </li>         
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Main content -->
+    <!-- <div class="content"> -->
+      <iframe src="networkmap.html" style="height: 100vh; width: 100%; border: none; margin:0; padding: 0;" name="iframe-content">
+        <p>Your browser does not support iframes.</p>
+      </iframe>
+    <!-- </div> -->
+  </div>
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+
+<script src="../dist/jquery/jquery-3.4.1.min.js"></script>
+<script src="../dist/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+<script src="../dist/adminlte/js/adminlte.js"></script>
+
+</body>
+</html>

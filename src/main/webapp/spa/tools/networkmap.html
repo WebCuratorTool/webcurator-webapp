@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Qa Visualization</title>
+    <!-- <link rel="stylesheet" href="../dist/bootstrap/4.4.1/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="../dist/chartjs/Chart.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="../dist/font/fontawesome-free.min.css">
+    <!-- IonIcons -->
+    <link rel="stylesheet" href="../dist/font/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../dist/adminlte/css/adminlte.min.css">
+
+    <link rel="stylesheet" href="../dist/ag-grid/ag-grid.css">
+    <link rel="stylesheet" href="../dist/ag-grid/ag-theme-balham.css">
+    <link rel="stylesheet" href="../dist/ag-grid/ag-theme-balham-dark.css">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="networkmap.css">
+    <!-- <i class="fas fa-bars"></i></a> -->
+</head>
+<body  class="hold-transition layout-top-nav">
+<div class="content-wrapper">
+    <div class="row">
+      <div class="col-xl-10 none-margin-padding" style="padding-left: 8px;">
+          <div id="network-map-canvas"></div>
+      </div>
+      <div class="col-xl-2 none-margin-padding">
+          <div id="domain-grid-continer" style="overflow: hidden;" class="ag-theme-balham"> </div>
+      </div>
+    </div>
+</div>
+
+<script src="../dist/jquery/jquery-3.4.1.min.js"></script>
+<script src="../dist/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="../dist/adminlte/js/adminlte.js"></script>
+<script src="../dist/moment/moment.js"></script>
+<script src="../dist/ag-grid/ag-grid-community.js"></script>
+<script src="../dist/vis/vis-network.min.js"></script>
+<script src="../dist/chartjs/Chart.js"></script>
+<script src="networkmap.js"></script>
+<script>
+    function sp(key){
+      $(".content").hide();
+      $("#content-"+key).show();
+    }
+
+
+    $(function(){
+
+        var networkMapContainer = document.getElementById('network-map-canvas');
+
+        // var sourceUrl = "/curator/qa/ti_resource_domains.json?targetInstanceOid=55&harvestResultId=25";
+        var sourceUrl="domain.json";
+        var networkMap;
+        var networkGrid;
+
+        fetch(sourceUrl)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                networkMap=drawNetworkMap(networkMapContainer, data);
+                networkGrid=drawNetworkDomainGrid("#domain-grid-continer", data);
+        });
+    });    
+
+</script>
+
+</body>
+</html>

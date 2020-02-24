@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Qa Visualization</title>
+    <!-- <link rel="stylesheet" href="../dist/bootstrap/4.4.1/css/bootstrap.min.css"> -->
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="../dist/font/fontawesome-free.min.css">
+    <!-- IonIcons -->
+    <link rel="stylesheet" href="../dist/font/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../dist/adminlte/css/adminlte.min.css">
+    <link rel="stylesheet" href="../dist/fancytree/skin-lion/ui.fancytree.min.css">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="harvestreview.css">
+
+    <!-- <i class="fas fa-bars"></i></a> -->
+</head>
+<body  class="hold-transition layout-top-nav">
+  <div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li>
+        <!-- SEARCH FORM -->
+        <form class="form-inline ml-3">
+          <div class="input-group input-group-sm">
+            <div class="input-group-append bg-light">
+              <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-navbar" type="submit">
+                <i class="fas fa-filter"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </li>
+
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" onclick="popupSearchWindow('networkmap')" class="nav-link">Search</a>
+      </li>
+     
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <li>
+        <div class="btn-group">
+          <button type="button" class="btn btn-success">Action</button>
+          <button type="button" class="btn btn-success dropdown-toggle dropdown-hover dropdown-icon" data-toggle="dropdown">
+            <span class="sr-only">Toggle Dropdown</span>
+            <div class="dropdown-menu" role="menu">
+              <a class="dropdown-item" href="#">Search</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">View</a>
+              <a class="dropdown-item" href="#">Hop path</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Prune Selected</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Import from disk file</a>
+              <a class="dropdown-item" href="#">Import from URL</a>
+              <a class="dropdown-item" href="#">Automated QA Imports</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Provenance Note</a>
+            </div>
+          </button>
+        </div>
+      </li>
+
+      <!-- <li>&nbsp;&nbsp;&nbsp;</li> -->
+      
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+</div>
+
+<!-- <div class="content-wrapper"> -->
+  <div class="fancytree-grid-container">
+      <table id="network-map-tree">
+          <colgroup>
+              <col width="0px">
+              <col width="*">
+              <col width="1500px">
+              <col width="80px">
+              <col width="80px">
+              <col width="80px">
+              <col width="80px">
+          </colgroup>
+          <thead>
+          <tr>
+              <th></th>
+              <th class="parent-path">Resource</th>
+              <th>Path</th>
+              <th>URLs</th>
+              <th>Success</th>
+              <th>Failed</th>
+              <th>Size</th>
+          </tr>
+          </thead>
+      </table>
+  </div>
+<!-- </div> -->
+
+
+<script src="../dist/jquery/jquery-3.4.1.min.js"></script>
+<script src="../dist/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="../dist/adminlte/js/adminlte.js"></script>
+<script src="../dist/moment/moment.js"></script>
+<script src="../dist/fancytree/jquery.fancytree-all-deps.min.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.ariagrid.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.clones.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.dnd5.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.edit.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.filter.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.grid.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.logger.js"></script>
+<script src="harvestreview.js"></script>
+<script>
+    $(function(){
+        // var sourceUrl = "/curator/qa/ti_resource_domains.json?targetInstanceOid=55&harvestResultId=25";
+        var sourceUrl="domain.json";
+        fetch(sourceUrl).then((response) => {
+            return response.json();
+        }).then((data) => {
+            drawNetworkTree("#network-map-tree", data);
+        });
+    });    
+
+</script>
+
+</body>
+</html>
