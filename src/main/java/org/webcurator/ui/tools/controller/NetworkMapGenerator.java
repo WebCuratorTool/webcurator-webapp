@@ -11,7 +11,9 @@ import org.webcurator.domain.model.core.TargetInstance;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
+@SuppressWarnings("all")
 public class NetworkMapGenerator {
     private TargetInstanceDAO targetInstanceDao;
     private long targetInstanceOid;
@@ -25,251 +27,191 @@ public class NetworkMapGenerator {
         this.harvestNumber = harvestNumber;
     }
 
-    public String genResourcesAll() {
-        String json = "{}";
-        TargetInstance targetInstance = targetInstanceDao.load(targetInstanceOid);
-        if (targetInstance == null) {
-            return json;
-        }
-
-        HarvestResult harvestResult = targetInstanceDao.getHarvestResult(harvestResultId);
-        if (harvestResult == null) {
-            return json;
-        }
-
-        Map<String, HarvestResource> resources = harvestResult.getResources();
-        if (resources == null) {
-            return json;
-        }
-
-        Set<Seed> seeds = targetInstance.getTarget().getSeeds();
-        if (seeds == null) {
-            return json;
-        }
-
-        final AtomicLong domainIdGenerator = new AtomicLong();
-        final ResourceData dataSet = new ResourceData();
-        final Map<String, ResourceDomain> domainMap = new HashMap<>();
-        resources.forEach((k, v) -> {
-            long nodeId = v.getOid();
-            long parentId = 0;
-            if (resources.containsKey(v.getViaName())) {
-                parentId = resources.get(v.getViaName()).getOid();
-            }
-
-            ResourceNode node = new ResourceNode();
-            node.setId(nodeId);
-            node.setParentId(parentId);
-            node.setUrl(v.getName());
-            dataSet.getNodes().add(node);
-
-            String domainNameFrom = URLResolverFunc.url2domain(v.getViaName());
-            ResourceDomain domainFrom = domainMap.get(domainNameFrom);
-            if (domainFrom == null) {
-                domainFrom = new ResourceDomain();
-                domainFrom.setId(domainIdGenerator.incrementAndGet());
-                domainFrom.setName(domainNameFrom);
-                domainMap.put(domainNameFrom, domainFrom);
-            }
-
-            String domainNameTo = URLResolverFunc.url2domain(v.getName());
-            ResourceDomain domainTo = domainMap.get(domainNameTo);
-            if (domainTo == null) {
-                domainTo = new ResourceDomain();
-                domainTo.setId(domainIdGenerator.incrementAndGet());
-                domainTo.setName(domainNameTo);
-                domainMap.put(domainNameTo, domainTo);
-            }
-            domainTo.getNodes().add(node.getId());
-
-            if (!domainFrom.getOutlinks().contains(domainTo.getId())) {
-                domainFrom.getOutlinks().add(domainTo.getId());
-            }
-        });
-        dataSet.setDomains(domainMap.values());
-
-        seeds.forEach(seed -> {
-            dataSet.getSeeds().add(seed.getSeed());
-        });
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            json = objectMapper.writeValueAsString(dataSet);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        dataSet.clear();
-        domainMap.clear();
-        resources.clear();
-
-        return json;
-    }
-
     public String genResourcesDomain() {
         String json = "{}";
         TargetInstance targetInstance = targetInstanceDao.load(targetInstanceOid);
         if (targetInstance == null) {
             return json;
         }
-        HarvestResult harvestResult = targetInstance.getHarvestResult(harvestNumber);
-        if (harvestResult == null) {
-            return json;
-        }
-        Map<String, HarvestResource> resources = harvestResult.getResources();
-        if (resources == null) {
-            return json;
-        }
-        Set<Seed> seeds = targetInstance.getTarget().getSeeds();
-        if (seeds == null) {
-            return json;
-        }
-
-        final AtomicLong domainIdGenerator = new AtomicLong();
-        ResourceData dataSet = new ResourceData();
-        Map<String, ResourceDomain> domainMap = new HashMap<>();
-        resources.forEach((k, v) -> {
-            String domainNameFrom = URLResolverFunc.url2domain(v.getViaName());
-            ResourceDomain domainFrom = domainMap.get(domainNameFrom);
-            if (domainFrom == null) {
-                domainFrom = new ResourceDomain();
-                domainFrom.setId(domainIdGenerator.incrementAndGet());
-                domainFrom.setName(domainNameFrom);
-                domainMap.put(domainNameFrom, domainFrom);
-            }
-
-            String domainNameTo = URLResolverFunc.url2domain(v.getName());
-            ResourceDomain domainTo = domainMap.get(domainNameTo);
-            if (domainTo == null) {
-                domainTo = new ResourceDomain();
-                domainTo.setId(domainIdGenerator.incrementAndGet());
-                domainTo.setName(domainNameTo);
-                domainMap.put(domainNameTo, domainTo);
-            }
-
-            if (!domainFrom.getOutlinks().contains(domainTo.getId())) {
-                domainFrom.getOutlinks().add(domainTo.getId());
-            }
-        });
-        dataSet.setDomains(domainMap.values());
-
-        seeds.forEach(seed -> {
-            dataSet.getSeeds().add(seed.getSeed());
-        });
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            json = objectMapper.writeValueAsString(dataSet);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        dataSet.clear();
-        domainMap.clear();
-        resources.clear();
-
-        return json;
-    }
-
-    public String genResourcesOneDomain(String domainName) {
-        String json = "{}";
-        TargetInstance targetInstance = targetInstanceDao.load(targetInstanceOid);
-        if (targetInstance == null) {
-            return json;
-        }
-
         HarvestResult harvestResult = targetInstanceDao.getHarvestResult(harvestResultId);
         if (harvestResult == null) {
             return json;
         }
-
         Map<String, HarvestResource> resources = harvestResult.getResources();
         if (resources == null) {
             return json;
         }
-
         Set<Seed> seeds = targetInstance.getTarget().getSeeds();
         if (seeds == null) {
             return json;
         }
 
-        final ResourceData dataSet = new ResourceData();
-        resources.values().stream().filter(v->{
-            String tempDomainName=URLResolverFunc.url2domain(v.getName());
-            return domainName.equals(tempDomainName);
-        }).forEach(v -> {
-            long nodeId = v.getOid();
-            long parentId = 0;
-            if (resources.containsKey(v.getViaName())) {
-                parentId = resources.get(v.getViaName()).getOid();
+        List<String> seedUrl = seeds.stream().map(Seed::getSeed).distinct().collect(Collectors.toList());
+        List<String> seedDomain = seeds.stream().map(seed -> URLResolverFunc.url2domain(seed.getSeed())).distinct().collect(Collectors.toList());
+
+        Node.init();
+        Map<String, DomainNode> domainMap = new HashMap<>();
+        for (HarvestResource harvestResource : resources.values()) {
+            String currentDomainName = URLResolverFunc.url2domain(harvestResource.getName());
+            if (currentDomainName == null) {
+                System.out.println(harvestResource.getName());
+                continue;
+            }
+            DomainNode currentDomain = domainMap.get(currentDomainName);
+            if (currentDomain == null) {
+                currentDomain = new DomainNode();
+                currentDomain.setTitle(currentDomainName);
+                if (seedDomain.contains(currentDomainName)) {
+                    currentDomain.setSeed(true);
+                }
+                domainMap.put(currentDomainName, currentDomain);
+            }
+            currentDomain.increase(harvestResource.getStatusCode(), harvestResource.getLength(), harvestResource.getContentType());
+            currentDomain.addNode(harvestResource.getOid());
+
+            String parentDomainName = URLResolverFunc.url2domain(harvestResource.getViaName());
+            if (parentDomainName == null) {
+                System.out.println(harvestResource.getViaName());
+                continue;
             }
 
-            ResourceNode node = new ResourceNode();
-            node.setId(nodeId);
-            node.setParentId(parentId);
-            node.setUrl(v.getName());
-            dataSet.getNodes().add(node);
-        });
+            DomainNode parentDomain = domainMap.get(parentDomainName);
+            if (parentDomain == null) {
+                parentDomain = new DomainNode();
+                parentDomain.setTitle(parentDomainName);
+                if (seedDomain.contains(parentDomainName)) {
+                    parentDomain.setSeed(true);
+                }
+                domainMap.put(parentDomainName, parentDomain);
+            }
 
-        seeds.forEach(seed -> {
-            dataSet.getSeeds().add(seed.getSeed());
-        });
+            parentDomain.addOutlink(currentDomain.getKey());
+
+        }
+        resources.clear();
+
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            json = objectMapper.writeValueAsString(dataSet);
+            json = objectMapper.writeValueAsString(domainMap.values());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
 
-        dataSet.clear();
-        resources.clear();
+        domainMap.values().forEach(DomainNode::clear);
+        domainMap.clear();
 
         return json;
     }
 
-    static class ResourceNode {
-        private long id;
-        private long parentId;
-        private String url;
+    static class Node {
+        protected static final int TYPE_URL = 1;
+        protected static final int TYPE_DOMAIN = 2;
+        protected static AtomicLong IdGenerator = new AtomicLong();
 
-        public long getId() {
-            return id;
-        }
+        private long key;
+        private String title;
+        private boolean isSeed = false; //true: if url equals seed or domain contains seed url.
+        private int type; //1: url, 2: domain
 
-        public void setId(long id) {
-            this.id = id;
-        }
+        /////////////////////////////////////////////////////////////////////////////////////////
+        // 1. Domain: the total items of all urls contained in this domain.
+        // 2. URL: the total items of all urls directly link to this url and the url itself
+        private int totUrls;
+        private int totSuccess;
+        private int totFailed;
+        private long totSize;
+        ///////////////////////////////////////////////////////////////////////////////////////////
 
-        public long getParentId() {
-            return parentId;
-        }
-
-        public void setParentId(long parentId) {
-            this.parentId = parentId;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-    }
-
-    static class ResourceDomain {
-        private long id;
-        private String name;
-        private List<Long> nodes = new ArrayList<>();
+        private long domainId = -1; //default: no domain
         private List<Long> outlinks = new ArrayList<>();
 
-        public long getId() {
-            return id;
+        public Node() {
+            this.key = IdGenerator.incrementAndGet();
         }
 
-        public void setId(long id) {
-            this.id = id;
+        public Node(int type) {
+            this();
+            this.type = type;
+        }
+
+        public static void init() {
+            IdGenerator = new AtomicLong();
+        }
+
+        public void addOutlink(long key) {
+            if (this.key != key && !this.outlinks.contains(key)) {
+                this.outlinks.add(key);
+            }
+        }
+
+        public void clear() {
+            this.outlinks.clear();
+        }
+
+        public long getKey() {
+            return key;
+        }
+
+        public void setKey(long key) {
+            this.key = key;
+        }
+
+
+        public boolean isSeed() {
+            return isSeed;
+        }
+
+        public void setSeed(boolean seed) {
+            isSeed = seed;
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public void setType(int type) {
+            this.type = type;
+        }
+
+        public int getTotUrls() {
+            return totUrls;
+        }
+
+        public void increaseTotUrls(int totUrls) {
+            this.totUrls += totUrls;
+        }
+
+        public int getTotSuccess() {
+            return totSuccess;
+        }
+
+        public void increaseTotSuccess(int totSuccess) {
+            this.totSuccess += totSuccess;
+        }
+
+        public int getTotFailed() {
+            return totFailed;
+        }
+
+        public void increaseTotFailed(int totFailed) {
+            this.totFailed += totFailed;
+        }
+
+        public long getTotSize() {
+            return totSize;
+        }
+
+        public void increaseTotSize(long totSize) {
+            this.totSize += totSize;
+        }
+
+        public long getDomainId() {
+            return domainId;
+        }
+
+        public void setDomainId(long domainId) {
+            this.domainId = domainId;
         }
 
         public List<Long> getOutlinks() {
@@ -280,12 +222,73 @@ public class NetworkMapGenerator {
             this.outlinks = outlinks;
         }
 
-        public String getName() {
-            return name;
+        public String toString() {
+            return String.format("URLs: %d\n\tSuccess: %d\n\tFailed: %d\nSize: %d", this.totUrls, this.totSuccess, this.totFailed, this.totSize);
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public String getTitle() {
+            return this.title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public void increase(int statusCode, long contentLength, String contentType) {
+            this.increaseTotSize(contentLength);
+            if (statusCode == 200) {
+                this.increaseTotSuccess(1);
+            } else {
+                this.increaseTotFailed(1);
+            }
+            this.increaseTotUrls(1);
+        }
+    }
+
+    static class UrlNode extends Node {
+        private long contentLength;
+        private String contentType;
+        private long statusCode;
+
+        public UrlNode() {
+            super(Node.TYPE_URL);
+        }
+
+        public long getContentLength() {
+            return contentLength;
+        }
+
+        public void setContentLength(long contentLength) {
+            this.contentLength = contentLength;
+        }
+
+        public String getContentType() {
+            return contentType;
+        }
+
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
+        }
+
+        public long getStatusCode() {
+            return statusCode;
+        }
+
+        public void setStatusCode(long statusCode) {
+            this.statusCode = statusCode;
+        }
+    }
+
+    static class DomainNode extends Node {
+        private List<Long> nodes = new ArrayList<>(); //all children
+        private Map<String, DomainNode> children = new HashMap<>();
+
+        public DomainNode() {
+            super(Node.TYPE_DOMAIN);
+        }
+
+        public void addNode(long nodeId) {
+            this.nodes.add(nodeId);
         }
 
         public List<Long> getNodes() {
@@ -296,47 +299,39 @@ public class NetworkMapGenerator {
             this.nodes = nodes;
         }
 
-        public void clear() {
-            this.nodes.clear();
-        }
-    }
-
-    static class ResourceData {
-        private List<String> seeds = new ArrayList<>();
-        private List<ResourceNode> nodes = new ArrayList<>();
-        private Collection<ResourceDomain> domains = null;
-
-        public List<String> getSeeds() {
-            return seeds;
+        public Collection<DomainNode> getChildren() {
+            return children.values();
         }
 
-        public void setSeeds(List<String> seeds) {
-            this.seeds = seeds;
-        }
-
-        public List<ResourceNode> getNodes() {
-            return nodes;
-        }
-
-        public void setNodes(List<ResourceNode> nodes) {
-            this.nodes = nodes;
-        }
-
-        public Collection<ResourceDomain> getDomains() {
-            return domains;
-        }
-
-        public void setDomains(Collection<ResourceDomain> domains) {
-            this.domains = domains;
+        public void setChildren(Map<String, DomainNode> children) {
+            this.children = children;
         }
 
         public void clear() {
-            this.seeds.clear();
+            super.clear();
             this.nodes.clear();
-            this.domains.forEach(domain -> {
-                domain.getNodes().clear();
-            });
-            this.domains.clear();
+            this.children.values().forEach(DomainNode::clear);
+            this.children.clear();
+        }
+
+        public void increase(int statusCode, long contentLength, String contentType) {
+            super.increase(statusCode, contentLength, contentType);
+
+            contentType = URLResolverFunc.trimContentType(contentType);
+            DomainNode childDomainNode = this.children.get(contentType);
+            if (childDomainNode == null) {
+                childDomainNode = new DomainNode();
+                this.children.put(contentType, childDomainNode);
+            }
+            childDomainNode.setTitle(contentType);
+
+            childDomainNode.increaseTotSize(contentLength);
+            if (statusCode == 200) {
+                childDomainNode.increaseTotSuccess(1);
+            } else {
+                childDomainNode.increaseTotFailed(1);
+            }
+            childDomainNode.increaseTotUrls(1);
         }
     }
 }

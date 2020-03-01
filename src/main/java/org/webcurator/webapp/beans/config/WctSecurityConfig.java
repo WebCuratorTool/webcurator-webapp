@@ -137,8 +137,7 @@ public class WctSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
+        http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/curator/**").hasRole("LOGIN")
@@ -162,6 +161,8 @@ public class WctSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().logout()
                 .invalidateHttpSession(true)
                 .logoutSuccessUrl("/logon.jsp");
+
+        http.headers().frameOptions().sameOrigin();
     }
 
     @Autowired

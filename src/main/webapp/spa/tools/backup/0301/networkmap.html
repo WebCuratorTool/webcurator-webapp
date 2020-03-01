@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Qa Visualization</title>
+    <!-- <link rel="stylesheet" href="../dist/bootstrap/4.4.1/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="../dist/chartjs/Chart.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="../dist/font/fontawesome-free.min.css">
+    <!-- IonIcons -->
+    <link rel="stylesheet" href="../dist/font/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../dist/adminlte/css/adminlte.min.css">
+    <link rel="stylesheet" href="../dist/fancytree/skin-win8/ui.fancytree.min.css">
+    <link rel="stylesheet" href="../dist/fancytree/modules/plain-scrollbar.css">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="networkmap.css">
+    <!-- <i class="fas fa-bars"></i></a> -->
+</head>
+<body class="hold-transition sidebar-collapse">
+<div class="wrapper">
+<div class="row">
+    <div class="col-xl-8 none-margin-padding" style="width: calc(100% - 8px); padding-right: 8px;">
+        <div id="network-map-canvas"></div>
+    </div>
+
+    <div class="col-xl-4 none-margin-padding" style="margin-left: -8px;">
+        <div id="fancytree-container" class="fancytree-grid-container flexbox-item-grow">
+            <table id="domain-grid-continer">
+                <colgroup>                       
+                    <col width="*">
+                    <col width="80px">
+                    <col width="80px">
+                    <col width="80px">
+                    <col width="80px">
+                </colgroup>
+                <thead>
+                <tr>                       
+                    <th>Domain(ContentType or StatusCode)</th>
+                    <th>Tot. URLs</th>
+                    <th>Tot. Success</th>
+                    <th>Tot. Failed</th>
+                    <th>Tot. Size</th>
+                </tr>
+                </thead>
+            </table>
+            <div id="verticalScrollbar" style="top:19px; height:calc(100% - 18px);"></div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="../dist/jquery/jquery-3.4.1.min.js"></script>
+<script src="../dist/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="../dist/adminlte/js/adminlte.js"></script>
+<script src="../dist/vis/vis-network.min.js"></script>
+<script src="../dist/fancytree/jquery.fancytree-all-deps.min.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.grid.js"></script>
+<script src="../dist/fancytree/modules/plain-scrollbar.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.logger.js"></script>
+<script src="../dist/chartjs/Chart.js"></script>
+<script src="common.js"></script>
+<script src="networkmap.js"></script>
+<script>
+    function sp(key){
+      $(".content").hide();
+      $("#content-"+key).show();
+    }
+
+
+    $(function(){
+
+        var networkMapContainer = document.getElementById('network-map-canvas');
+
+        // var sourceUrl = "/curator/qa/ti_resource_domains.json?targetInstanceOid=55&harvestResultId=25";
+        var sourceUrl="domains.json";
+        // var sourceUrl="http://localhost:8082/networkmap/get/all/domains?job=53";
+        var networkMap;
+        var networkGrid;
+
+        fetch(sourceUrl)
+            .then((response) => {
+                return response.json();
+            })
+            .then((rawData) => {
+                var data=formatStringArrayToJsonArray(rawData);
+                networkMap=drawNetworkMap(networkMapContainer, data);
+                networkGrid=drawNetworkDomainGrid("#domain-grid-continer", data);
+        });
+    });    
+
+</script>
+
+</body>
+</html>

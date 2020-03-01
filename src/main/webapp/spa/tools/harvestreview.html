@@ -5,24 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Qa Visualization</title>
-    <!-- <link rel="stylesheet" href="../dist/bootstrap/4.4.1/css/bootstrap.min.css"> -->
-    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="../dist/font/fontawesome-free.min.css">
-    <!-- IonIcons -->
     <link rel="stylesheet" href="../dist/font/ionicons.min.css">
-    <!-- Theme style -->
     <link rel="stylesheet" href="../dist/adminlte/css/adminlte.min.css">
-    <link rel="stylesheet" href="../dist/fancytree/skin-lion/ui.fancytree.min.css">
-    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="../dist/fancytree/skin-win8/ui.fancytree.min.css">
+    <link rel="stylesheet" href="../dist/fancytree/modules/plain-scrollbar.css">
     <link rel="stylesheet" href="harvestreview.css">
-
-    <!-- <i class="fas fa-bars"></i></a> -->
 </head>
-<body  class="hold-transition layout-top-nav">
+<body  class="hold-transition sidebar-collapse layout-top-nav">
   <div class="wrapper">
 
   <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand navbar-light">
+  <nav class="main-header navbar navbar-expand navbar-light bg-dark">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li>
@@ -80,21 +75,25 @@
 
 <!-- <div class="content-wrapper"> -->
   <div class="fancytree-grid-container">
-      <table id="network-map-tree">
+      <table id="network-map-tree" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
           <colgroup>
-              <col width="0px">
-              <col width="*">
-              <col width="1500px">
-              <col width="80px">
-              <col width="80px">
-              <col width="80px">
-              <col width="80px">
+            <col style="width: 40px;">
+            <col style="width: 1400px;">
+            <col style="width: 200px;">
+            <col style="width: 100px;">
+            <col style="width: 100px;">
+            <col style="width: 100px;">
+            <col style="width: 100px;">
+            <col style="width: 100px;">
+            <col style="width: 100px;">
           </colgroup>
           <thead>
           <tr>
-              <th></th>
-              <th class="parent-path">Resource</th>
-              <th>Path</th>
+              <th class="mdl-data-table__cell--non-numeric"></th>
+              <th class="mdl-data-table__cell--non-numeric">URL</th>
+              <th>ContentType</th>
+              <th>StatusCode</th>
+              <th>Size</th>
               <th>URLs</th>
               <th>Success</th>
               <th>Failed</th>
@@ -106,27 +105,34 @@
 <!-- </div> -->
 
 
-<script src="../dist/jquery/jquery-3.4.1.min.js"></script>
-<script src="../dist/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="../dist/jquery/jquery-3.4.1.js"></script>
+<script src="../dist/bootstrap/bootstrap.bundle.js"></script>
 <script src="../dist/adminlte/js/adminlte.js"></script>
 <script src="../dist/moment/moment.js"></script>
-<script src="../dist/fancytree/jquery.fancytree-all-deps.min.js"></script>
-<script src="../dist/fancytree/modules/jquery.fancytree.ariagrid.js"></script>
-<script src="../dist/fancytree/modules/jquery.fancytree.clones.js"></script>
-<script src="../dist/fancytree/modules/jquery.fancytree.dnd5.js"></script>
-<script src="../dist/fancytree/modules/jquery.fancytree.edit.js"></script>
-<script src="../dist/fancytree/modules/jquery.fancytree.filter.js"></script>
+<script src="../dist/fancytree/jquery.fancytree-all-deps.js"></script>
 <script src="../dist/fancytree/modules/jquery.fancytree.grid.js"></script>
+<script src="../dist/fancytree/modules/plain-scrollbar.js"></script>
 <script src="../dist/fancytree/modules/jquery.fancytree.logger.js"></script>
+<script src="common.js"></script>
 <script src="harvestreview.js"></script>
 <script>
     $(function(){
         // var sourceUrl = "/curator/qa/ti_resource_domains.json?targetInstanceOid=55&harvestResultId=25";
-        var sourceUrl="domain.json";
+        // var sourceUrl="/curator/seeds.json";
+        var sourceUrl="/curator/networkmap/get/root/urls?job=36&harvestResultNumber=1"
         fetch(sourceUrl).then((response) => {
-            return response.json();
-        }).then((data) => {
+            if(response.status==200){
+              if (response.redirected) {
+                alert("Please login!")
+                return null;
+              }else{
+                return response.json();
+              }
+            }
+        }).then((data)=>{
+          if(data!=null){
             drawNetworkTree("#network-map-tree", data);
+          }
         });
     });    
 

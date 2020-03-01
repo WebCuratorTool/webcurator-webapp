@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Qa Visualization</title>
+    <link rel="stylesheet" href="../dist/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../dist/fancytree/skin-win8/ui.fancytree.min.css">
+    <link rel="stylesheet" href="treetool.css">
+
+</head>
+<body>
+<div class="row">
+    <div class="col-xl-6">
+        <div id="network-map-canvas"></div>
+    </div>
+    <div class="col-xl-6">
+        <div class="row">
+
+        </div>
+        <div class="row">
+            <div class="fancytree-grid-container flexbox-item-grow">
+                <table id="network-map-tree">
+                    <colgroup>
+                        <col width="30px">
+                        <col width="*">
+                        <col width="800px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th class="parent-path">Resource</th>
+                        <th>Path</th>
+                        <th>URLs</th>
+                        <th>Success</th>
+                        <th>Failed</th>
+                        <th>Size</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+</div>
+</div>
+
+<script src="../dist/jquery/jquery-3.4.1.min.js"></script>
+<script src="../dist/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+<script src="../dist/fancytree/jquery.fancytree-all-deps.min.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.ariagrid.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.clones.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.dnd5.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.edit.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.filter.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.grid.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.logger.js"></script>
+<script src="../dist/vis/vis-network.min.js"></script>
+<script src="treetool.js"></script>
+
+
+<script src="networkmap.js"></script>
+<script>
+    $(function(){
+        var networkMapContainer = document.getElementById('network-map-canvas');
+
+        // var sourceUrl = "/curator/qa/ti_resource_domains.json?targetInstanceOid=55&harvestResultId=25";
+        var sourceUrl="domain.json";
+        var networkMap;
+
+        fetch(sourceUrl)
+            .then((response) => {
+                return response.json();
+            })
+            .then((data) => {
+                networkMap=drawNetworkMap(networkMapContainer, data);
+                drawNetworkTree("#network-map-tree", data);
+        });
+    });    
+
+</script>
+
+</body>
+</html>

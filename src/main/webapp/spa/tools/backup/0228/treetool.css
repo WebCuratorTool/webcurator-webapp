@@ -1,0 +1,30 @@
+/*html, body, div, canvas {margin: 0; height: 100%; overflow: hidden;user-select: none; -webkit-user-select: none; -moz-user-select: none;}
+input:focus, textarea:focus, select:focus, div:focus, canvas:focus{outline: none;}
+*/
+
+html,body{
+	margin: 0; height: 100%; overflow: hidden;
+}
+
+.none-margin-padding{
+	margin: 0;
+	padding: 0;
+}
+
+.content{
+	display: none;
+}
+
+.active{
+	display: block;
+}
+
+#network-map-canvas{
+	width: 100%;
+    height: 100vh;
+}
+
+#domain-grid-continer{
+	width: 100%;
+    height: 100vh;
+}

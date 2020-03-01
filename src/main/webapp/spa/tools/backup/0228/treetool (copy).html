@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Qa Visualization</title>
+    <link rel="stylesheet" href="../dist/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../dist/fancytree/skin-lion/ui.fancytree.min.css">
+    <link rel="stylesheet" href="treetool.css">
+
+</head>
+<body>
+<div class="row">
+    <div class="col-xl-8 bg-success">
+        <div id="network-map-canvas"></div>
+    </div>
+    <div class="col-xl-4">
+        <div class="row">
+
+        </div>
+        <div class="row">
+            <div class="fancytree-grid-container flexbox-item-grow">
+                <table id="network-map-tree">
+                    <colgroup>
+                        <col width="30px">
+                        <col width="*">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th class="parent-path">Resource</th>
+                        <th>Status</th>
+                        <th>Size</th>
+                        <th>Tot. URLs</th>
+                        <th>Tot. Success</th>
+                        <th>Tot. Failed</th>
+                        <th>Tot. Size</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+
+        <script src="../dist/jquery/jquery-3.4.1.min.js"></script>
+        <script src="../dist/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <script src="../dist/fancytree/jquery.fancytree-all-deps.min.js"></script>
+        <script src="../dist/fancytree/modules/jquery.fancytree.ariagrid.js"></script>
+        <script src="../dist/fancytree/modules/jquery.fancytree.clones.js"></script>
+        <script src="../dist/fancytree/modules/jquery.fancytree.dnd5.js"></script>
+        <script src="../dist/fancytree/modules/jquery.fancytree.edit.js"></script>
+        <script src="../dist/fancytree/modules/jquery.fancytree.filter.js"></script>
+        <script src="../dist/fancytree/modules/jquery.fancytree.grid.js"></script>
+        <script src="../dist/fancytree/modules/jquery.fancytree.logger.js"></script>
+        <script src="data.js"></script>
+
+        <script>
+    $(function(){
+       // var sourceUrl = "https://cdn.jsdelivr.net/gh/mar10/assets@master/fancytree/ajax_101k.json";
+        var sourceUrl = "/curator/qa/ti_resource_domains.json?targetInstanceOid=55&harvestResultId=25";
+        var modelCount = 0;
+
+
+        $("#network-map-tree").fancytree({
+          extensions: ["clones", "dnd5", "edit", "filter", "grid", "ariagrid"],
+          checkbox: true,
+          quicksearch: true,
+          autoScroll: true,
+          debugLevel: 5,
+          ariagrid: {
+            // Internal behavior flags
+            activateCellOnDoubelclick: true,
+            cellFocus: $( "#optionsForm [name=cellFocus]" ).find( ":selected" ).val(),
+            // TODO: use a global tree option `name` or `title` instead?:
+            label: "Tree Grid", // Added as `aria-label` attribute
+          },
+          dnd5: {
+            autoExpandMS: 1500,
+            dragStart: function(node, data) {
+              return true;
+            },
+            dragEnter: function(node, data) {
+              return true;
+            },
+            dragDrop: function(node, data) {
+              var transfer = data.dataTransfer;
+
+              if( data.otherNode ) {
+                data.otherNode.moveTo(node, data.hitMode);
+              } else {
+                node.addNode({
+                  title: transfer.getData("text")
+                }, data.hitMode);
+              }
+              // Expand target node when a child was created:
+              if (data.hitMode === "over") {
+                node.setExpanded();
+              }
+            },
+          },
+          edit: {
+            // triggerStart: ["f2", "mac+enter", "shift+click"],
+          },
+          filter: {
+            autoExpand: true,
+          },
+          table: {
+            indentation: 20,       // indent 20px per node level
+            nodeColumnIdx: 2,      // render the node title into the 2nd column
+            checkboxColumnIdx: 0,  // render the checkboxes into the 1st column
+          },
+          viewport: {
+            enabled: true,
+            count: 30,
+          },
+          // source: dataset,
+          source:{
+            url: sourceUrl,
+            cache: true
+          },
+          // postProcess: function(event, data) {
+          //   // Triage: Force ext-clones to create new keys and see if we get dupes
+          //   function _walk(n) {
+          //     if( n ) {
+          //       n.refKey = n.key;
+          //       delete n.key;
+          //       if (n.children) {
+          //         for (var i=0; i < n.children.length; i++){
+          //           _walk(n.children[i]);
+          //         }
+          //       }
+          //     }
+          //   }
+          //   _walk({children: data.response});
+          // },
+          // tooltip: function(event, data){
+          //   return data.node.data.author;
+          // },
+          init: function(event, data) {
+            modelCount = data.tree.count();
+            data.tree.adjustViewportSize();
+          },
+          lazyLoad: function(event, data) {
+            data.result = {url: "ajax-sub2.json"}
+          },
+          activateCell: function(event, data) {
+            data.node.debug(event.type, data);
+          },
+          defaultGridAction: function( event, data ) {
+            // Called when ENTER is pressed in cell-mode.
+            data.node.debug(event.type, data);
+          },
+          renderColumns: function(event, data) {
+            console.log(data);
+            var node = data.node,
+              $tdList = $(node.tr).find(">td");
+            // (index #0 is rendered by fancytree by adding the checkbox)
+            $tdList.eq(1).text(node.getIndexHier());  //.addClass("alignRight");
+            // (index #2 is rendered by fancytree)
+            //$tdList.eq(3).text(node._rowIdx);
+            // $tdList.eq(3).text(node.data.qty);
+            //$tdList.eq(4).html("<input type='checkbox' name='like' value='" + node.key + "'>");
+            $tdList.eq(3).text(0);
+            $tdList.eq(4).text(node.data.totUrls);
+            $tdList.eq(5).text(node.data.totSuccess);
+            $tdList.eq(6).text(node.data.totFailed);
+            $tdList.eq(7).text(node.data.totSize);
+
+          },
+          updateViewport: function(event, data) {
+            var tree = data.tree,
+              topNode = tree.visibleNodeList[tree.viewport.start],
+              path = (topNode && !topNode.isTopLevel()) ? topNode.getPath(false) + "/..." : "";
+
+            tree.debug(event.type, data);
+
+            // Display breadcrumb/parent-path in header
+            tree.$container.find("thead th.parent-path").text(path);
+
+            // Update edit controls
+            if (!tree.isVpUpdating ) {
+              $("input#vpStart").val(tree.viewport.start);
+              $("input#vpCount").val(tree.viewport.count);
+              $("span.statistics").text(
+                ", rows: " +
+                (tree.visibleNodeList ? tree.visibleNodeList.length : "-") +
+                "/" +
+                modelCount
+              );
+            }
+          },
+        });
+
+    });
+
+        </script>
+
+</body>
+</html>
