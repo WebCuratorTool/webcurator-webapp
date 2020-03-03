@@ -17,21 +17,26 @@ html,body{
 
 #network-map-canvas, #hoppath-canvas{
 	width: 100%;
-    height: 100vh;
+    height: calc(100vh - 7px);
 }
-#domain-grid-continer, #url-grid-continer{
+#urls-grid-container{
 	width:100%;
-    /*height: calc(100vh - 40px);*/
-    height: 100%;
-}
-#fancytree-container, #fancytree-container-urls{
-	width: 100%;
-	height: calc(100vh - 50px);;
+    height: 94.5vh;
 }
 
-#fancytree-grid-container{
+.fancytree-grid-container{
 	width: 100%;
-    height: 93vh;
+	height: 100%; 
+	/*overflow-y: auto;*/
+}
+
+#domain-tree{
+	width: 100%;
+    height: 100%;
+}
+#hierachy-tree{
+	width: 100%;
+    height: 100%;
 }
 
 div#tree {
@@ -41,18 +46,4 @@ div#tree {
 	border: 1px solid 1px solid rgba(0,0,0,.12);
 	box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
 }
-ul.fancytree-container {
-	width: 90%;
-	border: 0;
-	outline: 0;  /* No focus frame */
-}
-table.fancytree-container {
-	table-layout: fixed;
-	outline: 0;  /* No focus frame */
-}
 
-
-#urls-grid-continer{
-	width: 100%;
-	height: 94.5vh;
-}

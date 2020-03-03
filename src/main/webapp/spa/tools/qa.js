@@ -1,3 +1,11 @@
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
 function formatStringArrayToJsonArray(listStr){
   var listObj=[];
   for(var i=0;i<listStr.length;i++){
@@ -177,7 +185,7 @@ function drawNetworkDomainGrid(networkGridContainer, dataset){
           }
     });
 
-    // $.ui.fancytree.getTree().expandAll();
+    $.ui.fancytree.getTree(networkGridContainer).expandAll();
     return $(networkGridContainer).fancytree("getTree");
 
     // $.contextMenu({
@@ -222,7 +230,7 @@ function checkUrls(domainName, contentType, statusCode){
     "statusCodes": aryStatusCode
   }
 
-  var sourceUrl="/curator/networkmap/search/urls?job=36&harvestResultNumber=1";
+  var sourceUrl="/curator/networkmap/search/urls?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber;
   fetch(sourceUrl, {
     method: 'POST',
     headers: {
@@ -335,7 +343,7 @@ function drawNetworkTree(networkTreeContainer, dataset){
             // data.result = {url: "domain.json", debugDelay: 1000};
             var dfd = new $.Deferred();
             data.result = dfd.promise();
-            var outlinks="/curator/networkmap/get/outlinks?job=36&harvestResultNumber=1&id=" + data.node.data.id;
+            var outlinks="/curator/networkmap/get/outlinks?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber + "&id=" + data.node.data.id;
             fetch(outlinks).then((response) => {
                 return response.json();
             }).then((lazydata) => {
@@ -374,7 +382,7 @@ function drawHopPathFromSelectedURLs(){
 }
 
 function fetchHopPath(nodeId){
-  var sourceUrl="/curator/networkmap/get/hop/path?job=36&harvestResultNumber=1&id=" + nodeId;
+  var sourceUrl="/curator/networkmap/get/hop/path?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber + "&id=" + nodeId;
   fetch(sourceUrl)
       .then((response) => {
           return response.json();

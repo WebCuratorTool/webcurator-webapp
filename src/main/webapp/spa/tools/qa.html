@@ -67,17 +67,17 @@ to get the desired effect
   <!-- Networkmap Nav-->
   <ul class="navbar-nav ml-md-auto subnav" id="navbar-nav-networkmap">
     <li class="nav-item">
-      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll();">Expand All</a>
+      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-tree').expandAll();">Expand All</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Collapse All</a>
+      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-tree').expandAll(false);">Collapse All</a>
     </li>
   </ul>
 
   <!-- URLs Nav -->
   <ul class="navbar-nav ml-md-auto subnav" id="navbar-nav-urls">
     <li class="nav-item">
-      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Search</a>
+      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-container').expandAll(false);">Search</a>
     </li>
 
     <li class="nav-item dropdown">
@@ -98,14 +98,14 @@ to get the desired effect
       </div>
     </li>
     <li class="nav-item">
-      <a class="nav-link text-light" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Apply</a>
+      <a class="nav-link text-light" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-container').expandAll(false);">Apply</a>
     </li>
   </ul>
 
   <!-- Hop path Nav -->
   <ul class="navbar-nav ml-md-auto subnav" id="navbar-nav-hoppath">
     <li class="nav-item">
-      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Search</a>
+      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-container').expandAll(false);">Search</a>
     </li>
 
     <li class="nav-item dropdown">
@@ -126,14 +126,14 @@ to get the desired effect
       </div>
     </li>
     <li class="nav-item">
-      <a class="nav-link text-light" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Apply</a>
+      <a class="nav-link text-light" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-container').expandAll(false);">Apply</a>
     </li>
   </ul>
 
   <!-- Hierachy Nav -->
   <ul class="navbar-nav ml-md-auto subnav" id="navbar-nav-hierachy">
     <li class="nav-item">
-      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Search</a>
+      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-container').expandAll(false);">Search</a>
     </li>
 
     <li class="nav-item dropdown">
@@ -154,7 +154,7 @@ to get the desired effect
       </div>
     </li>
     <li class="nav-item">
-      <a class="nav-link text-light" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Apply</a>
+      <a class="nav-link text-light" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-container').expandAll(false);">Apply</a>
     </li>
   </ul>
 
@@ -168,9 +168,9 @@ to get the desired effect
         <div id="col-left" class="col-xl-8 none-margin-padding" style="width: calc(100% - 8px); padding-right: 8px; background: white;">
             <div id="network-map-canvas"></div>
         </div>
-        <div id="col-right" class="col-xl-4 none-margin-padding" style="margin-left: -8px;">            
-          <div id="fancytree-container" class="fancytree-grid-container flexbox-item-grow">
-              <table id="domain-grid-continer">
+        <div id="col-right" class="col-xl-4 none-margin-padding" style="margin-left: -8px; height: 94.5vh;">            
+          <div class="fancytree-grid-container flexbox-item-grow">
+              <table id="domain-tree">
                   <colgroup>
                       <col width="50px">                       
                       <col width="*">
@@ -190,14 +190,14 @@ to get the desired effect
                   </tr>
                   </thead>
               </table>
-              <div id="verticalScrollbar" style="top:19px; height:calc(100% - 18px);"></div>
-          </div>              
+              <div id="verticalScrollbar" style="top:19px; height:calc(100% - 25px);"></div>
+          </div>
         </div>
     </div>
   </div>
 
   <div class="content-page" id="page-urls">
-    <div id="urls-grid-continer" style="overflow: hidden;" class="ag-theme-balham"> </div>
+    <div id="urls-grid-container" style="overflow: hidden;" class="ag-theme-balham"> </div>
   </div>
 
   <div class="content-page" id="page-hoppath">
@@ -205,8 +205,8 @@ to get the desired effect
   </div>
 
   <div class="content-page" id="page-hierachy">
-    <div class="fancytree-grid-container">
-        <table id="network-map-tree" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+    <div class="fancytree-grid-container flexbox-item-grow">
+        <table id="hierachy-tree" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
             <colgroup>
               <col style="width: 40px;">
               <col style="width: 1400px;">
@@ -251,12 +251,16 @@ to get the desired effect
 <script src="qa.js"></script>
 
 <script>
+    var urlParameters=getUrlVars();
+    var jobId=parseInt(urlParameters["targetInstanceOid"]);
+    var harvestResultNumber=parseInt(urlParameters["harvestNumber"]);
+
     $(function(){
         sp("networkmap");
         var networkMapContainer = document.getElementById('network-map-canvas');
         var networkMap;
 
-        var sourceUrlDomains="/curator/networkmap/get/all/domains?job=36&harvestResultNumber=1";
+        var sourceUrlDomains="/curator/networkmap/get/all/domains?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber;
         fetch(sourceUrlDomains)
             .then((response) => {
                 console.log(response.status); // Will show you the status
@@ -265,7 +269,7 @@ to get the desired effect
             .then((rawData) => {
                 var data=formatStringArrayToJsonArray(rawData);
                 networkMap=drawNetworkMap(networkMapContainer, data);
-                drawNetworkDomainGrid("#domain-grid-continer", data);
+                drawNetworkDomainGrid("#domain-tree", data);
         });
 
 
@@ -288,9 +292,9 @@ to get the desired effect
           sp(id);
         });
 
-        initNetworkUrlGrid("#urls-grid-continer");
+        initNetworkUrlGrid("#urls-grid-container");
 
-        var sourceUrlRootUrls="/curator/networkmap/get/root/urls?job=36&harvestResultNumber=1"
+        var sourceUrlRootUrls="/curator/networkmap/get/root/urls?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber;
         fetch(sourceUrlRootUrls).then((response) => {
             if(response.status==200){
               if (response.redirected) {
@@ -302,7 +306,7 @@ to get the desired effect
             }
         }).then((data)=>{
           if(data!=null){
-            drawNetworkTree("#network-map-tree", data);
+            drawNetworkTree("#hierachy-tree", data);
           }
         });
     });
