@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+  <title>Target Instance</title>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="../dist/font/fontawesome-free.min.css">
+  <link rel="stylesheet" href="../dist/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../dist/adminlte/css/adminlte.min.css">
+  <link rel="stylesheet" href="../dist/fancytree/skin-win8/ui.fancytree.min.css">
+  <link rel="stylesheet" href="../dist/fancytree/modules/plain-scrollbar.css">
+  <!-- <link rel="stylesheet" href="../dist/jquery/menu/jquery.contextMenu.css"> -->
+  <link rel="stylesheet" href="../dist/ag-grid/ag-grid.css">
+  <link rel="stylesheet" href="../dist/ag-grid/ag-theme-balham.css">
+  <link rel="stylesheet" href="../dist/ag-grid/ag-theme-balham-dark.css">
+  <link rel="stylesheet" href="qa.css">
+</head>
+<!--
+BODY TAG OPTIONS:
+=================
+Apply one or more of the following classes to to the body tag
+to get the desired effect
+|---------------------------------------------------------|
+|LAYOUT OPTIONS | sidebar-collapse                        |
+|               | sidebar-mini                            |
+|---------------------------------------------------------|
+-->
+<body>
+<header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar">
+<div class="navbar-nav-scroll">
+    <ul class="navbar-nav bd-navbar-nav flex-row" id="main-navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link main-nav-link active" href="#" id="networkmap">NetworkMap</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link main-nav-link" href="#" id="urls">Links</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link main-nav-link" href="#" id="hoppath">HopPath</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link main-nav-link" href="#" id="hierachy">Hierachy</a>
+      </li>
+      <li class="nav-item dropdown">
+      <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        More
+      </a>
+      <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
+        <a class="dropdown-item" href="/docs/4.4/"><i class="nav-icon fas fa-calendar-alt"></i> &nbsp;History</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/4.3/"><i class="nav-icon fas fa-tag"></i> &nbsp;Log1</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/4.2/"><i class="nav-icon fas fa-tag"></i> &nbsp;Log2</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/4.0/"><i class="nav-icon fas fa-tag"></i> &nbsp;Log3</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href=""><i class="nav-icon fas fa-at"></i> &nbsp;Live</a>
+        <a class="dropdown-item" href=""><i class="nav-icon fas fa-at"></i> &nbsp;Wayback</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/4.0/"><i class="nav-icon fas fa-hammer"></i> &nbsp;Configuration</a>
+      </div>
+    </li>
+    </ul>
+  </div>
+      
+  <!-- Networkmap Nav-->
+  <ul class="navbar-nav ml-md-auto subnav" id="navbar-nav-networkmap">
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll();">Expand All</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Collapse All</a>
+    </li>
+  </ul>
+
+  <!-- URLs Nav -->
+  <ul class="navbar-nav ml-md-auto subnav" id="navbar-nav-urls">
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Search</a>
+    </li>
+
+    <li class="nav-item dropdown">
+      <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Action
+      </a>
+      <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
+        <a class="dropdown-item" href="/docs/4.4/">Search</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/4.3/">View</a>
+        <a class="dropdown-item" href="javascript:drawHopPathFromSelectedURLs();">Hop path</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/4.0/">Prune Selected</a>
+        <a class="dropdown-item" href="https://v4-alpha.getbootstrap.com/">Import from disk file</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/3.4/">Import from URL</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/3.3/">Automated QA Imports</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="/docs/versions/">Provenance Note</a>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link text-light" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Apply</a>
+    </li>
+  </ul>
+
+  <!-- Hop path Nav -->
+  <ul class="navbar-nav ml-md-auto subnav" id="navbar-nav-hoppath">
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Search</a>
+    </li>
+
+    <li class="nav-item dropdown">
+      <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Action
+      </a>
+      <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
+        <a class="dropdown-item" href="/docs/4.4/">Search</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/4.3/">View</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/4.2/">Hop path</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/4.0/">Prune Selected</a>
+        <a class="dropdown-item" href="https://v4-alpha.getbootstrap.com/">Import from disk file</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/3.4/">Import from URL</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/3.3/">Automated QA Imports</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="/docs/versions/">Provenance Note</a>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link text-light" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Apply</a>
+    </li>
+  </ul>
+
+  <!-- Hierachy Nav -->
+  <ul class="navbar-nav ml-md-auto subnav" id="navbar-nav-hierachy">
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Search</a>
+    </li>
+
+    <li class="nav-item dropdown">
+      <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Action
+      </a>
+      <div class="dropdown-menu dropdown-menu-md-right" aria-labelledby="bd-versions">
+        <a class="dropdown-item" href="/docs/4.4/">Search</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/4.3/">View</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/4.2/">Hop path</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/4.0/">Prune Selected</a>
+        <a class="dropdown-item" href="https://v4-alpha.getbootstrap.com/">Import from disk file</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/3.4/">Import from URL</a>
+        <a class="dropdown-item" href="https://getbootstrap.com/docs/3.3/">Automated QA Imports</a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="/docs/versions/">Provenance Note</a>
+      </div>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link text-light" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Apply</a>
+    </li>
+  </ul>
+
+  <input class="btn btn-tool bg-light" type="search" name="search" placeholder="Filter" aria-label="search" autocomplete="off">
+</header>
+
+<main class="bd-content" name="content" role="main">
+  <div class="content-page" id="page-networkmap">
+     <!-- <div class="customer-page"> -->
+       <div class="row">
+        <div id="col-left" class="col-xl-8 none-margin-padding" style="width: calc(100% - 8px); padding-right: 8px; background: white;">
+            <div id="network-map-canvas"></div>
+        </div>
+        <div id="col-right" class="col-xl-4 none-margin-padding" style="margin-left: -8px;">            
+          <div id="fancytree-container" class="fancytree-grid-container flexbox-item-grow">
+              <table id="domain-grid-continer">
+                  <colgroup>
+                      <col width="50px">                       
+                      <col width="*">
+                      <col width="80px">
+                      <col width="80px">
+                      <col width="80px">
+                      <col width="80px">
+                  </colgroup>
+                  <thead>
+                  <tr>
+                      <th>Action</th>
+                      <th>Title</th>
+                      <th>Tot. URLs</th>
+                      <th>Tot. Success</th>
+                      <th>Tot. Failed</th>
+                      <th>Tot. Size</th>
+                  </tr>
+                  </thead>
+              </table>
+              <div id="verticalScrollbar" style="top:19px; height:calc(100% - 18px);"></div>
+          </div>              
+        </div>
+    </div>
+  </div>
+
+  <div class="content-page" id="page-urls">
+    <div id="urls-grid-continer" style="overflow: hidden;" class="ag-theme-balham"> </div>
+  </div>
+
+  <div class="content-page" id="page-hoppath">
+    <div id="hoppath-canvas"></div>
+  </div>
+
+  <div class="content-page" id="page-hierachy">
+    <div class="fancytree-grid-container">
+        <table id="network-map-tree" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+            <colgroup>
+              <col style="width: 40px;">
+              <col style="width: 1400px;">
+              <col style="width: 200px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+            </colgroup>
+            <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric"></th>
+                <th class="mdl-data-table__cell--non-numeric">URL</th>
+                <th>ContentType</th>
+                <th>StatusCode</th>
+                <th>Size</th>
+                <th>URLs</th>
+                <th>Success</th>
+                <th>Failed</th>
+                <th>TolSize</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+  </div>
+</main>
+
+<script src="../dist/jquery/jquery-3.4.1.min.js"></script>
+<script src="../dist/bootstrap/bootstrap.bundle.min.js"></script>
+<!-- <script src="../dist/adminlte/js/adminlte.js"></script> -->
+<script src="../dist/vis/vis-network.min.js"></script>
+<script src="../dist/fancytree/jquery.fancytree-all-deps.min.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.grid.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.filter.js"></script>
+<script src="../dist/fancytree/modules/plain-scrollbar.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.logger.js"></script>
+<!-- <script src="../dist/chartjs/Chart.js"></script> -->
+<!-- <script src="../dist/jquery/menu/jquery.contextMenu.js"></script> -->
+<script src="../dist/ag-grid/ag-grid-community.js"></script>
+<script src="qa.js"></script>
+
+<script>
+    $(function(){
+        sp("networkmap");
+        var networkMapContainer = document.getElementById('network-map-canvas');
+        var networkMap;
+
+        var sourceUrlDomains="/curator/networkmap/get/all/domains?job=36&harvestResultNumber=1";
+        fetch(sourceUrlDomains)
+            .then((response) => {
+                console.log(response.status); // Will show you the status
+                return response.json();
+            })
+            .then((rawData) => {
+                var data=formatStringArrayToJsonArray(rawData);
+                networkMap=drawNetworkMap(networkMapContainer, data);
+                drawNetworkDomainGrid("#domain-grid-continer", data);
+        });
+
+
+        $("input[name=search]").on("change search", function(e){
+          var n,
+            tree = $.ui.fancytree.getTree(),
+            match = $.trim($(this).val());
+
+          // Pass a string to perform case insensitive matching
+          n = tree.filterNodes(match, { mode: "hide" });
+          // This will adjust the start value in case the filtered row set
+          // is not inside the current viewport
+          // tree.setViewport();
+
+          $("span.matches").text(n ? "(" + n + " matches)" : "");
+        });
+
+        $(".main-nav-link").click(function(event){
+          var id=$(this).attr('id');
+          sp(id);
+        });
+
+        initNetworkUrlGrid("#urls-grid-continer");
+
+        var sourceUrlRootUrls="/curator/networkmap/get/root/urls?job=36&harvestResultNumber=1"
+        fetch(sourceUrlRootUrls).then((response) => {
+            if(response.status==200){
+              if (response.redirected) {
+                alert("Please login!")
+                return null;
+              }else{
+                return response.json();
+              }
+            }
+        }).then((data)=>{
+          if(data!=null){
+            drawNetworkTree("#network-map-tree", data);
+          }
+        });
+    });
+
+</script>
+</body>

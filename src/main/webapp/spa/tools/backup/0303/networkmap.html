@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Qa Visualization</title>
+    <!-- <link rel="stylesheet" href="../dist/bootstrap/4.4.1/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="../dist/chartjs/Chart.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="../dist/font/fontawesome-free.min.css">
+    <!-- IonIcons -->
+    <link rel="stylesheet" href="../dist/font/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../dist/adminlte/css/adminlte.min.css">
+    <link rel="stylesheet" href="../dist/fancytree/skin-win8/ui.fancytree.min.css">
+    <link rel="stylesheet" href="../dist/fancytree/modules/plain-scrollbar.css">
+    <link rel="stylesheet" href="../dist/jquery/menu/jquery.contextMenu.css">
+
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="networkmap.css">
+    <!-- <i class="fas fa-bars"></i></a> -->
+</head>
+<body class="hold-transition sidebar-collapse">
+<div class="wrapper">
+<div class="row">
+    <div id="col-left" class="col-xl-9 none-margin-padding" style="width: calc(100% - 8px); padding-right: 8px;">
+        <div id="network-map-canvas"></div>
+    </div>
+
+    <div id="col-right" class="col-xl-3 none-margin-padding" style="margin-left: -8px;">
+        <div class="card card-prirary cardutline direct-chat direct-chat-primary">
+          <div class="card-header bg-primary">
+
+            <button type="button" class="btn btn-tool" onclick="javascript:toggleLayoutCol();"><i class="fas fa-bars"></i></button>
+
+            <div class="card-tools">
+                <input class="btn btn-tool bg-light" type="search" name="search" placeholder="Search" aria-label="search" autocomplete="off">
+
+                <!-- <span data-toggle="tooltip" title="3 New Messages" class="badge bg-primary">3</span> -->
+                <button type="button" class="btn btn-tool" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll(false);">Collapse All</i></button>
+                <button type="button" class="btn btn-tool" onclick="javascript:$.ui.fancytree.getTree('#domain-grid-continer').expandAll();">Expand All</i></button>
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body" style="overflow: hidden;">
+            <div id="fancytree-container" class="fancytree-grid-container flexbox-item-grow">
+                <table id="domain-grid-continer">
+                    <colgroup>
+                        <col width="50px">                       
+                        <col width="*">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Title</th>
+                        <th>Tot. URLs</th>
+                        <th>Tot. Success</th>
+                        <th>Tot. Failed</th>
+                        <th>Tot. Size</th>
+                    </tr>
+                    </thead>
+                </table>
+                <div id="verticalScrollbar" style="top:19px; height:calc(100% - 18px);"></div>
+            </div>
+            <div id="fancytree-container-urls" class="fancytree-grid-container flexbox-item-grow">
+                <table id="url-grid-continer">
+                    <colgroup>
+                        <col width="30px">                       
+                        <col width="200px">
+                        <col width="150px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th class="mdl-data-table__cell--non-numeric"></th>
+                        <th class="mdl-data-table__cell--non-numeric">URL</th>
+                        <th>ContentType</th>
+                        <th>StatusCode</th>
+                        <th>Size</th>
+                        <th>URLs</th>
+                        <th>Success</th>
+                        <th>Failed</th>
+                        <th>TolSize</th>
+                    </tr>
+                    </thead>
+                </table>
+                <div id="verticalScrollbarUrls" style="top:19px; height:calc(100% - 18px);"></div>
+            </div>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- card -->
+    </div>
+</div>
+</div>
+
+<script src="../dist/jquery/jquery-3.4.1.min.js"></script>
+<script src="../dist/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="../dist/adminlte/js/adminlte.js"></script>
+<script src="../dist/vis/vis-network.min.js"></script>
+<script src="../dist/fancytree/jquery.fancytree-all-deps.min.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.grid.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.filter.js"></script>
+<script src="../dist/fancytree/modules/plain-scrollbar.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.logger.js"></script>
+<script src="../dist/chartjs/Chart.js"></script>
+<script src="../dist/jquery/menu/jquery.contextMenu.js"></script>
+<script src="common.js"></script>
+<script src="networkmap.js"></script>
+<script>
+    function sp(key){
+      $(".content").hide();
+      $("#content-"+key).show();
+    }
+
+    $(function(){
+        var networkMapContainer = document.getElementById('network-map-canvas');
+
+        // var sourceUrl = "/curator/qa/ti_resource_domains.json?targetInstanceOid=55&harvestResultId=25";
+        // var sourceUrl="/curator/domains.json";
+        var sourceUrl="/curator/networkmap/get/all/domains?job=36&harvestResultNumber=1";
+        var networkMap;
+
+        fetch(sourceUrl)
+            .then((response) => {
+                console.log(response.status); // Will show you the status
+                return response.json();
+            })
+            .then((rawData) => {
+                var data=formatStringArrayToJsonArray(rawData);
+                networkMap=drawNetworkMap(networkMapContainer, data);
+                drawNetworkDomainGrid("#domain-grid-continer", data);
+        });
+
+
+        $("input[name=search]").on("change search", function(e){
+          var n,
+            tree = $.ui.fancytree.getTree(),
+            match = $.trim($(this).val());
+
+          // Pass a string to perform case insensitive matching
+          n = tree.filterNodes(match, { mode: "hide" });
+          // This will adjust the start value in case the filtered row set
+          // is not inside the current viewport
+          // tree.setViewport();
+
+          $("span.matches").text(n ? "(" + n + " matches)" : "");
+        });
+    });
+
+</script>
+
+</body>
+</html>
