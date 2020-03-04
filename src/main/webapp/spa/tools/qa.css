@@ -15,13 +15,9 @@ html,body{
 	display: block;
 }
 
-#network-map-canvas, #hoppath-canvas{
+#network-map-canvas, #hoppath-canvas, #urls-grid-container{
 	width: 100%;
     height: calc(100vh - 7px);
-}
-#urls-grid-container{
-	width:100%;
-    height: 94.5vh;
 }
 
 .fancytree-grid-container{

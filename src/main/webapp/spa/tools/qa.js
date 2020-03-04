@@ -29,6 +29,7 @@ function sp(id){
   $("#page-"+id).show();
 }
 
+var mapDomainStat={};
 function formatNetworkMapGraph(data){
   var dataSet={
     nodes:[],
@@ -44,11 +45,13 @@ function formatNetworkMapGraph(data){
     }
 
     if(dataNode.seed){
-      node.color='#A18648';
-      node.shape='star';
+      node.color='#2A4B7C';
+      node.shape='hexagon';
     }
 
     dataSet.nodes.push(node);
+
+    mapDomainStat[dataNode.id]=dataNode;
 
     for(var j=0;j<dataNode.outlinks.length;j++){
       var edge={
@@ -67,7 +70,6 @@ function formatNetworkMapGraph(data){
 
 function drawNetworkMap(networkMapContainer, data){
   var networkMapOptions = {
-      
       nodes: {
           shape: 'dot',
           size: 10,
@@ -76,19 +78,21 @@ function drawNetworkMap(networkMapContainer, data){
        },
       edges: {
           width: 1,
-          arrows: 'to'
+          arrows: 'to',
+          color: '#98AFC7'
       }
   };
 
-  var network = new vis.Network(networkMapContainer, formatNetworkMapGraph(data), networkMapOptions);
-  network.on("click", function (params) {
-      params.event = "[original event]";
-      console.log('click event, getNodeAt returns: ' + this.getNodeAt(params.pointer.DOM));
+  visDomainMap = new vis.Network(networkMapContainer, formatNetworkMapGraph(data), networkMapOptions);
+  visDomainMap.on("doubleClick", function (params) {
+      if(params.nodes.length<=0){
+        return;
+      }
+
+      var nodeId=params.nodes[0];
+      var node=mapDomainStat[nodeId];
+      checkUrls(node.url);
   });
-  network.on("doubleClick", function (params) {
-      params.event = "[original event]";
-  });
-  return network;
 }
 
 // Add Title field to Node to show tree grid
@@ -207,8 +211,6 @@ function drawNetworkDomainGrid(networkGridContainer, dataset){
 
 
 function checkUrls(domainName, contentType, statusCode){
-  sp("urls");
-
   var aryDomainName=[];
   if (domainName && domainName!==null && domainName!=="null") {
     aryDomainName.push(domainName);
@@ -242,6 +244,8 @@ function checkUrls(domainName, contentType, statusCode){
   }).then((rawData) => {
       var data=formatStringArrayToJsonArray(rawData);
       drawNetworkUrlGrid(data);
+
+      sp("urls");
   });
 }
 
@@ -262,7 +266,6 @@ function toggleLayoutCol(){
     $("#col-right").addClass("col-xl-4");
   }
 }
-
 
 var columnDefs = [
           {headerName: "URL", field: "url", pinned: 'left',width: 1600, headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
@@ -369,16 +372,13 @@ function drawNetworkTree(networkTreeContainer, dataset){
 
 
 function drawHopPathFromSelectedURLs(){
-  sp("hoppath");
-
   var selectedRows = grid.gridOptions.api.getSelectedRows();
-  if (selectedRows.length!=1) {
+  if (selectedRows.length==1) {
+    sp("hoppath");
+    fetchHopPath(selectedRows[0].id);
+  }else{
     alert("Please select one and only one row!");
-    return;
   }
-
-  var selectedId=selectedRows[0].id;
-  fetchHopPath(selectedId);
 }
 
 function fetchHopPath(nodeId){
@@ -392,6 +392,7 @@ function fetchHopPath(nodeId){
   });
 }
 
+var mapHopPath={};
 function drawHopPath(data){
   var dataSet={
     nodes:[],
@@ -402,16 +403,22 @@ function drawHopPath(data){
     var dataNode=data[i];
     var node={
       id: dataNode.id,
-      label: dataNode.url,
+      label: dataNode.url+"\n (Outlinks:" + dataNode.outlinks.length + " )",
       size: 5 + Math.log(dataNode.totSize+1)
     }
 
     if(dataNode.seed){
-      node.color='#A18648';
-      node.shape='star';
+      // node.color='#A18648';
+      // node.shape='star';
+      node.color='#2A4B7C';
+      node.shape='hexagon';
+    }else if(i===0){
+      node.color='#00bfee';
+      node.shape="box";
     }
 
     dataSet.nodes.push(node);
+    mapHopPath[dataNode.id]=dataNode;
 
     if(dataNode.parentId>0){
       var edge={
@@ -432,7 +439,8 @@ function drawHopPath(data){
        },
       edges: {
           width: 1,
-          arrows: 'to'
+          arrows: 'to',
+          color: '#98AFC7'
       },
       layout: {
           hierarchical: {
@@ -443,13 +451,25 @@ function drawHopPath(data){
 
   var hopPathContainer = document.getElementById('hoppath-canvas');
 
-  var network = new vis.Network(hopPathContainer, dataSet, networkMapOptions);
-  network.on("click", function (params) {
-      params.event = "[original event]";
-      console.log('click event, getNodeAt returns: ' + this.getNodeAt(params.pointer.DOM));
-  });
-  network.on("doubleClick", function (params) {
-      params.event = "[original event]";
-  });
-  return network;
+  visHopPath = new vis.Network(hopPathContainer, dataSet, networkMapOptions);
+ }
+
+
+var layoutColStatus=1;
+function toggleLayoutCol(){
+  if(layoutColStatus==1){
+    layoutColStatus=2;
+    $("#col-left").removeClass("col-xl-10");
+    $("#col-left").addClass("col-xl-8");
+    $("#col-right").removeClass("col-xl-2");
+    $("#col-right").addClass("col-xl-4");
+  }else{
+    layoutColStatus=1;
+    $("#col-left").removeClass("col-xl-8");
+    $("#col-left").addClass("col-xl-10");
+    $("#col-right").removeClass("col-xl-4");
+    $("#col-right").addClass("col-xl-2");
+  }
 }
+
+

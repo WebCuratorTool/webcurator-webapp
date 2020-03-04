@@ -67,6 +67,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'mysql:mysql-connector-java:5.1.6'
 
+    println 'Start debug gradle'
+    println project.includeMysql
+
     // Specific database dependencies.
     // Note that multiple database dependencies could be in use concurrently.
     if (project.includeH2) {

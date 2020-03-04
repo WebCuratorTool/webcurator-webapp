@@ -34,6 +34,9 @@ to get the desired effect
 <div class="navbar-nav-scroll">
     <ul class="navbar-nav bd-navbar-nav flex-row" id="main-navbar-nav">
       <li class="nav-item">
+        <a class="nav-link" href="/curator/target/queue.html">Home</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link main-nav-link active" href="#" id="networkmap">NetworkMap</a>
       </li>
       <li class="nav-item">
@@ -66,6 +69,9 @@ to get the desired effect
       
   <!-- Networkmap Nav-->
   <ul class="navbar-nav ml-md-auto subnav" id="navbar-nav-networkmap">
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="javascript:toggleLayoutCol();"><i class="fas fa-bars"></i></a>
+    </li>
     <li class="nav-item">
       <a class="nav-link" href="#" onclick="javascript:$.ui.fancytree.getTree('#domain-tree').expandAll();">Expand All</a>
     </li>
@@ -165,10 +171,10 @@ to get the desired effect
   <div class="content-page" id="page-networkmap">
      <!-- <div class="customer-page"> -->
        <div class="row">
-        <div id="col-left" class="col-xl-8 none-margin-padding" style="width: calc(100% - 8px); padding-right: 8px; background: white;">
+        <div id="col-left" class="col-xl-10 none-margin-padding" style="width: calc(100% - 8px); padding-right: 8px; background: white;">
             <div id="network-map-canvas"></div>
         </div>
-        <div id="col-right" class="col-xl-4 none-margin-padding" style="margin-left: -8px; height: 94.5vh;">            
+        <div id="col-right" class="col-xl-2 none-margin-padding" style="margin-left: -8px; height: 94.5vh;">            
           <div class="fancytree-grid-container flexbox-item-grow">
               <table id="domain-tree">
                   <colgroup>
@@ -255,10 +261,12 @@ to get the desired effect
     var jobId=parseInt(urlParameters["targetInstanceOid"]);
     var harvestResultNumber=parseInt(urlParameters["harvestNumber"]);
 
+    var visHopPath, visDomainMap;
+
     $(function(){
         sp("networkmap");
         var networkMapContainer = document.getElementById('network-map-canvas');
-        var networkMap;
+        var vis_networkmap;
 
         var sourceUrlDomains="/curator/networkmap/get/all/domains?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber;
         fetch(sourceUrlDomains)
@@ -268,7 +276,7 @@ to get the desired effect
             })
             .then((rawData) => {
                 var data=formatStringArrayToJsonArray(rawData);
-                networkMap=drawNetworkMap(networkMapContainer, data);
+                drawNetworkMap(networkMapContainer, data);
                 drawNetworkDomainGrid("#domain-tree", data);
         });
 
@@ -280,10 +288,6 @@ to get the desired effect
 
           // Pass a string to perform case insensitive matching
           n = tree.filterNodes(match, { mode: "hide" });
-          // This will adjust the start value in case the filtered row set
-          // is not inside the current viewport
-          // tree.setViewport();
-
           $("span.matches").text(n ? "(" + n + " matches)" : "");
         });
 
