@@ -101,6 +101,7 @@ public class ChangePasswordController {
     /**
      * Process the command tp change the users password.
      */
+    @SuppressWarnings("unchecked")
     private ModelAndView processPasswordChange(HttpServletRequest aReq, ChangePasswordCommand aCmd,
                                                BindingResult bindingResult) throws Exception {
         ModelAndView mav = new ModelAndView();

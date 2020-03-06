@@ -141,6 +141,7 @@ public class ArchiveController {
 		return (String)request.getAttribute("xmlData");
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Map getCustomDepositFormElementsAsMap(HttpServletRequest request) {
 		if (Boolean.parseBoolean(request.getParameter("customDepositForm_customFormPopulated")) == false) {
 			return null;

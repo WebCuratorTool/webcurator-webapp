@@ -63,6 +63,7 @@ import java.util.Properties;
  */
 @Configuration
 @PropertySource(value = "classpath:wct-webapp.properties")
+@SuppressWarnings("unchecked")
 public class ServletConfig {
 
     @Value("${queueController.enableQaModule}")

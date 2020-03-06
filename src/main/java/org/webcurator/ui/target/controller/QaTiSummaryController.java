@@ -81,6 +81,7 @@ import org.webcurator.common.util.DateUtils;
 @Controller
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 @Lazy(false)
+@SuppressWarnings("unchecked")
 @RequestMapping("/curator/target/qatisummary.html")
 public class QaTiSummaryController {
     /** The manager to use to access the target instance. */

@@ -53,6 +53,7 @@ import org.webcurator.ui.util.TabbedController.TabbedModelAndView;
  * @author bbeaumont
  */
 @Controller
+@SuppressWarnings("unchecked")
 @PropertySource(value = "classpath:wct-webapp.properties")
 public class AddParentsController {
 	/** the manager for Target and Group data. */

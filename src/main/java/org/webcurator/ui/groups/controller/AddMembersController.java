@@ -44,6 +44,7 @@ import org.webcurator.ui.util.TabbedController.TabbedModelAndView;
  * This controller manages the process of adding members to a Target Group.
  * @author bbeaumont
  */
+@SuppressWarnings("unchecked")
 @Controller
 public class AddMembersController {
 	/** the manager for Target and Group data. */

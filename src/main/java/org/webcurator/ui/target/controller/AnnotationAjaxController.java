@@ -66,6 +66,7 @@ public class AnnotationAjaxController {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private ModelAndView processTargetInstanceRequest(HttpServletRequest request, Long targetOid, Long targetInstanceOid)
 			throws Exception {
 		TargetInstanceCommand searchCommand = (TargetInstanceCommand) request.getSession().getAttribute(TargetInstanceCommand.SESSION_TI_SEARCH_CRITERIA);

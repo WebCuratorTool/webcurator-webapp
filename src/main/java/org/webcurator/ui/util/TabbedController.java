@@ -71,6 +71,7 @@ import org.webcurator.ui.target.command.TargetInstanceCommand;
  *
  * @author bbeaumont
  */
+@SuppressWarnings("unchecked")
 public abstract class TabbedController {
     /**
      * The default command class for the entry into this tabbed controller

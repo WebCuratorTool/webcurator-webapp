@@ -93,6 +93,7 @@ public class CreateQaIndicatorController {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping
     protected ModelAndView processFormSubmission(HttpServletRequest aReq, CreateQaIndicatorCommand indicatorCmd, BindingResult bindingResult)
             throws Exception {

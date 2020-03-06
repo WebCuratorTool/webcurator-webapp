@@ -50,6 +50,7 @@ import org.webcurator.ui.util.TabbedController.TabbedModelAndView;
  * The handler for the target instance results/harvests tab.
  * @author nwaight
  */
+@SuppressWarnings("unchecked")
 public class TargetInstanceResultHandler extends TabHandler {
 
     private TargetInstanceManager targetInstanceManager;

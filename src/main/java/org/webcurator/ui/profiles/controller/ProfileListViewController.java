@@ -54,6 +54,7 @@ public class ProfileListViewController {
      *
      * @return The view.
      */
+    @SuppressWarnings("unchecked")
     protected ModelAndView getView(ProfileListCommand command) {
         ModelAndView mav = new ModelAndView("profile-list");
 

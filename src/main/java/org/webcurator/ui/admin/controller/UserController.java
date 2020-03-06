@@ -144,6 +144,7 @@ public class UserController {
      * Populate the user list model object in the model and view provided.
      * @param mav the model and view to add the user list to.
      */
+    @SuppressWarnings("unchecked")
     private void populateUserList(ModelAndView mav) {
         List userDTOs = agencyUserManager.getUserDTOsForLoggedInUser();
         List agencies = null;

@@ -23,6 +23,7 @@ import org.webcurator.ui.site.SiteEditorContext;
  * A custom collection editor for rendering a list of URL's
  * @author bbeaumont
  */
+@SuppressWarnings("unchecked")
 public class UrlPatternCollectionEditor extends CustomCollectionEditor {
 
 	private SiteEditorContext ctx = null;

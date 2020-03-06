@@ -89,6 +89,7 @@ public class RoleController {
     /**
      * @return the default model and view.
      */
+    @SuppressWarnings("unchecked")
     public ModelAndView defaultView(String agencyFilter) {
         List roles = agencyUserManager.getRolesForLoggedInUser();
         List agencies = null;

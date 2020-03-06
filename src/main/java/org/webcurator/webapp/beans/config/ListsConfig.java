@@ -21,6 +21,7 @@ import java.util.Map;
  */
 @Configuration
 @PropertySource(value = "classpath:wct-webapp.properties")
+@SuppressWarnings("unchecked")
 public class ListsConfig {
 
     @Value("${groupTypes.subgroup}")

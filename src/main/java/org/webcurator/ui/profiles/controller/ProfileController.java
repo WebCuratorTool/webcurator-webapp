@@ -104,6 +104,7 @@ public class ProfileController extends TabbedController {
 		req.getSession().setAttribute(Constants.GBL_SESS_EDIT_MODE, true);
 	};
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected ModelAndView processSave(Tab currentTab, HttpServletRequest req, HttpServletResponse res, Object comm,
                                        BindingResult bindingResult) {

@@ -135,6 +135,7 @@ public class AssociateUserRoleController {
     /**
      * Process the command to save the user and role associations.
      */
+    @SuppressWarnings("unchecked")
     private ModelAndView processSaveUserToRoleAssoc(HttpServletRequest aReq, AssociateUserRoleCommand aCmd) {
         ModelAndView mav = new ModelAndView();
         log.debug("start of processSaveUserToRoleAssoc()");

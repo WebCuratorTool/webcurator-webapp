@@ -55,6 +55,7 @@ import org.webcurator.ui.site.command.SiteSearchCommand;
 @Controller
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 @Lazy(false)
+@SuppressWarnings("unchecked")
 @RequestMapping("/curator/site/search.html")
 public class SiteSearchController {
 

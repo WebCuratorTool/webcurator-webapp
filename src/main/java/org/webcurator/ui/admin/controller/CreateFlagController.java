@@ -89,6 +89,7 @@ public class CreateFlagController {
         return null;
     }
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping(method = RequestMethod.POST, path = "/curator/admin/create-flag.html")
     protected ModelAndView processFormSubmission(HttpServletRequest aReq, @ModelAttribute CreateFlagCommand createFlagCommand, BindingResult bindingResult)
             throws Exception {

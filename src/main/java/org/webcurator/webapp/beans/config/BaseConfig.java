@@ -78,10 +78,10 @@ import java.util.*;
  * is part of the change to move to using annotations for Spring instead of
  * XML files.
  */
-@SuppressWarnings("all")
 @Configuration
 @EnableTransactionManagement
 @PropertySource(value = "classpath:wct-webapp.properties")
+@SuppressWarnings("unchecked")
 public class BaseConfig {
     private static Logger LOGGER = LoggerFactory.getLogger(BaseConfig.class);
 

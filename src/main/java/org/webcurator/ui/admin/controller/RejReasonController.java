@@ -135,6 +135,7 @@ public class RejReasonController {
      * Populate the rejection reason list model object in the model and view provided.
      * @param mav the model and view to add the user list to.
      */
+    @SuppressWarnings("unchecked")
     private void populateRejReasonList(ModelAndView mav) {
         List reasons = agencyUserManager.getRejReasonsForLoggedInUser();
         List agencies = null;

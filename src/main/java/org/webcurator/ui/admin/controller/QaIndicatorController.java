@@ -149,6 +149,7 @@ public class QaIndicatorController {
      * Populate the Indicator Criteria list model object in the model and view provided.
      * @param mav the model and view to add the user list to.
      */
+    @SuppressWarnings("unchecked")
     private void populateIndicatorCriteriaList(ModelAndView mav) {
         List<IndicatorCriteria> indicators = agencyUserManager.getIndicatorCriteriaForLoggedInUser();
         List<Agency> agencies = null;

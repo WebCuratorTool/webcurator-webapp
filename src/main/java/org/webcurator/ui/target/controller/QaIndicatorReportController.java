@@ -62,10 +62,10 @@ import org.webcurator.ui.target.command.TargetInstanceCommand;
  *
  * @author twoods
  */
-@SuppressWarnings("all")
 @Controller
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 @Lazy(false)
+@SuppressWarnings("unchecked")
 @RequestMapping(path = "/curator/target/qa-indicator-report.html")
 public class QaIndicatorReportController {
 	/** the logger. */

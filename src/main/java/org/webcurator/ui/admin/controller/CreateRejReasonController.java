@@ -86,6 +86,7 @@ public class CreateRejReasonController {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @RequestMapping(method = RequestMethod.POST, path = "/curator/admin/create-rejreason.html")
     protected ModelAndView processFormSubmission(HttpServletRequest aReq, @ModelAttribute CreateRejReasonCommand createRejReasonCommand, BindingResult bindingResult)
             throws Exception {

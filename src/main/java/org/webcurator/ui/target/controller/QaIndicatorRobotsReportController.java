@@ -196,6 +196,7 @@ public class QaIndicatorRobotsReportController {
 	 * @param mav
 	 *            the model and view to add the user list to.
 	 */
+	@SuppressWarnings("unchecked")
 	private void populateIndicatorCriteriaList(ModelAndView mav) {
 		List<IndicatorCriteria> indicators = agencyUserManager
 				.getIndicatorCriteriaForLoggedInUser();

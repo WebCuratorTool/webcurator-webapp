@@ -348,6 +348,7 @@ public class QueueController {
 		return mav;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addQaInformation(ModelAndView mav) {
 		// fetch the valid rejection reasons for targets
 		// (used to populate the rejection reason drop-down)

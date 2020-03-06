@@ -53,6 +53,7 @@ import org.webcurator.common.ui.Constants;
 @Controller
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 @Lazy(false)
+@SuppressWarnings("unchecked")
 public class FlagController {
 	/** the logger. */
     private Log log = null;

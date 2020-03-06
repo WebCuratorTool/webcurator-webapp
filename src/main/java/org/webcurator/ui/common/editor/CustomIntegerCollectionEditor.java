@@ -21,6 +21,7 @@ import org.springframework.beans.propertyeditors.CustomCollectionEditor;
  * A Custom Collection Editor for mapping a collection of Integers.
  * @author bbeaumont
  */
+@SuppressWarnings("unchecked")
 public class CustomIntegerCollectionEditor extends CustomCollectionEditor {
 
 	public CustomIntegerCollectionEditor(Class aClazz, boolean aAllowEmpty) {
