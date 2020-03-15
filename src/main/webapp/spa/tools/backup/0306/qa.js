@@ -6,21 +6,6 @@ function getUrlVars() {
     return vars;
 }
 
-
-var networkmapGridStatus=1; //1: show; 0: hide;
-function toggleNetworkMapGrid(){
-  if (networkmapGridStatus === 1) {
-    $('#networkmap-main-container-right').hide();
-    $('#networkmap-main-container-left').width('100vw');
-    networkmapGridStatus=0;
-  }else{
-    $('#networkmap-main-container-right').show();
-    $('#networkmap-main-container-left').width('80vw');
-    networkmapGridStatus=1;
-  }
-}
-
-
 function formatStringArrayToJsonArray(listStr){
   var listObj=[];
   for(var i=0;i<listStr.length;i++){
@@ -45,10 +30,111 @@ function sp(id){
 }
 
 var mapDomainStat={};
+function formatNetworkMapGraph(data){
+  var dataSet={
+    nodes:[],
+    edges:[]
+  };
+
+  for(var i=0; i<data.length;i++){
+    var dataNode=data[i];
+    var node={
+      id: dataNode.id,
+      label: dataNode.title,
+      size: 5 + Math.log(dataNode.totSize+1)
+    }
+
+    if(dataNode.seed){
+      node.color='#2A4B7C';
+      node.shape='hexagon';
+    }
+
+    dataSet.nodes.push(node);
+
+    mapDomainStat[dataNode.id]=dataNode;
+
+    for(var j=0;j<dataNode.outlinks.length;j++){
+      var edge={
+        from: dataNode.id,
+        to: dataNode.outlinks[j]
+      }
+
+      dataSet.edges.push(edge);
+    }
+    node.from=dataNode.id;
+  }
+
+  return dataSet;
+}
 
 
+function drawNetworkMap(networkMapContainer, data){
+  var minVelocityValue=1;
+  // if(data.length<200){
+  //   minVelocityValue=30;
+  // }else if(data.length<500){
+  //   minVelocityValue=50;
+  // }else if(data.length<700){
+  //   minVelocityValue=90;
+  // }else if(data.length<1000){
+  //   minVelocityValue=120;
+  // }else{
+  //   minVelocityValue=135;
+  // }
+  
+  var networkMapOptions = {
+      nodes: {
+          shape: 'dot',
+          size: 10,
+          borderWidth: 2,
+          color: '#98AFC7'
+       },
+      edges: {
+          width: 1,
+          arrows: 'to',
+          color: '#98AFC7'
+      },
+      physics: {
+          // barnesHut: {
+          //   theta: 0.5,
+          //   gravitationalConstant: -3500,
+          //   centralGravity: 0.3,
+          //   springLength: 95,
+          //   springConstant: 0.04,
+          //   damping: 0.09,
+          //   avoidOverlap: 0
+          // },
+          forceAtlas2Based: {
+              gravitationalConstant: -26,
+              centralGravity: 0.005,
+              springLength: 230,
+              springConstant: 0.18
+          },
+          minVelocity: minVelocityValue,
+          maxVelocity: 146,
+          solver: 'forceAtlas2Based',
+          timestep: 0.35,
+          stabilization: {
+              enabled:true,
+              iterations:1000,
+              updateInterval:25,
+              onlyDynamicEdges: false,
+              fit: true
+          }
+      }
+  };
 
+  visDomainMap = new vis.Network(networkMapContainer, formatNetworkMapGraph(data), networkMapOptions);
+  visDomainMap.on("doubleClick", function (params) {
+      if(params.nodes.length<=0){
+        return;
+      }
 
+      var nodeId=params.nodes[0];
+      var node=mapDomainStat[nodeId];
+      checkUrls(node.url);
+  });
+}
 
 // Add Title field to Node to show tree grid
 function addTitleForTreeGrid(listObj){
@@ -343,8 +429,7 @@ function fetchHopPath(nodeId){
           return response.json();
       })
       .then((data) => {
-      drawHopPath(data);
-      $('#popup-window-hop-path').show();
+          drawHopPath(data);
   });
 }
 
@@ -365,9 +450,9 @@ function drawHopPath(data){
 
     if(dataNode.seed){
       // node.color='#A18648';
-      node.shape='star';
-      // node.color='#2A4B7C';
-      // node.shape='hexagon';
+      // node.shape='star';
+      node.color='#2A4B7C';
+      node.shape='hexagon';
     }else if(i===0){
       node.color='#00bfee';
       node.shape="box";

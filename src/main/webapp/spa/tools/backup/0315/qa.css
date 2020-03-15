@@ -31,63 +31,18 @@ html,body{
 .popup-window-content{
 	width: 80vw; 
 	height: 80vh; 
-	border: 5px solid #343a40; 
+	border: 5px solid #007bff; 
 	border-radius: 10px;
-	background: #F1E4E1;
+}
+
+.window-modify-nav{
+	width: 100%;
+	height: 5vh;
 }
 
 .window-modify-grid{
 	width: 100%;
 	height: 58vh;
-}
-
-
-.popup-modal{
-	display: none;
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	z-index: 2002;
-	padding: 8vh 10vw 8vh 10vw;
-	background: rgba(0,0,0,0.2);
-}
-
-#popup-window-hop-path{
-	display: none;
-	position: absolute;
-	width: 70vw; 
-	height: 90vh;
-	margin: 5vh 15vw 5vh 15vw;
-	border: 5px solid #007bff;
-	border-radius: 10px;
-	background: #F1E4E1;
-	z-index: 2002;
-}
-
-#popup-window-import-input{
-	display: none;
-	position: absolute;
-	width: 50vw; 
-	height: 40vh;
-	margin: 30vh 25vw 30vh 25vw;
-	border: 5px solid #007bff;
-	border-radius: 10px;
-	background: #F1E4E1;
-	z-index: 2002;
-}
-
-#popup-window-insight{
-	display: none;
-	position: absolute;
-	width: 70vw; 
-	height: 90vh;
-	margin: 5vh 15vw 5vh 15vw;
-	border: 5px solid #007bff;
-	border-radius: 10px;
-	background: #F1E4E1;
-	z-index: 2002;
 }
 
 /*==============================Main Network Map=====================================================*/
@@ -124,14 +79,9 @@ html,body{
 }
 /*==============================End of Main Network Map============================================*/
 
-#urls-grid-container{
+#hoppath-canvas, #urls-grid-container{
 	width: 100%;
     height: 100%;
-}
-
-#hoppath-canvas{
-	width: 100%;
-	height: 100%;
 }
 
 .fancytree-grid-container{

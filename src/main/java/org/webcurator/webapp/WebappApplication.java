@@ -9,8 +9,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
-import org.webcurator.core.networkmap.service.NetworkMapLocalController;
+
 
 
 import java.util.Arrays;
@@ -22,9 +21,9 @@ import java.util.Arrays;
         "org.webcurator.core.rest",
         "org.webcurator.core.reader",
         "org.webcurator.core.harvester.agent.HarvestAgentClient",
-        "org.webcurator.core.networkmap.service"},
+        "org.webcurator.core.networkmap.service"}
         // Put any exclusions here.
-        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = NetworkMapLocalController.class)
+//        excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = NetworkMapLocalController.class)
 )
 @EnableAutoConfiguration(exclude = {SecurityAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 public class WebappApplication {

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+  <title>Target Instance</title>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="../dist/font/fontawesome-free.min.css">
+  <link rel="stylesheet" href="../dist/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../dist/adminlte/css/adminlte.min.css">
+  <link rel="stylesheet" href="../dist/fancytree/skin-win8/ui.fancytree.min.css">
+  <link rel="stylesheet" href="../dist/fancytree/modules/plain-scrollbar.css">
+  <!-- <link rel="stylesheet" href="../dist/jquery/menu/jquery.contextMenu.css"> -->
+  <link rel="stylesheet" href="../dist/ag-grid/ag-grid.css">
+  <link rel="stylesheet" href="../dist/ag-grid/ag-theme-balham.css">
+  <link rel="stylesheet" href="../dist/ag-grid/ag-theme-balham-dark.css">
+  <link rel="stylesheet" href="qa.css">
+</head>
+<!--
+BODY TAG OPTIONS:
+=================
+Apply one or more of the following classes to to the body tag
+to get the desired effect
+|---------------------------------------------------------|
+|LAYOUT OPTIONS | sidebar-collapse                        |
+|               | sidebar-mini                            |
+|---------------------------------------------------------|
+-->
+<body>
+
+<main class="bd-content" name="content" role="main">
+  <div class="content-page" id="page-networkmap">
+    <div id="networkmap-main-container">
+      <!-- Networmap Canvas -->
+      <div id="network-map-canvas"></div>
+
+      <!-- Left Button Group -->
+      <div class="btn-group" style="position: absolute; left: 3px; top: 5px; z-index: 1000;">
+        <button type="button" class="btn btn-default" onclick="">Reload</button>
+        <button type="button" class="btn btn-default">Collapse All</button>
+        <button type="button" class="btn btn-default">Open Urls</button>
+      </div>
+
+      <!-- Right Button Group -->
+      <div class="card  bg-default" style="position: absolute; right: 0px; top: 5px; z-index: 1000; width: 30vw;">
+        <div class="card-header" style="height: 50px;">
+          <h3 class="card-title">Direct Chat</h3>
+
+          <div class="card-tools">
+            <!-- <span data-toggle="tooltip" title="3 New Messages" class="badge bg-primary">3</span> -->
+
+            <button type="button" class="btn btn-tool" onclick="spNetworkMapSideTab('networkmap-side-pie');" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle"> <i class="fas fa-chart-pie"></i></button>
+            
+            <button type="button" class="btn btn-tool" onclick="spNetworkMapSideTab('networkmap-side-table');" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle"> <i class="fas fa-list-alt"></i></button>
+                        
+
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" onclick="console.log('minus');"><i class="fas fa-minus"></i>
+            </button>
+
+          </div>
+
+          <!-- /.card-tools -->
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body" style="height: calc(100vh - 50px - 5px); overflow-y: auto;">
+            <div class="tab-content bg-secondary">
+              <div class="tab-pane show active" id="networkmap-side-pie">
+                <div id="networkmap-pie-urls-contenttype" style="width: 100%; height: 100%;"></div>
+                <!-- <div id="networkmap-pie-urls-statuscode" style="height: 25%;"></div>
+                <div id="networkmap-pie-size-contenttype" style="height: 25%;"></div>
+                <div id="networkmap-pie-size-statuscode" style="height: 25%;"></div> -->
+              </div>
+              <div class="tab-pane" id="networkmap-side-table" style="display: none;">
+                <div id="networkmap-side-table-domain-grid" style="width: 100%; height: 100vh;" class="ag-theme-balham"> </div>
+              </div>
+            </div>
+        </div>
+        <!-- /.card-body -->
+      </div>
+
+    </div>
+  </div>
+
+  <div class="content-page" id="page-hierachy">
+   <!--  <div class="fancytree-grid-container flexbox-item-grow">
+        <table id="hierachy-tree" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+            <colgroup>
+              <col style="width: 40px;">
+              <col style="width: 1400px;">
+              <col style="width: 25%;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+            </colgroup>
+            <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric"></th>
+                <th class="mdl-data-table__cell--non-numeric">URL</th>
+                <th>ContentType</th>
+                <th>StatusCode</th>
+                <th>Size</th>
+                <th>URLs</th>
+                <th>Success</th>
+                <th>Failed</th>
+                <th>TolSize</th>
+            </tr>
+            </thead>
+        </table>
+    </div> -->
+    <div class="fancytree-grid-container flexbox-item-grow">
+        <table id="domain-tree">
+            <colgroup>
+                <col width="50px">
+                <col width="*">
+                <col width="80px">
+                <col width="80px">
+                <col width="80px">
+                <col width="80px">
+            </colgroup>
+            <thead>
+            <tr>
+                <th>Action</th>
+                <th>Title</th>
+                <th>Tot. URLs</th>
+                <th>Tot. Success</th>
+                <th>Tot. Failed</th>
+                <th>Tot. Size</th>
+            </tr>
+            </thead>
+        </table>
+        <div id="verticalScrollbar" style="top:19px; height:calc(100% - 25px);"></div>
+    </div>
+  </div>
+</main>
+
+<script src="../dist/jquery/jquery-3.4.1.min.js"></script>
+<script src="../dist/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="../dist/adminlte/js/adminlte.js"></script>
+<script src="../dist/vis/vis-network.js"></script>
+<script src="../dist/fancytree/jquery.fancytree-all-deps.min.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.grid.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.filter.js"></script>
+<script src="../dist/fancytree/modules/plain-scrollbar.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.logger.js"></script>
+<!-- <script src="../dist/chartjs/Chart.js"></script> -->
+<!-- <script src="../dist/jquery/menu/jquery.contextMenu.js"></script> -->
+<script src="../dist/ag-grid/ag-grid-community.js"></script>
+<!-- <script src="../dist/google/loader.js"></script> -->
+<script src="../dist/d3/d3.js"></script>
+<script src="networkmap-graph.js"></script>
+<script src="networkmap-grid.js"></script>
+<script src="networkmap-treemap.js"></script>
+<script src="networkmap.js"></script>
+
+<script src="qa.js"></script>
+
+<script>
+    var urlParameters=getUrlVars();
+    var jobId=parseInt(urlParameters["targetInstanceOid"]);
+    var harvestResultNumber=parseInt(urlParameters["harvestNumber"]);
+
+    var visHopPath, networkmap;
+    $(function(){        
+        sp("networkmap");
+        
+        networkmap=new NetworkMap('network-map-canvas', '#networkmap-side-table-domain-grid', 'networkmap-pie-urls-contenttype', 'networkmap-pie-urls-statuscode', 'networkmap-pie-size-contenttype', 'networkmap-pie-size-statuscode');
+        networkmap.init(jobId, harvestResultNumber);
+
+        $("input[name=search]").on("change search", function(e){
+          var n,
+            tree = $.ui.fancytree.getTree(),
+            match = $.trim($(this).val());
+
+          // Pass a string to perform case insensitive matching
+          n = tree.filterNodes(match, { mode: "hide" });
+          $("span.matches").text(n ? "(" + n + " matches)" : "");
+        });
+
+        $(".main-nav-link").click(function(event){
+          var id=$(this).attr('id');
+          sp(id);
+        });
+
+        // initNetworkUrlGrid("#urls-grid-container");
+
+        var sourceUrlRootUrls="/curator/networkmap/get/root/urls?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber;
+        fetch(sourceUrlRootUrls).then((response) => {
+            if(response.status==200){
+              if (response.redirected) {
+                alert("Please login!")
+                return null;
+              }else{
+                return response.json();
+              }
+            }
+        }).then((data)=>{
+          if(data!=null){
+            // drawNetworkTree("#hierachy-tree", data);
+          }
+        });
+
+    });
+
+</script>
+</body>

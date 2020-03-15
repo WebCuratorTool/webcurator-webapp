@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+  <title>Target Instance</title>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="../dist/font/fontawesome-free.min.css">
+  <link rel="stylesheet" href="../dist/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../dist/adminlte/css/adminlte.min.css">
+  <link rel="stylesheet" href="../dist/fancytree/skin-win8/ui.fancytree.min.css">
+  <link rel="stylesheet" href="../dist/fancytree/modules/plain-scrollbar.css">
+  <!-- <link rel="stylesheet" href="../dist/jquery/menu/jquery.contextMenu.css"> -->
+  <link rel="stylesheet" href="../dist/ag-grid/ag-grid.css">
+  <link rel="stylesheet" href="../dist/ag-grid/ag-theme-balham.css">
+  <link rel="stylesheet" href="../dist/ag-grid/ag-theme-balham-dark.css">
+  <link rel="stylesheet" href="qa.css">
+</head>
+<!--
+BODY TAG OPTIONS:
+=================
+Apply one or more of the following classes to to the body tag
+to get the desired effect
+|---------------------------------------------------------|
+|LAYOUT OPTIONS | sidebar-collapse                        |
+|               | sidebar-mini                            |
+|---------------------------------------------------------|
+-->
+<body>
+
+<main class="bd-content" name="content" role="main">
+  <div class="content-page" id="page-networkmap">
+    <div class="networkmap-main-col" id="networkmap-main-container-left">
+      <div style="position: relative; height: 100vh;">
+        <!-- Networmap Canvas -->
+        <div id="network-map-canvas"></div>
+
+        <!-- Left Button Group -->
+        <div class="btn-group" style="position: absolute; left: 3px; top: 5px; z-index: 1000;">
+          <button type="button" class="btn btn-default" onclick="networkmap.graph.reload();">Reload</button>
+          <button type="button" class="btn btn-default" onclick="networkmap.graph.reset();">Reset</button>
+          <button type="button" class="btn btn-default" onclick="networkmap.graph.collapseAll();">Collapse All</button>
+          <button type="button" class="btn btn-default"><i class="fas fa-chart-pie"></i> &nbsp; Insight</button>
+          <button type="button" class="btn btn-default" onclick="modifyHarvest();"><i class="fas fa-edit"></i> &nbsp; Modify Harvest</button>
+        </div>
+
+        <!-- Right Button Group -->
+        <div class="btn-group" style="position: absolute; right: 0px; top: 5px; z-index: 1000;">
+          <button type="button" class="btn btn-flat btn-default" onclick="toggleNetworkMapGrid();"><i class="fas fa-bars"></i></button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="networkmap-main-col bg-info" id="networkmap-main-container-right">
+      <div id="networkmap-side-table-domain-grid" style="width: 100%; height: 100vh;" class="ag-theme-balham"> </div>
+    </div>
+  </div>
+
+  <div class="content-page" id="page-hierachy">
+   <!--  <div class="fancytree-grid-container flexbox-item-grow">
+        <table id="hierachy-tree" class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+            <colgroup>
+              <col style="width: 40px;">
+              <col style="width: 1400px;">
+              <col style="width: 25%;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+              <col style="width: 100px;">
+            </colgroup>
+            <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric"></th>
+                <th class="mdl-data-table__cell--non-numeric">URL</th>
+                <th>ContentType</th>
+                <th>StatusCode</th>
+                <th>Size</th>
+                <th>URLs</th>
+                <th>Success</th>
+                <th>Failed</th>
+                <th>TolSize</th>
+            </tr>
+            </thead>
+        </table>
+    </div> -->
+    <div class="fancytree-grid-container flexbox-item-grow">
+        <table id="domain-tree">
+            <colgroup>
+                <col width="50px">
+                <col width="*">
+                <col width="80px">
+                <col width="80px">
+                <col width="80px">
+                <col width="80px">
+            </colgroup>
+            <thead>
+            <tr>
+                <th>Action</th>
+                <th>Title</th>
+                <th>Tot. URLs</th>
+                <th>Tot. Success</th>
+                <th>Tot. Failed</th>
+                <th>Tot. Size</th>
+            </tr>
+            </thead>
+        </table>
+        <div id="verticalScrollbar" style="top:19px; height:calc(100% - 25px);"></div>
+    </div>
+  </div>
+</main>
+
+
+<div class="card card-primary popup-window"  id="popup-window-modify-harvest">
+  <div class="card-header p-0 pt-1 border-bottom-0">
+    <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill" href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home" aria-selected="true">Prune</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="custom-tabs-one-profile-tab" data-toggle="pill" href="#custom-tabs-one-profile" role="tab" aria-controls="custom-tabs-one-profile" aria-selected="false">Import</a>
+      </li>
+    </ul>
+  </div>
+  <div class="card-body" style="margin-top: -20px;">
+    <div class="tab-content" id="custom-tabs-one-tabContent">
+      <div class="tab-pane fade show active" id="custom-tabs-one-home" role="tabpanel" aria-labelledby="custom-tabs-one-home-tab">
+         <!-- Left -->
+         <div class="window-modify-col window-modify-col-left">
+            <nav class="main-header navbar navbar-expand navbar-white navbar-light window-modify-nav" style="margin: 0;">
+              <!-- SEARCH FORM -->
+              <form class="form-inline ml-3">
+                <div class="input-group input-group-sm">
+                  <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                  <div class="input-group-append">
+                    <button class="btn btn-navbar" type="submit">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              <ul class="navbar-nav  ml-auto">
+                <li class="nav-item d-none d-sm-inline-block">
+                  <a href="../../index3.html" class="nav-link">Clear</a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                  <a href="#" class="nav-link">Query</a>
+                </li>
+                <!-- <li class="nav-item d-none d-sm-inline-block">
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        Action
+                      </button>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Separated link</a>
+                      </div>
+                    </div>
+                  </div>
+                </li> -->
+                <li class="nav-item dropdown">
+                  <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <span class="dropdown-item dropdown-header">15 Notifications</span>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                      <i class="fas fa-envelope mr-2"></i> 4 new messages
+                      <span class="float-right text-muted text-sm">3 mins</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                      <i class="fas fa-users mr-2"></i> 8 friend requests
+                      <span class="float-right text-muted text-sm">12 hours</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                      <i class="fas fa-file mr-2"></i> 3 new reports
+                      <span class="float-right text-muted text-sm">2 days</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+                  </div>
+                </li>
+              </ul>
+            </nav>
+           
+            <div id="grid-modify-prune-left" class="ag-theme-balham window-modify-grid"> </div>
+         </div>
+
+         <!-- Middle -->
+         <div class="window-modify-col window-modify-col-middle">
+           <div style="margin: 0; position: absolute; top: 50%; left: 5px; -ms-transform: translateY(-50%); transform: translateY(-50%);">
+                <button type="button" class="btn btn-default btn-flat"><i class="fas fa-angle-double-right"></i></button>
+                <br><br><br><br>
+                <button type="button" class="btn btn-default btn-flat"><i class="fas fa-angle-double-left"></i></button>
+           </div>
+         </div>
+
+         <!-- Right -->
+         <div class="window-modify-col window-modify-col-right">
+           <nav class="main-header navbar navbar-expand navbar-white navbar-light window-modify-nav" style="margin: 0;">
+              <!-- SEARCH FORM -->
+              <form class="form-inline ml-3">
+                <div class="input-group input-group-sm">
+                  <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                  <div class="input-group-append">
+                    <button class="btn btn-navbar" type="submit">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              <ul class="navbar-nav  ml-auto">
+              </ul>
+            </nav>
+            <div id="grid-modify-prune-right" class="ag-theme-balham window-modify-grid"> </div>
+         </div>
+      </div>
+      <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel" aria-labelledby="custom-tabs-one-profile-tab">
+         <!-- Left -->
+         <div class="window-modify-col window-modify-col-left">
+            <nav class="main-header navbar navbar-expand navbar-white navbar-light window-modify-nav" style="margin: 0;">
+              <!-- SEARCH FORM -->
+              <form class="form-inline ml-3">
+                <div class="input-group input-group-sm">
+                  <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                  <div class="input-group-append">
+                    <button class="btn btn-navbar" type="submit">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              <ul class="navbar-nav  ml-auto">
+                <li class="nav-item d-none d-sm-inline-block">
+                  <a href="../../index3.html" class="nav-link">Clear</a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                  <a href="#" class="nav-link">Query</a>
+                </li>
+                <!-- <li class="nav-item d-none d-sm-inline-block">
+                  <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        Action
+                      </button>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Separated link</a>
+                      </div>
+                    </div>
+                  </div>
+                </li> -->
+                <li class="nav-item dropdown">
+                  <a class="nav-link" data-toggle="dropdown" href="#">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                    <span class="dropdown-item dropdown-header">15 Notifications</span>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                      <i class="fas fa-envelope mr-2"></i> 4 new messages
+                      <span class="float-right text-muted text-sm">3 mins</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                      <i class="fas fa-users mr-2"></i> 8 friend requests
+                      <span class="float-right text-muted text-sm">12 hours</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                      <i class="fas fa-file mr-2"></i> 3 new reports
+                      <span class="float-right text-muted text-sm">2 days</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+                  </div>
+                </li>
+              </ul>
+            </nav>
+           
+            <div id="grid-modify-import-left" class="ag-theme-balham window-modify-grid"> </div>
+         </div>
+
+         <!-- Middle -->
+         <div class="window-modify-col window-modify-col-middle">
+           <div style="margin: 0; position: absolute; top: 50%; -ms-transform: translateY(-50%); transform: translateY(-50%);">
+                <button type="button" class="btn btn-default btn-flat"><i class="fas fa-angle-double-right"></i></button>
+                <br><br><br><br>
+                <button type="button" class="btn btn-default btn-flat"><i class="fas fa-angle-double-left"></i></button>
+           </div>
+         </div>
+
+         <!-- Right -->
+         <div class="window-modify-col window-modify-col-right">
+           <nav class="main-header navbar navbar-expand navbar-white navbar-light window-modify-nav" style="margin: 0;">
+              <!-- SEARCH FORM -->
+              <form class="form-inline ml-3">
+                <div class="input-group input-group-sm">
+                  <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                  <div class="input-group-append">
+                    <button class="btn btn-navbar" type="submit">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+
+              <ul class="navbar-nav  ml-auto">
+              </ul>
+            </nav>
+            <div id="grid-modify-import-right" class="ag-theme-balham window-modify-grid"> </div>
+         </div>
+      </div>
+    </div>
+  </div>  <!-- ./body -->
+
+  <div class="card-footer" style="width: 100%; position: absolute; bottom: 0;">
+    <div class="row">
+      <div class="col-11">
+          <textarea class="form-control" rows="4" placeholder="Provenance Note ..." style="resize: none;"></textarea>
+      </div>
+      <div class="col-1">
+        <div style="width: 100px; margin: 0; position: absolute; top: 50%; left: 5px; -ms-transform: translateY(-50%); transform: translateY(-50%);">
+          <button type="button" class="btn btn-block btn-primary">Apply</button>
+          <br>
+          <button type="button" class="btn btn-block btn-secondary" onclick="$('#popup-window-modify-harvest').hide();">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+  <!-- /.card -->
+
+<div class="popup-window" id="popup-window-hop-path">
+  <button type="button" class="btn btn-block btn-flat btn-primary" onclick="$('#popup-window-hop-path').hide();">Close</button>
+  <div id="hoppath-canvas" style="width: 70vw; height: 77vh; background: white; margin: 0; padding: 0; border: none;"></div>
+</div>
+
+<!-- <div class="popup-window">
+  <h1>hello</h1>
+</div> -->
+
+
+<script src="../dist/jquery/jquery-3.4.1.min.js"></script>
+<script src="../dist/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="../dist/adminlte/js/adminlte.js"></script>
+<script src="../dist/vis/vis-network.js"></script>
+<script src="../dist/fancytree/jquery.fancytree-all-deps.min.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.grid.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.filter.js"></script>
+<script src="../dist/fancytree/modules/plain-scrollbar.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.logger.js"></script>
+<!-- <script src="../dist/chartjs/Chart.js"></script> -->
+<!-- <script src="../dist/jquery/menu/jquery.contextMenu.js"></script> -->
+<script src="../dist/ag-grid/ag-grid-community.js"></script>
+<!-- <script src="../dist/google/loader.js"></script> -->
+<script src="../dist/d3/d3.js"></script>
+<script src="networkmap-graph.js"></script>
+<script src="networkmap-grid.js"></script>
+<script src="networkmap-treemap.js"></script>
+<script src="networkmap.js"></script>
+<script src="popup-modify-harvest.js"></script>
+
+<script src="qa.js"></script>
+
+<script>
+    var urlParameters=getUrlVars();
+    var jobId=parseInt(urlParameters["targetInstanceOid"]);
+    var harvestResultNumber=parseInt(urlParameters["harvestNumber"]);
+
+    var visHopPath, networkmap, gPopupModifyHarvest;
+    $(function(){        
+        sp("networkmap");
+        
+        gPopupModifyHarvest=new PopupModifyHarvest(jobId, harvestResultNumber);
+
+        networkmap=new NetworkMap('network-map-canvas', '#networkmap-side-table-domain-grid', 'networkmap-pie-urls-contenttype', 'networkmap-pie-urls-statuscode', 'networkmap-pie-size-contenttype', 'networkmap-pie-size-statuscode');
+        networkmap.init(jobId, harvestResultNumber);
+
+        $("input[name=search]").on("change search", function(e){
+          var n,
+            tree = $.ui.fancytree.getTree(),
+            match = $.trim($(this).val());
+
+          // Pass a string to perform case insensitive matching
+          n = tree.filterNodes(match, { mode: "hide" });
+          $("span.matches").text(n ? "(" + n + " matches)" : "");
+        });
+
+        $(".main-nav-link").click(function(event){
+          var id=$(this).attr('id');
+          sp(id);
+        });
+
+        // initNetworkUrlGrid("#urls-grid-container");
+
+        var sourceUrlRootUrls="/curator/networkmap/get/root/urls?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber;
+        fetch(sourceUrlRootUrls).then((response) => {
+            if(response.status==200){
+              if (response.redirected) {
+                alert("Please login!")
+                return null;
+              }else{
+                return response.json();
+              }
+            }
+        }).then((data)=>{
+          if(data!=null){
+            // drawNetworkTree("#hierachy-tree", data);
+          }
+        });
+
+    });
+
+
+    function modifyHarvest(){
+      var node=networkmap.graph.getSelectedNode();
+      if(!node){
+        alert("Please select a domain or sub-domain");
+        return;
+      }
+      gPopupModifyHarvest.addPruneUrlsViaDomain(node);
+    }
+
+</script>
+</body>

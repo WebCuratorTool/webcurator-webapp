@@ -39505,6 +39505,7 @@
 	  }, {
 	    key: "physicsTick",
 	    value: function physicsTick() {
+	      console.log("physicsTick");
 	      this._startStabilizing(); // this ensures that there is no start event when the network is already stable.
 
 
@@ -39683,7 +39684,28 @@
 
 
 	      this.adaptiveTimestepEnabled = averageNodeVelocity / nodeIndices.length < velocityAdaptiveThreshold;
-	      this.stabilized = maxNodeVelocity < this.options.minVelocity;
+	      this.stabilized = (maxNodeVelocity < this.options.minVelocity);
+	      this.stabilized = this.stabilized || (this.stabilizationIterations >= this.options.stabilization.iterations);
+	      if (this.stabilized) {
+	      	var networkMapOptionsWothoutPhysics = {
+		      nodes: {
+		          shape: 'dot',
+		          size: 10,
+		          borderWidth: 2,
+		          color: '#98AFC7'
+		       },
+		      edges: {
+		          width: 1,
+		          arrows: 'to',
+		          color: '#98AFC7'
+		      },
+		      physics: {
+		        enabled: false
+		      }
+		    };
+	      	this.body.emitter.emit("setOptions",networkMapOptionsWothoutPhysics);
+	      	// this.options=false;
+	      }
 	    }
 	    /**
 	     * Calculate new velocity for a coordinate direction
@@ -41852,6 +41874,7 @@
 	      hideEdgesOnZoom: false,
 	      hideNodesOnDrag: false
 	    };
+	    this.frequency=0;
 	    extend(this.options, this.defaultOptions);
 
 	    this._determineBrowserMethod();
@@ -42006,6 +42029,8 @@
 	  }, {
 	    key: "_renderStep",
 	    value: function _renderStep() {
+	      console.log("_redraw");
+
 	      if (this.renderingActive === true) {
 	        // reset the renderTimer so a new scheduled animation step can be set
 	        this.renderTimer = undefined;
@@ -42015,7 +42040,7 @@
 	          this._startRendering();
 	        }
 
-	        this._redraw();
+		    this._redraw();
 
 	        if (this.requiresTimeout === false) {
 	          // this schedules a new simulation step
@@ -42062,7 +42087,7 @@
 
 	  }, {
 	    key: "_redraw",
-	    value: function _redraw() {
+	    value: function _redraw() {    
 	      var hidden = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
 	      if (this.allowRedraw === true) {

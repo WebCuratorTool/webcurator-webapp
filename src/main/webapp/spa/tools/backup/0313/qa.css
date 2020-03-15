@@ -1,0 +1,89 @@
+html,body{
+	margin: 0; height: 100%; overflow: hidden;
+}
+
+.none-margin-padding{
+	margin: 0;
+	padding: 0;
+}
+
+.content{
+	display: none;
+}
+
+.active{
+	display: block;
+}
+
+.large-right{
+	width: 70%;
+}
+.large-left{
+	width: 30%;
+}
+
+.small-right{
+	width: 88%;
+}
+.small-left{
+	width: 12%;
+}
+
+.hide-right{
+	width: 100%;
+}
+.hide-left{
+	width: 0%;
+}
+
+
+#networkmap-main-container{
+	position: relative; 
+	width: 100%;
+	height: 100vh;
+}
+
+#networkmap-side-container{
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	height: 100%;
+}
+
+
+.card-aside{
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+	width: 12%;
+	height: 94.5vh;
+}
+
+#network-map-canvas, #hoppath-canvas, #urls-grid-container{
+	width: 100%;
+    height: 100%;
+}
+
+.fancytree-grid-container{
+	width: 100%;
+	height: 100%; 
+	/*overflow-y: auto;*/
+}
+
+#domain-tree{
+	width: 100%;
+    height: 100%;
+}
+#hierachy-tree{
+	width: 100%;
+    height: 100%;
+}
+
+div#tree {
+	width: 90%;
+	padding: 10px;
+	margin: 10px 0;
+	border: 1px solid 1px solid rgba(0,0,0,.12);
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+}
+

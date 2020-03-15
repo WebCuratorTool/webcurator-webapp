@@ -42,7 +42,7 @@ to get the desired effect
           <button type="button" class="btn btn-default" onclick="networkmap.graph.reload();">Reload</button>
           <button type="button" class="btn btn-default" onclick="networkmap.graph.reset();">Reset</button>
           <button type="button" class="btn btn-default" onclick="networkmap.graph.collapseAll();">Collapse All</button>
-          <button type="button" class="btn btn-default" onclick="insight();"><i class="fas fa-chart-pie"></i> &nbsp; Insight</button>
+          <button type="button" class="btn btn-default"><i class="fas fa-chart-pie"></i> &nbsp; Insight</button>
           <button type="button" class="btn btn-default" onclick="modifyHarvest();"><i class="fas fa-edit"></i> &nbsp; Modify Harvest</button>
         </div>
 
@@ -114,167 +114,106 @@ to get the desired effect
   </div>
 </main>
 
-
 <div class="popup-window"  id="popup-window-modify-harvest">
-  <div class="popup-window-content">
-      <div class="row">
-        <div class="col-6">
-          <!-- <div id="grid-modify-prune-left" class="ag-theme-balham window-modify-grid"> </div> -->
-          <div class="card">
-            <div class="card-header p-2 bg-dark">
-              <ul class="nav nav-pills">
-                <li class="nav-item"><a class="nav-link">Candidates:</a></li>
-                <li class="nav-item"><button type="button" class="btn btn-block btn-primary">Query</button></li>
-                <li class="nav-item" style="position: absolute; right: 10px;">
-                    <input class="form-control" type="search" placeholder="Filter" aria-label="Search">
-                </li>
-              </ul>
-            </div><!-- /.card-header -->
-            <div class="card-body none-margin-padding">
-              <div id="grid-modify-candidate" class="ag-theme-balham window-modify-grid"> </div>
-            </div>
-          </div>   <!-- end of card -->
-        </div>
-
-        <div class="col-6">
-          <!-- <div id="grid-modify-prune-right" class="ag-theme-balham window-modify-grid"> </div> -->
-          <div class="card">
-            <div class="card-header p-2 bg-dark">
-              <ul class="nav nav-pills">
-                <li class="nav-item"><a class="nav-link active" href="#card-tab-prune" data-toggle="tab">To Be Pruned</a></li>
-                <li class="nav-item"><a class="nav-link" href="#card-tab-import" data-toggle="tab">To Be Imported</a></li>
-                <li class="nav-item" style="position: absolute; right: 10px;">
-                    <input class="form-control" type="search" placeholder="Filter" aria-label="Search">
-                </li>
-              </ul>
-            </div><!-- /.card-header -->
-            <div class="card-body none-margin-padding">
-              <div class="tab-content">
-                <div class="active tab-pane" id="card-tab-prune">
-                    <div id="grid-modify-prune" class="ag-theme-balham window-modify-grid"> </div>
-                </div>
-                <div class="tab-pane" id="card-tab-import">
-                    <div id="grid-modify-import" class="ag-theme-balham window-modify-grid"> </div>
-                </div>
-              </div>
-            </div>   <!-- end of body -->
-          </div>   <!-- end of card -->
-        </div>   <!-- end of col -->
-     </div>  <!-- end of row -->
-    
-     <div class="row">
-        <div class="col-11" style="padding-left: 10px;">
-            <textarea class="form-control" rows="4" placeholder="Provenance Note ..." style="resize: none;"></textarea>
-        </div>
-        <div class="col-1">
-          <div style="width: 100px; margin: 0; position: absolute; top: 50%; left: 5px; -ms-transform: translateY(-50%); transform: translateY(-50%);">
-            <button type="button" class="btn btn-block btn-primary">Apply</button>
-            <br>
-            <button type="button" class="btn btn-block btn-secondary" onclick="$('#popup-window-modify-harvest').hide();">Close</button>
-          </div>
-        </div>
-     </div>
+<div class="card card-primary popup-window-content">
+  <div class="card-header p-0 pt-1 border-bottom-0">
+    <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill" href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home" aria-selected="true">Prune</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="custom-tabs-one-profile-tab" data-toggle="pill" href="#custom-tabs-one-profile" role="tab" aria-controls="custom-tabs-one-profile" aria-selected="false">Import</a>
+      </li>
+    </ul>
   </div>
-</div>
+  <div class="card-body">
+    <div class="tab-content" id="custom-tabs-one-tabContent">
+      <div class="tab-pane fade show active" id="custom-tabs-one-home" role="tabpanel" aria-labelledby="custom-tabs-one-home-tab">
+         <div class="row">
+            <div class="col-6">
+              <div id="grid-modify-prune-left" class="ag-theme-balham window-modify-grid"> </div>
+            </div>
+            <div class="col-6">
+              <div id="grid-modify-prune-right" class="ag-theme-balham window-modify-grid"> </div>
+            </div>   <!-- end of col -->
+         </div>
+      </div>
 
+      <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel" aria-labelledby="custom-tabs-one-profile-tab">
+         <div class="row">
+            <div class="col-6">
+               <br><br>
+               <form role="form">
+                  <div class="form-group">
+                    <label for="specifyTargetUrlInput">Specify Target URL</label>
+                    <input type="input" class="form-control" id="specifyTargetUrlInput" placeholder="Specify Target URL">
+                  </div>
 
-<!-- Popup Hop Path-->
-<div class="card card-primary" id="popup-window-hop-path">
-  <div class="card-header">
-    <h3 class="card-title">Hop Path</h3>
+                  <div class="form-group">
+                    <label for="importFromFileInput">Import from disk file</label>
+                    <div class="input-group">
+                      <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="importFromFileInput">
+                        <label class="custom-file-label" for="importFromFileInput">Choose file</label>
+                      </div>
+                      <div class="input-group-append">
+                        <span class="input-group-text" id="">Upload</span>
+                      </div>
+                    </div>
+                  </div>
 
-    <div class="card-tools">
-      <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
-      </button>
+                  <div class="form-group">
+                    <label for="importFromUrlInput">Import from URL</label>
+                    <div class="input-group">
+                      <input type="input" class="form-control" id="importFromUrlInput" placeholder="Source URL">
+                      <div class="input-group-append">
+                        <span class="input-group-text" id="">Download</span>
+                      </div>
+                    </div>
+                  </div>
+               </form>
+            </div>
+            <div class="col-6">
+              <div id="grid-modify-import" class="ag-theme-balham window-modify-grid"> </div>
+            </div>
+         </div> 
+         <!-- end of row -->
+      </div>
     </div>
-    <!-- /.card-tools -->
-  </div>
-  <!-- /.card-header -->
-  <div class="card-body none-margin-padding" style="height: 85vh;">
-      <div id="hoppath-canvas"></div>
-  </div>   <!-- /.card-body -->
-</div> <!-- /.card -->
-
-
-<!-- Popup Import Input-->
-<div class="card card-primary"  id="popup-window-import-input">
-  <div class="card-header">
-    <h3 class="card-title">Import Content For URL</h3>
-    <div class="card-tools">
-      <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
-    </div>
-    <!-- /.card-tools -->
-  </div>
-  <!-- /.card-header -->
-  <div class="card-body" style="height: 35vh;">
-    <form role="form">
-        <div class="form-group">
-          <label for="specifyTargetUrlInput">Specify Target URL</label>
-          <input type="input" class="form-control" id="specifyTargetUrlInput" placeholder="Specify Target URL">
-        </div>
-
-        <div class="form-group">
-          <!-- <label for="importFromFileInput">Import from disk file</label> -->
-          <div class="custom-control custom-radio">
-            <input class="custom-control-input" type="radio" id="customRadio1" name="customRadio" checked>
-            <label for="customRadio1" class="custom-control-label">Option 1: Import from disk file</label>
-          </div>
-          <div class="input-group">
-            <div class="custom-file">
-              <input type="file" class="custom-file-input" id="importFromFileInput">
-              <label class="custom-file-label" for="importFromFileInput">Choose file</label>
-            </div>
-            <div class="input-group-append">
-              <span class="input-group-text" id="">Upload</span>
-            </div>
-          </div>
-    
-          <!-- <label for="importFromUrlInput">Import from URL</label> -->
-          <div class="custom-control custom-radio">
-            <input class="custom-control-input" type="radio" id="customRadio2" name="customRadio">
-            <label for="customRadio2" class="custom-control-label">Option 2: Import from URL</label>
-          </div>
-          <div class="input-group">
-            <input type="input" class="form-control" id="importFromUrlInput" placeholder="Source URL">
-            <div class="input-group-append">
-              <span class="input-group-text" id="">Download</span>
-            </div>
-          </div>
-        </div>
-    </form>
-  </div>  <!-- /.card-body -->
+  </div>  <!-- ./body -->
 
   <div class="card-footer" style="width: 100%; position: absolute; bottom: 0;">
     <div class="row">
-      <div class="col-8"></div>
-      <div class="col-2">
-          <button type="button" class="btn btn-block btn-primary">Import</button>
+      <div class="col-11">
+          <textarea class="form-control" rows="4" placeholder="Provenance Note ..." style="resize: none;"></textarea>
       </div>
-      <div class="col-2">
-          <button type="button" class="btn btn-block btn-secondary" onclick="$('#popup-window-import-input').hide();">Close</button>
+      <div class="col-1">
+        <div style="width: 100px; margin: 0; position: absolute; top: 50%; left: 5px; -ms-transform: translateY(-50%); transform: translateY(-50%);">
+          <button type="button" class="btn btn-block btn-primary">Apply</button>
+          <br>
+          <button type="button" class="btn btn-block btn-secondary" onclick="$('#popup-window-modify-harvest').hide();">Close</button>
+        </div>
       </div>
     </div>
   </div>
-</div> <!-- /.card -->
 
+</div>
+<!-- /.card -->
+</div>
 
-<!-- Popup Insight-->
-<div class="card card-primary" id="popup-window-insight">
-  <div class="card-header">
-    <h3 class="card-title">Insight</h3>
-    <div class="card-tools">
-      <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
-      </button>
-    </div>    <!-- /.card-tools -->
-  </div>   <!-- /.card-header -->
-  <div class="card-body none-margin-padding" style="height: 85vh; overflow: auto;">
-    <div id="networkmap-pie-urls-contenttype" style="width: 100%; height: 100%;"></div>
-  </div>   <!-- /.card-body -->
-</div> <!-- /.card -->
+<div class="popup-window" id="popup-window-hop-path">
+  <div class="popup-window-content">
+    <button type="button" class="btn btn-block btn-flat btn-primary" onclick="$('#popup-window-hop-path').hide();">Close</button>
+    <div id="hoppath-canvas" style="width: 70vw; height: 77vh; background: white; margin: 0; padding: 0; border: none;"></div>
+  </div>
+</div>
+
+<!-- <div class="popup-window">
+  <h1>hello</h1>
+</div> -->
 
 
 <script src="../dist/jquery/jquery-3.4.1.min.js"></script>
-<!-- <script src="../dist/jquery/require.js"></script> -->
 <script src="../dist/bootstrap/bootstrap.bundle.min.js"></script>
 <script src="../dist/adminlte/js/adminlte.js"></script>
 <script src="../dist/vis/vis-network.js"></script>
@@ -302,12 +241,9 @@ to get the desired effect
     var jobId=parseInt(urlParameters["targetInstanceOid"]);
     var harvestResultNumber=parseInt(urlParameters["harvestNumber"]);
 
-    var visHopPath, networkmap, gPopupModifyHarvest, gTreeMap;
+    var visHopPath, networkmap, gPopupModifyHarvest;
     $(function(){
         document.addEventListener('contextmenu', event => event.preventDefault());
-        // $('.popup-modal').on('click', function(){
-        //   $(this).hide();
-        // });
 
         sp("networkmap");
         
@@ -361,18 +297,5 @@ to get the desired effect
       gPopupModifyHarvest.addPruneUrlsViaDomain(node);
     }
 
-    function insight(){
-      var node=networkmap.graph.getSelectedNode();
-      if(!node){
-        alert("Please select a domain or sub-domain");
-        return;
-      }
-
-      var treeMap=new NetworkMapTreeMap('networkmap-pie-urls-contenttype', '', 'contentLength');
-      treeMap.setData(node);
-      treeMap.draw();
-
-      $('#popup-window-insight').show();
-    }
 </script>
 </body>

@@ -6,18 +6,21 @@ function getUrlVars() {
     return vars;
 }
 
-
-var networkmapGridStatus=1; //1: show; 0: hide;
-function toggleNetworkMapGrid(){
-  if (networkmapGridStatus === 1) {
-    $('#networkmap-main-container-right').hide();
-    $('#networkmap-main-container-left').width('100vw');
-    networkmapGridStatus=0;
-  }else{
-    $('#networkmap-main-container-right').show();
-    $('#networkmap-main-container-left').width('80vw');
-    networkmapGridStatus=1;
+function spNetworkMapSide(key){
+  var prefixList=["large", "small", "hide"];
+  for(var i=0;i<prefixList.length;i++){
+    var prefix=prefixList[i];
+    $("#networkmap-main-container").removeClass(prefix+"-right");
+    $("#networkmap-side-container").removeClass(prefix+"-left");
   }
+
+  $("#networkmap-main-container").addClass(key+"-right");
+  $("#networkmap-side-container").addClass(key+"-left");
+}
+
+function spNetworkMapSideTab(key){
+  $("#networkmap-side-container .tab-pane").hide();
+  $("#"+key).show();
 }
 
 
@@ -343,8 +346,7 @@ function fetchHopPath(nodeId){
           return response.json();
       })
       .then((data) => {
-      drawHopPath(data);
-      $('#popup-window-hop-path').show();
+          drawHopPath(data);
   });
 }
 
@@ -365,9 +367,9 @@ function drawHopPath(data){
 
     if(dataNode.seed){
       // node.color='#A18648';
-      node.shape='star';
-      // node.color='#2A4B7C';
-      // node.shape='hexagon';
+      // node.shape='star';
+      node.color='#2A4B7C';
+      node.shape='hexagon';
     }else if(i===0){
       node.color='#00bfee';
       node.shape="box";

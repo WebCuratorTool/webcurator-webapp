@@ -43,6 +43,7 @@ import org.webcurator.core.common.EnvironmentImpl;
 import org.webcurator.core.harvester.agent.HarvestAgentFactoryImpl;
 import org.webcurator.core.harvester.coordinator.*;
 import org.webcurator.core.networkmap.service.NetworkMapRemoteClient;
+import org.webcurator.core.networkmap.service.NetworkMapService;
 import org.webcurator.core.notification.InTrayManagerImpl;
 import org.webcurator.core.notification.MailServerImpl;
 import org.webcurator.core.permissionmapping.HierPermMappingDAOImpl;
@@ -370,7 +371,7 @@ public class BaseConfig {
     @Bean
     @Scope(BeanDefinition.SCOPE_SINGLETON)
     @Lazy(false)
-    public NetworkMapRemoteClient networkMapReomoteClient() {
+    public NetworkMapService networkMapReomoteClient() {
         return new NetworkMapRemoteClient(digitalAssetStoreScheme, digitalAssetStoreHost, digitalAssetStorePort, restTemplateBuilder);
     }
 

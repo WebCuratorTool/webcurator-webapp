@@ -365,9 +365,9 @@ function drawHopPath(data){
 
     if(dataNode.seed){
       // node.color='#A18648';
-      node.shape='star';
-      // node.color='#2A4B7C';
-      // node.shape='hexagon';
+      // node.shape='star';
+      node.color='#2A4B7C';
+      node.shape='hexagon';
     }else if(i===0){
       node.color='#00bfee';
       node.shape="box";

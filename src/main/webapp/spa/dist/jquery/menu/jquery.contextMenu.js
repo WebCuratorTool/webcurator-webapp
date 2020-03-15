@@ -139,7 +139,8 @@
                 iconDelete: 'context-menu-icon-delete',
                 iconAdd: 'context-menu-icon-add',
                 iconQuit: 'context-menu-icon-quit',
-                iconLoadingClass: 'context-menu-icon-loading'
+                iconLoadingClass: 'context-menu-icon-loading',
+                iconLink: 'context-menu-icon-link'
             },
 
             // determine position to show menu at

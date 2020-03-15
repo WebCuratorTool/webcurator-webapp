@@ -90,6 +90,10 @@
   content: "\EA08";
 }
 
+.context-menu-icon-link:before {
+  content: "\FC01";
+}
+
 .context-menu-icon::before {
   position: absolute;
   top: 50%;
