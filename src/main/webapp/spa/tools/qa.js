@@ -7,17 +7,20 @@ function getUrlVars() {
 }
 
 
-var networkmapGridStatus=1; //1: show; 0: hide;
+var networkmapGridStatus=0; //1: show; 0: hide;
 function toggleNetworkMapGrid(){
+  networkmapGridStatus = (networkmapGridStatus+1) % 2;
   if (networkmapGridStatus === 1) {
-    $('#networkmap-main-container-right').hide();
     $('#networkmap-main-container-left').width('100vw');
-    networkmapGridStatus=0;
   }else{
-    $('#networkmap-main-container-right').show();
     $('#networkmap-main-container-left').width('80vw');
-    networkmapGridStatus=1;
   }
+}
+
+
+function spNetworkMapSideTab(key){
+  $("#networkmap-side-container .tab-pane").hide();
+  $("#"+key).show();
 }
 
 

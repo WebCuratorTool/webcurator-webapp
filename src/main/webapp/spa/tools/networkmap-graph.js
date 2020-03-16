@@ -63,8 +63,10 @@ class NetworkMapGraph{
         }
 
         var nodeId=params.nodes[0];
-        var node=that.dataMap[nodeId];
-        console.log("x="+node.x+", y="+node.y);
+        // var node=that.dataMap[nodeId];
+        // networkmap.chartUrl.draw(node);
+        // networkmap.chartSize.draw(node);
+        networkmap.switchNode(nodeId);
     });
 
     //Event: doubleClic
@@ -78,6 +80,11 @@ class NetworkMapGraph{
         // var node=mapDomainStat[nodeId];
         // checkUrls(node.url);
         that.toggleParentNode(nodeId);
+
+        // var node=that.dataMap[nodeId];
+        // networkmap.chartUrl.draw(node);
+        // networkmap.chartSize.draw(node);
+        networkmap.switchNode(nodeId);
     });
 
     //Event: statbilized

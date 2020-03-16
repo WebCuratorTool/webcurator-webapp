@@ -3,10 +3,11 @@ class NetworkMapGrid{
 	  	this.container=container;
 
 	  	this.columnDefs = [
-			{headerName: "Domain", field: "title", width: 200, pinned: "left"},
-			{headerName: "TotSize(Bytes)", field: "totSize", width: 120, filter: 'agNumberColumnFilter'},
-			{headerName: "TotSuccess", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
-			{headerName: "TotFailed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
+			{headerName: "ContentType", field: "contentType", width: 180},
+			{headerName: "StatusCode", field: "statusCode", width: 120, filter: 'agNumberColumnFilter'},
+			{headerName: "TotSize", field: "totSize", width: 120, filter: 'agNumberColumnFilter'},
+			// {headerName: "TotSuccess", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
+			// {headerName: "TotFailed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
 			{headerName: "TotURLs", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'}
 	    ];
 
@@ -33,16 +34,37 @@ class NetworkMapGrid{
 		this.draw(node);
 	}
 
-	draw = function(node){
-		if(!node){
+	draw = function(statNodes){
+		if(!statNodes){
 			return;
 		}
 
+		var dataMap={};
+	    for(var i=0; i<statNodes.statData.length; i++){
+	      var statNode=statNodes.statData[i];
+	      var contentType=statNode.contentType;
+	      var statusCode=statNode.statusCode;
+
+	      var key=contentType + '@' + statusCode;
+
+	      var node=dataMap[key];
+	      if(!node){
+	      	node={
+	      		contentType: contentType,
+	      		statusCode: statusCode,
+	      		totUrls: 0,
+	      		totSize: 0
+	      	}
+	      	dataMap[key]=node;
+	      }
+
+	      node.totUrls=node.totUrls+statNode.totUrls;
+	      node.totSize=node.totSize+statNode.totSize;
+	    }
+
 		var dataset=[];
-		if (node.level===0 || node.level===1) {
-			dataset=node.children;
-		}else{
-			dataset.push(node);
+		for(var key in dataMap){
+			dataset.push(dataMap[key]);
 		}
 
 		if (this.grid) {

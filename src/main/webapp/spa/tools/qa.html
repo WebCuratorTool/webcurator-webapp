@@ -42,21 +42,37 @@ to get the desired effect
           <button type="button" class="btn btn-default" onclick="networkmap.graph.reload();">Reload</button>
           <button type="button" class="btn btn-default" onclick="networkmap.graph.reset();">Reset</button>
           <button type="button" class="btn btn-default" onclick="networkmap.graph.collapseAll();">Collapse All</button>
-          <button type="button" class="btn btn-default" onclick="insight();"><i class="fas fa-chart-pie"></i> &nbsp; Insight</button>
+          <button type="button" class="btn btn-default" onclick="hierarchy();">URL Hierarchy</button>
           <button type="button" class="btn btn-default" onclick="modifyHarvest();"><i class="fas fa-edit"></i> &nbsp; Modify Harvest</button>
         </div>
-
-        <!-- Right Button Group -->
-        <div class="btn-group" style="position: absolute; right: 0px; top: 5px; z-index: 1000;">
-          <button type="button" class="btn btn-flat btn-default" onclick="toggleNetworkMapGrid();"><i class="fas fa-bars"></i></button>
-        </div>
-
       </div>
     </div>
 
-    <div class="networkmap-main-col bg-info" id="networkmap-main-container-right">
-      <div id="networkmap-side-table-domain-grid" style="width: 100%; height: 100vh;" class="ag-theme-balham"> </div>
-    </div>
+    <!-- Right Button Group -->
+    <div class="card bg-info" style="position: absolute; right: 0px; top: 5px; z-index: 1000; width: 20vw;">
+        <div class="card-header" style="height: 50px;">
+          <h3 class="card-title" id="networkmap-side-title">Root</h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" onclick="spNetworkMapSideTab('networkmap-side-pie');" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle"> <i class="fas fa-chart-pie"></i></button>
+            <button type="button" class="btn btn-tool" onclick="spNetworkMapSideTab('networkmap-side-table');" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle"> <i class="fas fa-list-alt"></i></button>
+            <div style="display: inline-block; width: 20px;"></div>
+            <button type="button" class="btn btn-tool" onclick="networkmap.reset();" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle"><i class="fas fa-h-square"></i></button>
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" onclick="toggleNetworkMapGrid();"><i class="fas fa-minus"></i></button>
+          </div>     <!-- /.card-tools -->
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body none-margin-padding">
+            <div class="tab-content" id="networkmap-side-container">
+              <div class="tab-pane show active" id="networkmap-side-pie">
+                  <div id="networkmap-insight-tot-url" style="width: 100%; height: calc(50vh - 25px - 3px);"></div>
+                  <div id="networkmap-insight-tot-size" style="width: 100%; height: calc(50vh - 25px - 3px);"></div>
+              </div>
+              <div class="tab-pane" id="networkmap-side-table" style="display: none;">                                
+                  <div id="networkmap-side-table-domain-grid" style="width: 100%; height: calc(100vh - 50px - 5px);" class="ag-theme-balham"> </div>
+              </div>
+            </div>
+        </div>     <!-- /.card-body -->
+      </div> <!-- end of card -->
   </div>
 
   <div class="content-page" id="page-hierachy">
@@ -88,29 +104,7 @@ to get the desired effect
             </thead>
         </table>
     </div> -->
-    <div class="fancytree-grid-container flexbox-item-grow">
-        <table id="domain-tree">
-            <colgroup>
-                <col width="50px">
-                <col width="*">
-                <col width="80px">
-                <col width="80px">
-                <col width="80px">
-                <col width="80px">
-            </colgroup>
-            <thead>
-            <tr>
-                <th>Action</th>
-                <th>Title</th>
-                <th>Tot. URLs</th>
-                <th>Tot. Success</th>
-                <th>Tot. Failed</th>
-                <th>Tot. Size</th>
-            </tr>
-            </thead>
-        </table>
-        <div id="verticalScrollbar" style="top:19px; height:calc(100% - 25px);"></div>
-    </div>
+    
   </div>
 </main>
 
@@ -259,16 +253,40 @@ to get the desired effect
 
 
 <!-- Popup Insight-->
-<div class="card card-primary" id="popup-window-insight">
+<div class="card card-primary" id="popup-window-hierarchy">
   <div class="card-header">
-    <h3 class="card-title">Insight</h3>
+    <h3 class="card-title">Hierarchy</h3>
     <div class="card-tools">
-      <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i>
-      </button>
+      <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
     </div>    <!-- /.card-tools -->
   </div>   <!-- /.card-header -->
-  <div class="card-body none-margin-padding" style="height: 85vh; overflow: auto;">
-    <div id="networkmap-pie-urls-contenttype" style="width: 100%; height: 100%;"></div>
+  <div class="card-body none-margin-padding">
+    <div class="fancytree-grid-container flexbox-item-grow">
+        <table id="domain-tree">
+            <colgroup>
+                <col width="50px">
+                <col width="*">
+                <col width="80px">
+                <col width="80px">
+                <col width="80px">
+                <col width="80px">
+            </colgroup>
+            <thead>
+            <tr>
+                <th>Action</th>
+                <th>Title</th>
+                <th>Tot. URLs</th>
+                <th>Tot. Success</th>
+                <th>Tot. Failed</th>
+                <th>Tot. Size</th>
+            </tr>
+            </thead>
+        </table>
+        <div id="verticalScrollbar" style="top:19px; height:calc(100% - 25px);"></div>
+    </div>
+
+
+
   </div>   <!-- /.card-body -->
 </div> <!-- /.card -->
 
@@ -303,6 +321,8 @@ to get the desired effect
     var harvestResultNumber=parseInt(urlParameters["harvestNumber"]);
 
     var visHopPath, networkmap, gPopupModifyHarvest, gTreeMap;
+    var treeMap=new NetworkMapTreeMap('networkmap-insight-sunburst', '', 'totSize');
+
     $(function(){
         document.addEventListener('contextmenu', event => event.preventDefault());
         // $('.popup-modal').on('click', function(){
@@ -313,7 +333,7 @@ to get the desired effect
         
         gPopupModifyHarvest=new PopupModifyHarvest(jobId, harvestResultNumber);
 
-        networkmap=new NetworkMap('network-map-canvas', '#networkmap-side-table-domain-grid', 'networkmap-pie-urls-contenttype', 'networkmap-pie-urls-statuscode', 'networkmap-pie-size-contenttype', 'networkmap-pie-size-statuscode');
+        networkmap=new NetworkMap();
         networkmap.init(jobId, harvestResultNumber);
 
         $("input[name=search]").on("change search", function(e){
@@ -361,18 +381,8 @@ to get the desired effect
       gPopupModifyHarvest.addPruneUrlsViaDomain(node);
     }
 
-    function insight(){
-      var node=networkmap.graph.getSelectedNode();
-      if(!node){
-        alert("Please select a domain or sub-domain");
-        return;
-      }
-
-      var treeMap=new NetworkMapTreeMap('networkmap-pie-urls-contenttype', '', 'contentLength');
-      treeMap.setData(node);
-      treeMap.draw();
-
-      $('#popup-window-insight').show();
+    function hierarchy(){
+      $('#popup-window-hierarchy').show();
     }
 </script>
 </body>

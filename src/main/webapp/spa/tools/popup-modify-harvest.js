@@ -18,8 +18,8 @@ var gridOptionsCandidate={
 	columnDefs: [
 		// {headerName: "Action", field: "id", width: 100, cellRenderer: 'renderHopPathIcon'},
 		{headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
-		{headerName: "URL", field: "url", width: 1200},
-		{headerName: "Type", field: "contentType", width: 120, pinned: 'right'},
+		{headerName: "URL", field: "url", width: 1200, filter: true},
+		{headerName: "Type", field: "contentType", width: 120, filter: true, pinned: 'right'},
 		{headerName: "Status", field: "statusCode", width: 100, filter: 'agNumberColumnFilter', pinned: 'right'},
 		{headerName: "Length", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', pinned: 'right'}
 	]

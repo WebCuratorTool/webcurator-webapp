@@ -1,35 +1,46 @@
-// d3 = require("d3@5");
-
-width=1200;
-height=500;
-treemap = data => d3.treemap()
-    .size([width, height])
-    .padding(1)
-    .round(true)
-  (d3.hierarchy(data)
+partition = data => {
+  const root = d3.hierarchy(data)
       .sum(d => d.value)
-      .sort((a, b) => b.value - a.value));
+      .sort((a, b) => b.height - a.height || b.value - a.value);  
+  return d3.partition()
+      .size([height, (root.height + 1) * width / 3])
+    (root);
+}
 
-  format = d3.format(",d");
 
-  color = d3.scaleOrdinal(d3.schemeCategory10);
+// format = d3.format(",d");
 
+width = 900;
+height = 1110;
+
+function format(d){
+  // return d3.format(",d");
+  return '';
+}
 
 class NetworkMapTreeMap{
-  constructor(containerContentType, containerStatusCode, statKey){
+  constructor(containerContentType, statKey){
   	this.containerContentType=containerContentType;
-  	this.containerStatusCode=containerStatusCode;
   	this.statKey=statKey;
     this.maxContentType;
     this.node;
+
+    // append the svg object to the body of the page
+    this.svg = d3.select("#"+this.containerContentType)
+      .append("svg")
+      .attr("viewBox", [0, 0, width, height])
+      .style("font", "24px sans-serif");
   }
 
   setData=function(node){
     this.node=node;
   }
 
-  draw=function(){
-    var node=this.node;
+  draw=function(node){
+    if(!node){
+      node=this.node;
+    }
+
     var statMap={};
     for(var i=0; i<node.statData.length; i++){
       var statNode=node.statData[i];
@@ -40,209 +51,133 @@ class NetworkMapTreeMap{
       var contentTypeNode=statMap[contentType];
       if(!contentTypeNode){
         contentTypeNode={
-          'self': {'value':0}
+          name: contentType,
+          value: 0,
+          children: {}
         };
         statMap[contentType]=contentTypeNode;
       }
 
-      var selfNode=contentTypeNode['self'];
-      selfNode.value=selfNode.value + value;
+      
+      contentTypeNode.value=contentTypeNode.value + value;
 
 
-      var statusCodeNode=contentTypeNode[statusCode];
+      var statusCodeNode=contentTypeNode.children[statusCode];
       if(!statusCodeNode){
-        statusCodeNode={'value': 0};
-        contentTypeNode[statusCode]=statusCodeNode;
+        statusCodeNode={
+          name: statusCode,
+          value: 0
+        }
+        contentTypeNode.children[statusCode]=statusCodeNode;
       }
       statusCodeNode.value = statusCodeNode.value + value;
     }
 
 
-    var treeData={name: 'root', children:[]};
+    var treeData={children:[]};
+    var totalValue=0;
     for(var contentType in statMap){
         var contentTypeNode=statMap[contentType];
         var contentTypeTreeNode={
-          'name': contentType + '(' + contentTypeNode.self.value + ')',
+          'name': contentTypeNode.name + '(' + contentTypeNode.value + ')',
           'children': [],
-          'colname': 'level2'
         }
         treeData.children.push(contentTypeTreeNode);
+        totalValue=totalValue+contentTypeNode.value;
 
-        for(var statusCode in contentTypeNode){
-          if(statusCode === 'self'){
-            continue;
-          }
 
-          var statusCodeNode=contentTypeNode[statusCode];
+        for(var statusCode in contentTypeNode.children){
+          var statusCodeNode=contentTypeNode.children[statusCode];
           var statusCodeTreeNode={
-            'name': statusCode,
-            'value': statusCodeNode.value,
-            'colname': 'level3'
+            'name': 'StatusCode: ' + statusCodeNode.name + '(' + statusCodeNode.value + ')',
+            'value': Math.ceil(1 + Math.log(statusCodeNode.value)),
           }
 
           contentTypeTreeNode.children.push(statusCodeTreeNode);
         }
     }
 
+    treeData['name']=this.statKey + '(' + totalValue + ')';
     this.drawTreeMap(treeData);
   }
 
 
+drawTreeMap(data){
+  console.log(data);
+  // d3.select("#"+this.containerContentType).selectAll("g").remove();
 
-  drawTreeMap2(data){
-      const root = treemap(data);
-      // const root = d3.hierarchy(data).sum(function(d){ return d.value}) // Here the size of each leave is given in the 'value' field in input data
+    const root = partition(data);
+    var focus = root;
 
+  root.each(d => d.current = d);
 
-      // set the dimensions and margins of the graph
-      var margin = {top: 10, right: 10, bottom: 10, left: 10},
-        width = 1245 - margin.left - margin.right,
-        height = 800 - margin.top - margin.bottom;
+  var color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, data.children.length + 1));
 
-      // append the svg object to the body of the page
-      var svg = d3.select("#" + this.containerContentType)
-      .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-        .attr("transform",
-              "translate(" + margin.left + "," + margin.top + ")");
+  this.svg.selectAll("g").remove();
 
+const cell = this.svg
+    .selectAll("g")
+    .data(root.descendants())
+    .join("g")
+      .attr("transform", d => `translate(${d.y0},${d.x0})`);
 
+  const rect = cell.append("rect")
+      .attr("width", d => d.y1 - d.y0 - 1)
+      .attr("height", d => rectHeight(d))
+      .attr("fill-opacity", 0.6)
+      .attr("fill", d => {
+        if (!d.depth) return "#ccc";
+        while (d.depth > 1) d = d.parent;
+        return color(d.data.name);
+      })
+      .style("cursor", "pointer")
+      .on("click", clicked);
 
+  const text = cell.append("text")
+      .style("user-select", "none")
+      .attr("pointer-events", "none")
+      .attr("x", 4)
+      .attr("y", 30)
+      .attr("fill-opacity", d => +labelVisible(d));
 
-        const leaf = svg.selectAll("g")
-          .data(root.leaves())
-          .join("g")
-            .attr("transform", d => `translate(${d.x0},${d.y0})`);
+  text.append("tspan")
+      .text(d => d.data.name);
 
-        leaf.append("title")
-            .text(d => `${d.ancestors().reverse().map(d => d.data.name).join("/")}\n${format(d.value)}`);
+  const tspan = text.append("tspan")
+      .attr("fill-opacity", d => labelVisible(d) * 0.7)
+      .text(d => ` ${format(d.value)}`);
 
-        leaf.append("rect")
-            .attr("id", d => (d.leafUid = DOM.uid("leaf")).id)
-            .attr("fill", d => { while (d.depth > 1) d = d.parent; return color(d.data.name); })
-            .attr("fill-opacity", 0.6)
-            .attr("width", d => d.x1 - d.x0)
-            .attr("height", d => d.y1 - d.y0);
+  cell.append("title")
+      .text(d => `${d.ancestors().map(d => d.data.name).reverse().join("/")}\n${format(d.value)}`);
 
-        leaf.append("clipPath")
-            .attr("id", d => (d.clipUid = DOM.uid("clip")).id)
-          .append("use")
-            .attr("xlink:href", d => d.leafUid.href);
+  function clicked(p) {
+    focus = focus === p ? p = p.parent : p;
 
-        leaf.append("text")
-            .attr("clip-path", d => d.clipUid)
-          .selectAll("tspan")
-          .data(d => d.data.name.split(/(?=[A-Z][a-z])|\s+/g).concat(format(d.value)))
-          .join("tspan")
-            .attr("x", 3)
-            .attr("y", (d, i, nodes) => `${(i === nodes.length - 1) * 0.3 + 1.1 + i * 0.9}em`)
-            .attr("fill-opacity", (d, i, nodes) => i === nodes.length - 1 ? 0.7 : null)
-            .text(d => d);
+    root.each(d => d.target = {
+      x0: (d.x0 - p.x0) / (p.x1 - p.x0) * height,
+      x1: (d.x1 - p.x0) / (p.x1 - p.x0) * height,
+      y0: d.y0 - p.y0,
+      y1: d.y1 - p.y0
+    });
+
+    const t = cell.transition().duration(750)
+        .attr("transform", d => `translate(${d.target.y0},${d.target.x0})`);
+
+    rect.transition(t).attr("height", d => rectHeight(d.target));
+    text.transition(t).attr("fill-opacity", d => +labelVisible(d.target));
+    tspan.transition(t).attr("fill-opacity", d => labelVisible(d.target) * 0.7);
+  }
+  
+  function rectHeight(d) {
+    return d.x1 - d.x0 - Math.min(1, (d.x1 - d.x0) / 2);
   }
 
-
-  drawTreeMap(data){
-    // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 10, bottom: 10, left: 10},
-      width = 1245 - margin.left - margin.right,
-      height = 800 - margin.top - margin.bottom;
-
-    // append the svg object to the body of the page
-    var svg = d3.select("#" + this.containerContentType)
-    .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-      .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
-
-    // read json data
-    // Give the data to this cluster layout:
-      var root = d3.hierarchy(data).sum(function(d){ return d.value}) // Here the size of each leave is given in the 'value' field in input data
-
-      // Then d3.treemap computes the position of each element of the hierarchy
-      d3.treemap()
-        .size([width, height])
-        .paddingTop(28)
-        .paddingRight(7)
-        .paddingInner(3)      // Padding between each rectangle
-        //.paddingOuter(6)
-        //.padding(20)
-        (root);
-
-      // prepare a color scale
-      var color = d3.scaleOrdinal()
-        .domain(["boss1", "boss2", "boss3"])
-        .range([ "#402D54", "#D18975", "#8FD175"]);
-
-      // And a opacity scale
-      var opacity = d3.scaleLinear()
-        .domain([10, 30])
-        .range([.5,1]);
-
-      // use this information to add rectangles:
-      svg
-        .selectAll("rect")
-        .data(root.leaves())
-        .enter()
-        .append("rect")
-          .attr('x', function (d) { return d.x0; })
-          .attr('y', function (d) { return d.y0; })
-          .attr('width', function (d) { return d.x1 - d.x0; })
-          .attr('height', function (d) { return d.y1 - d.y0; })
-          .style("stroke", "black")
-          .style("fill", function(d){ return color(d.parent.data.name)} )
-          .style("opacity", function(d){ return opacity(d.data.value)});
-
-      // and to add the text labels
-      svg
-        .selectAll("text")
-        .data(root.leaves())
-        .enter()
-        .append("text")
-          .attr("x", function(d){ return d.x0+5})    // +10 to adjust position (more right)
-          .attr("y", function(d){ return d.y0+20})    // +20 to adjust position (lower)
-          .text(function(d){ return d.data.name.replace('mister_','') })
-          .attr("font-size", "19px")
-          .attr("fill", "white");
-
-      // and to add the text labels
-      svg
-        .selectAll("vals")
-        .data(root.leaves())
-        .enter()
-        .append("text")
-          .attr("x", function(d){ return d.x0+5})    // +10 to adjust position (more right)
-          .attr("y", function(d){ return d.y0+35})    // +20 to adjust position (lower)
-          .text(function(d){ return d.data.value })
-          .attr("font-size", "11px")
-          .attr("fill", "white");
-
-      // Add title for the 3 groups
-      svg
-        .selectAll("titles")
-        .data(root.descendants().filter(function(d){return d.depth==1}))
-        .enter()
-        .append("text")
-          .attr("x", function(d){ return d.x0})
-          .attr("y", function(d){ return d.y0+21})
-          .text(function(d){ return d.data.name })
-          .attr("font-size", "19px")
-          .attr("fill",  function(d){ return color(d.data.name)} );
-
-      // Add title for the 3 groups
-      svg
-        .append("text")
-          .attr("x", 0)
-          .attr("y", 14)    // +20 to adjust position (lower)
-          .text("Three group leaders and 14 employees")
-          .attr("font-size", "19px")
-          .attr("fill",  "grey" );
-
-
-
+  function labelVisible(d) {
+    return d.y1 <= width && d.y0 >= 0 && d.x1 - d.x0 > 16;
   }
+  
+  return this.svg.node();
+}
+
 }
 
