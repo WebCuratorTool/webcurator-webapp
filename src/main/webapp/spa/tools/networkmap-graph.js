@@ -345,15 +345,18 @@ class NetworkMapGraph{
   }
 
   reload=function(){
+    // this.viewOptions.scale=this.network.getScale();
     this.draw(this.originalData);
   }
 
   reset=function(){
+    // this.viewOptions.scale=this.network.getScale();
     this.dataMap=JSON.parse(JSON.stringify(this.originalDataMap));
     this.network.setData(this.formatDataSet());
   }
 
   collapseAll=function(){
+    this.viewOptions.scale=this.network.getScale();
     var expandedNode=[];
     for(var key in this.dataMap){
       var parentNode=this.dataMap[key];
