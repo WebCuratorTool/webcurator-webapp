@@ -33,7 +33,7 @@ to get the desired effect
 <main class="bd-content" name="content" role="main">
   <div style="position: relative; height: 100vh; width: 100vw;">
     <!-- Networmap Canvas -->
-    <div id="network-map-canvas" style="width: 80vw; outline: none;"></div>
+    <div id="network-map-canvas" style="width: 80vw;"></div>
 
     <!-- Left Button Group -->
     <div class="btn-group" style="position: absolute; left: 3px; top: 5px; z-index: 1000;">
@@ -221,7 +221,7 @@ to get the desired effect
 
 
 <!-- Popup Hierarchy-->
-<div class="card card-default" id="popup-window-hierarchy">
+<div class="card card-primary" id="popup-window-hierarchy">
   <div class="card-header">
     <h3 class="card-title">Hierarchy</h3>
     <div class="card-tools">
@@ -229,8 +229,8 @@ to get the desired effect
     </div>    <!-- /.card-tools -->
   </div>   <!-- /.card-header -->
   <div class="card-body none-margin-padding">
-    <div class="fixed-size">
-        <table id="hierachy-tree" style="width: 99vw; outline: none;">
+    <div class="fancytree-grid-container flexbox-item-grow">
+        <table id="hierachy-tree">
             <colgroup>
                 <col width="50px">
                 <col width="*">
@@ -256,6 +256,7 @@ to get the desired effect
             </tr>
             </thead>
         </table>
+        <div id="verticalScrollbar" style="top:50px; height:calc(100% - 60px);"></div>
     </div>
   </div>   <!-- /.card-body -->
 </div> <!-- /.card -->
@@ -266,10 +267,9 @@ to get the desired effect
 <script src="../dist/adminlte/js/adminlte.js"></script>
 <script src="../dist/vis/vis-network.js"></script>
 <script src="../dist/fancytree/jquery.fancytree-all-deps.min.js"></script>
-<script src="../dist/fancytree/modules/jquery.fancytree.table.js"></script>
-<script src="../dist/fancytree/modules/jquery.fancytree.wide.js"></script>
-<!-- <script src="../dist/fancytree/modules/jquery.fancytree.filter.js"></script> -->
-<!-- <script src="../dist/fancytree/modules/plain-scrollbar.js"></script> -->
+<script src="../dist/fancytree/modules/jquery.fancytree.grid.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.filter.js"></script>
+<script src="../dist/fancytree/modules/plain-scrollbar.js"></script>
 <script src="../dist/fancytree/modules/jquery.fancytree.logger.js"></script>
 <!-- <script src="../dist/chartjs/Chart.js"></script> -->
 <script src="../dist/jquery/menu/jquery.contextMenu.js"></script>

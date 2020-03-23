@@ -56,7 +56,7 @@ class NetworkMap{
 	_switchNode(node){
 		this.grid.draw(node);
 		this.chartContentType.draw(node);
-        this.chartContentError.draw(node);
+        // this.chartContentError.draw(node);
 
 		var title='Root';
 		if(node.title){

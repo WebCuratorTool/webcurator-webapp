@@ -142,6 +142,7 @@ class NetworkMapGraph{
         return;
       }
 
+
       var node = that.network.getNodeAt({x: params.pointer.DOM.x, y: params.pointer.DOM.y});
       console.log(node);
 

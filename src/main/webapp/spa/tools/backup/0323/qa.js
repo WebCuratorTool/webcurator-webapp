@@ -192,15 +192,3 @@ function drawHopPath(data){
  }
 
 
-var K=1024, M=K*1024, G=M*1024;
-function formatContentLength(l){
-  if(l>G){
-    return Math.round(l/G)+'G';
-  }else if(l>M){
-    return Math.round(l/M)+'M';
-  }else if(l>K){
-    return Math.round(l/K)+'K';
-  }else{
-    return l;
-  }
-}

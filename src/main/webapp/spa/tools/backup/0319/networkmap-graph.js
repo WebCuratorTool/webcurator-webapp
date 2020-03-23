@@ -1,7 +1,6 @@
 class NetworkMapGraph{
-  constructor(containerName){
-    this.containerName='#'+containerName;
-    this.container=document.getElementById(containerName);
+  constructor(container){
+    this.container=document.getElementById(container);
     this.options={
       nodes: {shape: 'dot', size: 10, borderWidth: 1, color: '#98AFC7'},
       edges: {width: 1, arrows: 'to', color: '#98AFC7'},
@@ -45,32 +44,6 @@ class NetworkMapGraph{
 
     this.originalData={};
     this.originalDataMap=null;
-
-
-    var that=this;
-    $.contextMenu({
-            selector: that.containerName, 
-            trigger: 'none',
-            reposition: false,
-            callback: function(key, options) {
-                // var rowId=$(this).attr('row-id');
-                // that.contentMenuCallback(key, rowId);
-            },
-            position: function(opt, x, y){
-                // console.log('context menu position: (' + that.x + ', ' + that.y + ')');
-                var offset = opt.$menu.position();
-                offset.top=that.y;
-                offset.left=that.x;
-                opt.$menu.css(offset);
-            },
-            items: {
-                        "modifyHarvestCurrent": {name: "Modify Harvest Current", icon: "far fa-edit"},
-                        "modifyHarvestSelected": {name: "Modify Harvest Selected", icon: "fas fa-edit"},
-                        "sep1": "---------",
-                        "urlHierarchyCurrent": {name: "URL Hierarchy Current", icon: "fab fa-think-peaks"},
-                        "urlHierarchySelected": {name: "URL Hierarchy Selected", icon: "fab fa-think-peaks"}
-                    }
-        });
   }
 
   draw(data){
@@ -136,8 +109,7 @@ class NetworkMapGraph{
     });
     //========================================================================
     this.network.on("oncontext", function(params){
-      // params.event.preventDefault();
-
+      console.log(params);
       if(!params || !params.pointer || !params.pointer.DOM){
         return;
       }
@@ -151,10 +123,30 @@ class NetworkMapGraph{
 
       that.network.selectNodes([node]);
 
-      that.x=params.event.x;
-      that.y=params.event.y;
-      console.log('vis network position: (' + that.x + ', ' + that.y + ')');
-      $(that.containerName).contextMenu();
+      $.contextMenu({
+        selector: '#' + that.container, 
+        build: function($trigger, e) {
+            // this callback is executed every time the menu is to be shown
+            // its results are destroyed every time the menu is hidden
+            // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
+            return {
+                callback: function(key, options) {
+                    var m = "clicked: " + key;
+                    window.console && console.log(m) || alert(m); 
+                },
+                items: {
+                    "edit": {name: "Edit", icon: "edit"},
+                    "cut": {name: "Cut", icon: "cut"},
+                    "copy": {name: "Copy", icon: "copy"},
+                    "paste": {name: "Paste", icon: "paste"},
+                    "delete": {name: "Delete", icon: "delete"},
+                    "sep1": "---------",
+                    "quit": {name: "Quit", icon: function($element, key, item){ return 'context-menu-icon context-menu-icon-quit'; }}
+                }
+            };
+        }
+    });
+
     }); 
   }
 

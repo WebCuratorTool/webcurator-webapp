@@ -33,7 +33,7 @@ to get the desired effect
 <main class="bd-content" name="content" role="main">
   <div style="position: relative; height: 100vh; width: 100vw;">
     <!-- Networmap Canvas -->
-    <div id="network-map-canvas" style="width: 80vw; outline: none;"></div>
+    <div id="network-map-canvas" style="width: 80vw;"></div>
 
     <!-- Left Button Group -->
     <div class="btn-group" style="position: absolute; left: 3px; top: 5px; z-index: 1000;">
@@ -220,8 +220,8 @@ to get the desired effect
 </div> <!-- /.card -->
 
 
-<!-- Popup Hierarchy-->
-<div class="card card-default" id="popup-window-hierarchy">
+<!-- Popup Insight-->
+<div class="card card-primary" id="popup-window-hierarchy">
   <div class="card-header">
     <h3 class="card-title">Hierarchy</h3>
     <div class="card-tools">
@@ -229,14 +229,11 @@ to get the desired effect
     </div>    <!-- /.card-tools -->
   </div>   <!-- /.card-header -->
   <div class="card-body none-margin-padding">
-    <div class="fixed-size">
-        <table id="hierachy-tree" style="width: 99vw; outline: none;">
+    <div class="fancytree-grid-container flexbox-item-grow">
+        <table id="hierachy-tree">
             <colgroup>
                 <col width="50px">
                 <col width="*">
-                <col width="80px">
-                <col width="80px">
-                <col width="80px">
                 <col width="80px">
                 <col width="80px">
                 <col width="80px">
@@ -246,16 +243,14 @@ to get the desired effect
             <tr>
                 <th>Action</th>
                 <th>Title</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Size</th>
-                <th>URLs</th>
-                <th>Success</th>
-                <th>Failed</th>
-                <th>TotSize</th>
+                <th>Tot. URLs</th>
+                <th>Tot. Success</th>
+                <th>Tot. Failed</th>
+                <th>Tot. Size</th>
             </tr>
             </thead>
         </table>
+        <div id="verticalScrollbar" style="top:19px; height:calc(100% - 25px);"></div>
     </div>
   </div>   <!-- /.card-body -->
 </div> <!-- /.card -->
@@ -266,10 +261,9 @@ to get the desired effect
 <script src="../dist/adminlte/js/adminlte.js"></script>
 <script src="../dist/vis/vis-network.js"></script>
 <script src="../dist/fancytree/jquery.fancytree-all-deps.min.js"></script>
-<script src="../dist/fancytree/modules/jquery.fancytree.table.js"></script>
-<script src="../dist/fancytree/modules/jquery.fancytree.wide.js"></script>
-<!-- <script src="../dist/fancytree/modules/jquery.fancytree.filter.js"></script> -->
-<!-- <script src="../dist/fancytree/modules/plain-scrollbar.js"></script> -->
+<script src="../dist/fancytree/modules/jquery.fancytree.grid.js"></script>
+<script src="../dist/fancytree/modules/jquery.fancytree.filter.js"></script>
+<script src="../dist/fancytree/modules/plain-scrollbar.js"></script>
 <script src="../dist/fancytree/modules/jquery.fancytree.logger.js"></script>
 <!-- <script src="../dist/chartjs/Chart.js"></script> -->
 <script src="../dist/jquery/menu/jquery.contextMenu.js"></script>
@@ -283,7 +277,6 @@ to get the desired effect
 <!-- <script src="networkmap-sunburst.js"></script> -->
 <script src="networkmap.js"></script>
 <script src="popup-modify-harvest.js"></script>
-<script src="popup-hierarchy-tree.js"></script>
 
 <script src="qa.js"></script>
 
@@ -296,7 +289,7 @@ to get the desired effect
 
     var visHopPath, networkmap, gPopupModifyHarvest, gTreeMap;
     // var treeMap=new NetworkMapTreeMap('networkmap-insight-sunburst', '', 'totSize');
-    var hierarchyTree;
+
     $(function(){
         document.addEventListener('contextmenu', event => event.preventDefault());
         // $('.popup-modal').on('click', function(){
@@ -325,8 +318,22 @@ to get the desired effect
         //   sp(id);
         // });
 
-        hierarchyTree=new HierarchyTree("#hierachy-tree", jobId, harvestResultNumber);
-        hierarchyTree.draw();
+
+        var sourceUrlRootUrls="/curator/networkmap/get/root/urls?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber;
+        fetch(sourceUrlRootUrls).then((response) => {
+            if(response.status==200){
+              if (response.redirected) {
+                alert("Please login!")
+                return null;
+              }else{
+                return response.json();
+              }
+            }
+        }).then((data)=>{
+          if(data!=null){
+            drawNetworkTree("#hierachy-tree", data);
+          }
+        });
 
     });
 

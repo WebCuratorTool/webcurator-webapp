@@ -162,24 +162,32 @@ html,body,canvas{
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 100vw; 
-	height: 100vh;
-	/*margin: 5vh 5vw 5vh 5vw;*/
-	/*border: 5px solid #007bff;*/
-	/*border: solid;*/
-	/*border-color: rgba(30,30,30,0.5); */
-	/*padding: 5vh 5vw 5vh 5vw;*/
-	/*border-radius: 10px;*/
+	width: 90vw; 
+	height: 90vh;
+	margin: 5vh 5vw 5vh 5vw;
+	border: 5px solid #007bff;
+	border-radius: 10px;
 	background: #F1E4E1;
 	z-index: 3002;
 }
+.fancytree-grid-container{
+	width: 100%;
+	height: 100%;
+	scroll: none;
+}
 
- .fixed-size {
-    width: 100vw;
-    height: 94vh;
-    overflow: auto;
-    position: relative;
-  }
+#hierachy-tree{
+	width: 100%;
+	height: 100%;
+	scroll: none;
+}
+
+ul.fancytree-container {
+	width: 200px;
+	height: 120px;
+	overflow: auto;
+	position: relative;
+}
 /*==============================Main Network Map=====================================================*/
 .networkmap-main-col{
 	position: absolute;
