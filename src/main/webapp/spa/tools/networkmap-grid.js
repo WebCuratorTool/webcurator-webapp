@@ -1,20 +1,25 @@
 
 class NetworkMapGrid{
-  	constructor(container){
+  	constructor(container, key){
 	  	this.container=container;
+	  	this.key=key;
 
-	  	this.columnDefs = [
+	  	var headerNameValue;
+	  	if(key === 'statusCode'){
+	  		headerNameValue='StatusCode';
+	  	}else{
+	  		headerNameValue='ContentType';
+	  	}
+
+	  	this.columnDefs=[
 	  		{headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
-			{headerName: "ContentType", field: "contentType", width: 180},
-			{headerName: "StatusCode", field: "statusCode", width: 120, filter: 'agNumberColumnFilter'},
-			{headerName: "TotSize", field: "totSize", width: 120, filter: 'agNumberColumnFilter'},
-			// {headerName: "TotSuccess", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
-			// {headerName: "TotFailed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
-			{headerName: "TotURLs", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'}
+			{headerName: headerNameValue, field: "name", width: 180, filter: 'agNumberColumnFilter'},
+			{headerName: "TotSize", field: "totSize", width: 120, type: "numericColumn", filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
+			{headerName: "TotURLs", field: "totUrls", width: 100, type: "numericColumn", filter: 'agNumberColumnFilter'}
 	    ];
 
 	    this.gridOptions = {
-		  // suppressRowClickSelection: true,
+		  suppressRowClickSelection: true,
 		  rowSelection: 'multiple',
 		  defaultColDef: {
 		    resizable: true,
@@ -25,15 +30,6 @@ class NetworkMapGrid{
 		  rowData: []
 		};
 
-
-		this.contextMenuItemsGrid={
-		    "modifyHarvestCurrent": {name: "Modify Harvest Current", icon: "far fa-edit"},
-		    "modifyHarvestSelected": {name: "Modify Harvest Selected", icon: "fas fa-edit"},
-		    "sep1": "---------",
-			"urlHierarchyCurrent": {name: "URL Hierarchy Current", icon: "fab fa-think-peaks"},
-		    "urlHierarchySelected": {name: "URL Hierarchy Selected", icon: "fab fa-think-peaks"},
-		};
-
 		var that=this;
 		$.contextMenu({
             selector: that.container + ' .ag-row', 
@@ -41,56 +37,24 @@ class NetworkMapGrid{
                 var rowId=$(this).attr('row-id');
 				that.contentMenuCallback(key, rowId);
             },
-            items: that.contextMenuItemsGrid
+            items: NetworkMap.contextMenuItems
         });
-  	}
 
-  	initialDataGrid(node){
-		// lookup the container we want the Grid to use
+
+        // lookup the container we want the Grid to use
 		var eGridDiv = document.querySelector(this.container);
 
 		// create the grid passing in the div to use together with the columns & data we want to use
 		this.grid = new agGrid.Grid(eGridDiv, this.gridOptions);
+  	}
 
-		this.draw(node);
-	}
-
-	draw(statNodes){
-		if(!statNodes){
+	draw(dataNode){
+		if(!dataNode || !this.grid){
 			return;
 		}
 
-		var dataMap={};
-	    for(var i=0; i<statNodes.statData.length; i++){
-	      var statNode=statNodes.statData[i];
-	      var contentType=statNode.contentType;
-	      var statusCode=statNode.statusCode;
-
-	      var key=contentType + '@' + statusCode;
-
-	      var node=dataMap[key];
-	      if(!node){
-	      	node={
-	      		contentType: contentType,
-	      		statusCode: statusCode,
-	      		totUrls: 0,
-	      		totSize: 0
-	      	}
-	      	dataMap[key]=node;
-	      }
-
-	      node.totUrls=node.totUrls+statNode.totUrls;
-	      node.totSize=node.totSize+statNode.totSize;
-	    }
-
-		var dataset=[];
-		for(var key in dataMap){
-			dataset.push(dataMap[key]);
-		}
-
-		if (this.grid) {
-			this.grid.gridOptions.api.setRowData(dataset);
-		}
+		var dataset=this.summary(dataNode);
+		this.grid.gridOptions.api.setRowData(dataset);
 	}
 
 	contentMenuCallback(operationKey, rowId){
@@ -100,6 +64,36 @@ class NetworkMapGrid{
 		}else if (operationKey==='import') {
 			$('#popup-window-import-input').show();
 		}
+	}
+
+
+	summary(node){
+	    var statMap={};
+	    for(var i=0; i<node.statData.length; i++){
+	      var statNode=node.statData[i];
+	      var key=statNode[this.key];
+	      var totUrls=statNode['totUrls'];
+	      var totSize=statNode['totSize'];
+
+	      var statNode=statMap[key];
+	      if(!statNode){
+	        statNode={
+	          name: key,
+	          totUrls: 0,
+	          totSize: 0,
+	        };
+	        statMap[key]=statNode;
+	      }
+	      statNode.totUrls=statNode.totUrls + totUrls;
+	      statNode.totSize=statNode.totSize + totSize;
+	    }
+
+	    var statList=[];
+	    for(var key in statMap){
+	    	statList.push(statMap[key]);
+	    }
+
+	    return statList;
 	}
 }
 

@@ -63,7 +63,13 @@ class NetworkMapGraph{
                 offset.left=that.x;
                 opt.$menu.css(offset);
             },
-            items: NetworkMap.contextMenuItems
+            items: {
+                        "modifyHarvestCurrent": {name: "Modify Harvest Current", icon: "far fa-edit"},
+                        "modifyHarvestSelected": {name: "Modify Harvest Selected", icon: "fas fa-edit"},
+                        "sep1": "---------",
+                        "urlHierarchyCurrent": {name: "URL Hierarchy Current", icon: "fab fa-think-peaks"},
+                        "urlHierarchySelected": {name: "URL Hierarchy Selected", icon: "fab fa-think-peaks"}
+                    }
         });
   }
 

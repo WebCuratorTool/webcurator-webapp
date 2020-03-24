@@ -13,7 +13,7 @@ function toggleNetworkMapGrid(){
     $('#networkmap-side-container').hide();
     status='off';
   }else{
-    $('#network-map-canvas').width('80vw');
+    $('#network-map-canvas').width('75vw');
     $('#networkmap-side-container').show();
     status='on';
   }
@@ -89,8 +89,6 @@ function checkUrls(domainName, contentType, statusCode){
   });
 }
 
-
-
 function formatDataForTreeGrid(listObj){
   for(var i=0;i<listObj.length;i++){
     var e=listObj[i];
@@ -107,89 +105,15 @@ function formatDataForTreeGrid(listObj){
   return listObj;
 }
 
-function drawHopPathFromSelectedURLs(){
-  var selectedRows = grid.gridOptions.api.getSelectedRows();
-  if (selectedRows.length==1) {
-    sp("hoppath");
-    fetchHopPath(selectedRows[0].id);
-  }else{
-    alert("Please select one and only one row!");
-  }
-}
-
-function fetchHopPath(nodeId){
-  var sourceUrl="/curator/networkmap/get/hop/path?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber + "&id=" + nodeId;
-  fetch(sourceUrl)
-      .then((response) => {
-          return response.json();
-      })
-      .then((data) => {
-      drawHopPath(data);
-      $('#popup-window-hop-path').show();
-  });
-}
-
-var mapHopPath={};
-function drawHopPath(data){
-  var dataSet={
-    nodes:[],
-    edges:[]
-  };
-
-  for(var i=0; i<data.length;i++){
-    var dataNode=data[i];
-    var node={
-      id: dataNode.id,
-      label: dataNode.url+"\n (Outlinks:" + dataNode.outlinks.length + " )",
-      size: 5 + Math.log(dataNode.totSize+1)
-    }
-
-    if(dataNode.seed){
-      // node.color='#A18648';
-      node.shape='star';
-      // node.color='#2A4B7C';
-      // node.shape='hexagon';
-    }else if(i===0){
-      node.color='#00bfee';
-      node.shape="box";
-    }
-
-    dataSet.nodes.push(node);
-    mapHopPath[dataNode.id]=dataNode;
-
-    if(dataNode.parentId>0){
-      var edge={
-          from: dataNode.parentId,
-          to: dataNode.id
-      }
-      dataSet.edges.push(edge);
-    }
-  }
-
-
-  var networkMapOptions = {
-      nodes: {
-          shape: 'dot',
-          // size: 10,
-          borderWidth: 2,
-          color: '#98AFC7'
-       },
-      edges: {
-          width: 1,
-          arrows: 'to',
-          color: '#98AFC7'
-      },
-      layout: {
-          hierarchical: {
-              direction: "UD"
-          }
-      }
-  };
-
-  var hopPathContainer = document.getElementById('hoppath-canvas');
-
-  visHopPath = new vis.Network(hopPathContainer, dataSet, networkMapOptions);
- }
+// function drawHopPathFromSelectedURLs(){
+//   var selectedRows = grid.gridOptions.api.getSelectedRows();
+//   if (selectedRows.length==1) {
+//     sp("hoppath");
+//     visHopPath.draw(selectedRows[0].id);
+//   }else{
+//     alert("Please select one and only one row!");
+//   }
+// }
 
 
 var K=1024, M=K*1024, G=M*1024;
@@ -204,3 +128,90 @@ function formatContentLength(l){
     return l;
   }
 }
+
+function formatContentLengthAg(params){
+    return formatContentLength(params.value);
+}
+
+
+
+function contextMenuCallback(key, data, target){
+  if (key==='pruneHarvestCurrent') {
+    target.pruneHarvestCurrent(data);
+  }else if(key==='pruneHarvestSelected'){
+    target.pruneHarvestSelected(data);
+  }else if(key==='modifyHarvestCurrent'){
+    target.modifyHarvestCurrent(data);
+  }else if(key==='modifyHarvestSelected'){
+    target.modifyHarvestSelected(data);
+  }else if(key==='hoppath'){
+    visHopPath.draw(data.id);
+  }else if(key==='import'){
+    $('#specifyTargetUrlInput').text(data.url);
+    $('#popup-window-import-input').show();
+  }else if(key==='reviewUrl'){
+    
+  }else if(key==='reviewInAccessTool'){
+    
+  }else if(key==='liveSite'){
+    
+  }else if(key==='archiveOne'){
+    
+  }else if(key==='archiveTwo'){
+    
+  }else if(key==='webArchive'){
+    
+  }
+}
+
+
+
+var itemsPruneHarvest={
+                  "pruneHarvestCurrent": {"name": "Current"},
+                  "pruneHarvestSelected": {"name": "Selected"}
+              };
+var itemsModifyHarvest={
+                  "modifyHarvestCurrent": {"name": "Current"},
+                  "modifyHarvestSelected": {"name": "Selected"}
+              };
+var itemsBrowse={
+                  "reviewUrl": {name: "Review this URL", icon: "fas fa-dice-one"},
+                  "reviewInAccessTool": {name: "Review in Access Tool", icon: "fas fa-dice-two"},
+                  "liveSite": {name: "Live Site", icon: "fas fa-dice-three"},
+                  "archiveOne": {name: "Archive One", icon: "fas fa-dice-four"},
+                  "archiveTwo": {name: "Archive Two", icon: "fas fa-dice-five"},
+                  "webArchive": {name: "Web Archive", icon: "fas fa-dice-six"}
+                };
+
+var contextMenuItemsUrlBasic={
+                  "hoppath": {name: "HopPath", icon: "fas fa-link"},
+                  "import": {name: "Import", icon: "fas fa-file-import"},
+                  "sep1": "---------",
+                  "pruneHarvest": {name: "Prune", icon: "cut", items: itemsPruneHarvest},
+                  "sep2": "---------",
+                  "modifyHarvest": {name: "Modify", icon: "far fa-edit", items: itemsModifyHarvest},
+                  "sep3": "---------",
+                  "browseUrl": {name: "Browse", icon: "fab fa-chrome", items: itemsBrowse}
+                };
+
+var contextMenuItemsPrune={
+    "hoppath": {name: "HopPath", icon: "fas fa-link"},
+    "sep1": "---------",
+    "undo": {name: "Undo", icon: "fas fa-undo", items: {
+                  "undoPruneCurrent": {name: "Current"},
+                  "undoPruneSelected": {name: "Selected"},
+                  "undoPruneAll": {name: "All"}
+            }
+    },
+    "sep2": "---------",
+    "browseUrl": {name: "Browse", icon: "fab fa-chrome", items: itemsBrowse}
+};
+
+var contextMenuItemsImport={
+  "undo": {name: "Undo", icon: "fas fa-undo", items: {
+                  "undoImportCurrent": {name: "Current"},
+                  "undoImportSelected": {name: "Selected"},
+                  "undoImportAll": {name: "All"}
+            }
+    },
+};

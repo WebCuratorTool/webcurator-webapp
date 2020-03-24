@@ -1,9 +1,8 @@
 class NetworkMap{
 	constructor(){
 		this.graph=new NetworkMapGraph('network-map-canvas');
-		this.grid=new NetworkMapGrid('#networkmap-side-table');
-		this.chartContentType=new NetworkMapMenuMap('#networkmap-side-chart-type', 'contentType', 'statusCode');
-		this.chartContentError=new NetworkMapMenuMap('#networkmap-side-chart-error', 'statusCode', 'contentType');
+		this.gridStatusCode=new NetworkMapGrid('#networkmap-side-table-group-by-status-code', 'statusCode');
+		this.gridContentType=new NetworkMapGrid('#networkmap-side-table-group-by-content-type', 'contentType');
 		this.data={};
 	}
 
@@ -26,10 +25,8 @@ class NetworkMap{
 
 	initDraw(node){
 		this.graph.draw(node.children);
-        this.grid.initialDataGrid(node);
-
-        this.chartContentType.draw(node);
-        this.chartContentError.draw(node);
+        this.gridStatusCode.draw(node);
+        this.gridContentType.draw(node);
 	}
 
 	formatData(node){
@@ -54,21 +51,50 @@ class NetworkMap{
 	}
 
 	_switchNode(node){
-		this.grid.draw(node);
-		this.chartContentType.draw(node);
-        this.chartContentError.draw(node);
+		this.gridStatusCode.draw(node);
+        this.gridContentType.draw(node);
 
 		var title='Root';
 		if(node.title){
 			title=node.title;
 		}
 
-		if(title.length > 50){
-			title=title.substr(0, 50) + '...';
+		if(title.length > 60){
+			title=title.substr(0, 60) + '...';
 		}
 
 		$('#networkmap-side-title').text('Domain: ' + title);
 	}
+
+
+	static contextMenuItems={
+	        "pruneHarvest": {
+	            				name: "Prune",
+	            				icon: "cut",
+								items: {
+										"pruneHarvestCurrent": {"name": "Current"},
+										"pruneHarvestSelected": {"name": "Selected"}
+								}
+	    					},
+	    	"sep1": "---------",
+			"modifyHarvest": {	 
+								name: "Modify", 
+	                            icon: "far fa-edit",
+	                            items: {
+			                            "modifyHarvestCurrent": {"name": "Current"},
+			                            "modifyHarvestSelected": {"name": "Selected"}
+					            }
+						      },
+	    	"sep2": "---------",
+	    	"checkURL": { 
+							name: "Check URLs", 
+							icon: "fab fa-think-peaks",
+							items: {
+								"checkURLCurrent": {"name": "Current"},
+								"checkURLSelected": {"name": "Selected"}
+							}
+				      	}
+	    };
 }
 
 

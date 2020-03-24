@@ -51,7 +51,28 @@ class HierarchyTree{
 		            // that.contentMenuCallback(key, rowId);
 		            console.log(options);
 		        },
-		        items: contextMenuItemsUrlBasic
+		        items: {
+		        	    	"hoppath": {name: "HopPath", icon: "fas fa-link"},
+		        	    	"sep1": "---------",
+		                    "pruneHarvest": {name: "Prune",
+		                    				icon: "cut",
+											items: {
+													"pruneHarvestCurrent": {"name": "Current"},
+													"pruneHarvestSelected": {"name": "Selected"}
+												}
+		                					},
+		                	"sep2": "---------",
+							"modifyHarvest": {	 name: "Modify", 
+	                                             icon: "far fa-edit",
+	                                             items: {
+									                            "modifyHarvestCurrent": {"name": "Current"},
+									                            "modifyHarvestSelected": {"name": "Selected"}
+									                    }
+										      },
+                        	"sep3": "---------",
+		                    "urlHierarchyCurrent": {name: "URL Hierarchy Current", icon: "fab fa-think-peaks"},
+		                    "urlHierarchySelected": {name: "URL Hierarchy Selected", icon: "fab fa-think-peaks"}
+		                }
     	});
 	} 
 

@@ -65,6 +65,45 @@ var gridOptionsImport={
 	]
 };
 
+var contextMenuItemsCandidate={
+    "hoppath": {name: "HopPath", icon: "fas fa-link"},
+    "import": {name: "Import", icon: "fas fa-file-import"},
+    "sep1": "---------",
+    "pruneCurrent": {name: "Prune Current", icon: "cut"},
+    "pruneSelected": {name: "Prune Selected", icon: "cut"},
+    "sep2": "---------",
+    "clearCurrent": {name: "Clear Current", icon: "delete"},
+    "clearSelected": {name: "Clear Selected", icon: "delete"},
+    "clearAll": {name: "Clear All", icon: "delete"},
+    "sep3": "---------",
+    "review": {name: "Review this Harvest", icon: "fas fa-dice-one"},
+    "reviewInAccessTool": {name: "Review in Access Tool", icon: "fas fa-dice-two"},
+    "liveSite": {name: "Live Site", icon: "fas fa-dice-three"},
+    "archiveOne": {name: "Archive One", icon: "fas fa-dice-four"},
+    "archiveTwo": {name: "Archive Two", icon: "fas fa-dice-five"},
+    "webArchive": {name: "Web Archive", icon: "fas fa-dice-six"},
+};
+
+var contextMenuItemsPrune={
+    "hoppath": {name: "HopPath", icon: "fas fa-link"},
+    "sep1": "---------",
+    "undoCurrent": {name: "Undo Current", icon: "fas fa-undo"},
+    "undoSelected": {name: "Undo Selected", icon: "fas fa-undo"},
+    "undoAll": {name: "Undo All", icon: "fas fa-undo"},
+    "sep2": "---------",
+    "review": {name: "Review this Harvest", icon: "fas fa-dice-one"},
+    "reviewInAccessTool": {name: "Review in Access Tool", icon: "fas fa-dice-two"},
+    "liveSite": {name: "Live Site", icon: "fas fa-dice-three"},
+    "archiveOne": {name: "Archive One", icon: "fas fa-dice-four"},
+    "archiveTwo": {name: "Archive Two", icon: "fas fa-dice-five"},
+    "webArchive": {name: "Web Archive", icon: "fas fa-dice-six"},
+};
+
+var contextMenuItemsImport={
+	"undoCurrent": {name: "Undo Current", icon: "fas fa-undo"},
+    "undoSelected": {name: "Undo Selected", icon: "fas fa-undo"},
+    "undoAll": {name: "Undo All", icon: "fas fa-undo"}
+};
 
 class CustomizedAgGrid{
 	constructor(jobId, harvestResultNumber, gridContainer, gridOptions, menuItems){
@@ -82,16 +121,30 @@ class CustomizedAgGrid{
 			$.contextMenu({
 	            selector: that.gridContainer + ' .ag-row', 
 	            callback: function(key, options) {
+	                // var m = "clicked: " + key;
+	                // window.console && console.log(m) || alert(m);
 					var rowId=$(this).attr('row-id');
+					// console.log(rowId);
+					// console.log(this);
+
 					// var rowNode = that.grid.gridOptions.api.getDisplayedRowAtIndex(rowId);
-					var rowNode = that.grid.gridOptions.api.getRowNode(rowId);
-					
-					contextMenuCallback(key, rowNode.data, gPopupModifyHarvest);
+					// console.log(rowNode);
+					that.contentMenuCallback(key, rowId);
 	            },
 	            items: that.menuItems
 	        });
 		}
 	}
+
+	contentMenuCallback(operationKey, rowId){
+		var rowNode = this.grid.gridOptions.api.getDisplayedRowAtIndex(rowId);
+		if (operationKey==='hoppath') {
+			fetchHopPath(rowNode.data.id);
+		}else if (operationKey==='import') {
+			$('#popup-window-import-input').show();
+		}
+	}
+
 
 	processResponse(data){
 		for(var i=0; i<data.length; i++){
@@ -117,7 +170,7 @@ class PopupModifyHarvest{
 		this.jobId=jobId;
 		this.harvestResultNumber=harvestResultNumber;
 
-		this.gridCandidate=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-candidate', gridOptionsCandidate, contextMenuItemsUrlBasic);
+		this.gridCandidate=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-candidate', gridOptionsCandidate, contextMenuItemsCandidate);
 		this.gridPrune=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-prune', gridOptionsPrune, contextMenuItemsPrune);
 		this.gridImport=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-import', gridOptionsImport, contextMenuItemsImport);
 	}
@@ -137,19 +190,6 @@ class PopupModifyHarvest{
 	addImportUrlsViaInputFile(){
 		
 	}
-
-
-	pruneHarvestCurrent(data){
-		var newItems=[data];
-		this.gridPrune.gridOptions.api.updateRowData({ add: newItems });
-		this.gridCandidate.gridOptions.api.updateRowData({remove: newItems});
-	}
-
-	pruneHarvestSelected(data){
-		this.gridPrune.gridOptions.api.updateRowData({ add: this.gridCandidate.gridOptions.api.getSelectedRows()});
-		this.gridCandidate.gridOptions.api.updateRowData({remove: this.gridCandidate.gridOptions.api.getSelectedRows()});
-	}
-
 
 	checkUrls(domainName, contentType, statusCode){
 		var aryDomainName=[];
