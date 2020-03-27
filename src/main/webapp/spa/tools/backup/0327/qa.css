@@ -153,13 +153,16 @@ html,body,canvas{
 	z-index: 2002;
 }
 
-#popup-window-import-input-content{
+#popup-window-import-input{
+	display: none;
+	position: absolute;
 	width: 50vw; 
 	height: 40vh;
 	margin: 30vh 25vw 30vh 25vw;
 	border: 5px solid #007bff;
 	border-radius: 10px;
 	background: #F1E4E1;
+	z-index: 2002;
 }
 
 #popup-window-hierarchy{

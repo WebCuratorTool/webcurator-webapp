@@ -66,36 +66,35 @@ class NetworkMap{
 		$('#networkmap-side-title').text('Domain: ' + title);
 	}
 
-	contextMenuCallback(key, condition, source){
-		if (key==='pruneHarvestCurrent') {
-			gPopupModifyHarvest.addPruneUrls(condition);
-		}else if(key==='pruneHarvestSelected'){
-			var c=source.getSelectedNodes();
-			gPopupModifyHarvest.addPruneUrls(c);
-		}else if(key==='modifyHarvestCurrent'){
-			gPopupModifyHarvest.addModifyUrls(condition);
-		}else if(key==='modifyHarvestSelected'){
-			var c=source.getSelectedNodes();
-			gPopupModifyHarvest.addModifyUrls(c);
-		}
-	}
 
-
-
-
-	static contextMenuItemsGrid={
-        "pruneHarvestCurrent": {"name": "Prune Current", icon: "far fa-trash-alt"},
-		"pruneHarvestSelected": {"name": "Prune Selected", icon: "fas fa-trash-alt"},
-    	"sep1": "---------",
-    	"modifyHarvestCurrent": {"name": "Modify Current", icon: "far fa-edit"},
-		"modifyHarvestSelected": {"name": "Modify Selected", icon: "fas fa-edit"}
-    };
-
-    static contextMenuItemsGraph={
-        "pruneHarvestCurrent": {"name": "Prune", icon: "far fa-trash-alt"},
-    	"sep1": "---------",
-    	"modifyHarvestCurrent": {"name": "Modify", icon: "far fa-edit"},
-    };
+	static contextMenuItems={
+	        "pruneHarvest": {
+	            				name: "Prune",
+	            				icon: "cut",
+								items: {
+										"pruneHarvestCurrent": {"name": "Current"},
+										"pruneHarvestSelected": {"name": "Selected"}
+								}
+	    					},
+	    	"sep1": "---------",
+			"modifyHarvest": {	 
+								name: "Modify", 
+	                            icon: "far fa-edit",
+	                            items: {
+			                            "modifyHarvestCurrent": {"name": "Current"},
+			                            "modifyHarvestSelected": {"name": "Selected"}
+					            }
+						      },
+	    	"sep2": "---------",
+	    	"checkURL": { 
+							name: "Check URLs", 
+							icon: "fab fa-think-peaks",
+							items: {
+								"checkURLCurrent": {"name": "Current"},
+								"checkURLSelected": {"name": "Selected"}
+							}
+				      	}
+	    };
 }
 
 

@@ -53,18 +53,8 @@ class NetworkMapGraph{
             trigger: 'none',
             reposition: false,
             callback: function(key, options) {
-                var node=that.getSelectedNode();
-                var searchCondition={
-                  "domainNames": [],
-                  "contentTypes": [],
-                  "statusCodes": []
-                }
-
-                if(node){
-                  searchCondition.domainNames.push(node.title);
-                }
-
-                networkmap.contextMenuCallback(key, searchCondition, that);
+                // var rowId=$(this).attr('row-id');
+                // that.contentMenuCallback(key, rowId);
             },
             position: function(opt, x, y){
                 // console.log('context menu position: (' + that.x + ', ' + that.y + ')');
@@ -73,7 +63,7 @@ class NetworkMapGraph{
                 offset.left=that.x;
                 opt.$menu.css(offset);
             },
-            items: NetworkMap.contextMenuItemsGraph
+            items: NetworkMap.contextMenuItems
         });
   }
 
@@ -90,15 +80,15 @@ class NetworkMapGraph{
 
     var that=this;
     //Event: doubleClic
-    this.network.on("click", function (params) {
+    this.network.on("selectNode", function (params) {
         console.log(params);
 
         if(params.nodes.length<=0){
-          networkmap.reset();
-        }else{
-          var nodeId=params.nodes[0];
-          networkmap.switchNode(nodeId);
+          return;
         }
+
+        var nodeId=params.nodes[0];
+        networkmap.switchNode(nodeId);
     });
 
     //Event: doubleClic
@@ -140,7 +130,7 @@ class NetworkMapGraph{
     });
     //========================================================================
     this.network.on("oncontext", function(params){
-      params.event.preventDefault();
+      // params.event.preventDefault();
 
       if(!params || !params.pointer || !params.pointer.DOM){
         return;

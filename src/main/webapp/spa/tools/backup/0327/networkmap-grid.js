@@ -34,26 +34,10 @@ class NetworkMapGrid{
 		$.contextMenu({
             selector: that.container + ' .ag-row', 
             callback: function(key, options) {
-            	var searchCondition={
-                  "domainNames": [],
-                  "contentTypes": [],
-                  "statusCodes": []
-                }
-
-            	var rowId=$(this).attr('row-id');
-            	var node = that.grid.gridOptions.api.getRowNode(rowId); //getDisplayedRowAtIndex
-				if(node){
-					if(this.key === 'statusCode'){
-						searchCondition.statusCodes.push(node.data.name);
-					}else{
-						searchCondition.contentTypes.push(node.data.name);
-					}
-				}
-
-                networkmap.contextMenuCallback(key, searchCondition, that);
-
+                var rowId=$(this).attr('row-id');
+				that.contentMenuCallback(key, rowId);
             },
-            items: NetworkMap.contextMenuItemsGrid
+            items: NetworkMap.contextMenuItems
         });
 
 
@@ -73,24 +57,13 @@ class NetworkMapGrid{
 		this.grid.gridOptions.api.setRowData(dataset);
 	}
 
-	getSelectedNodes(){
-		var searchCondition={
-          "domainNames": [],
-          "contentTypes": [],
-          "statusCodes": []
-        }
-
-		var rows=this.grid.gridOptions.api.getSelectedRows();
-		for(var i=0; i<rows.length; i++){
-			var node=rows[i];
-			if(this.key === 'statusCode'){
-				searchCondition.statusCodes.push(node.name);
-			}else{
-				searchCondition.contentTypes.push(node.name);
-			}
+	contentMenuCallback(operationKey, rowId){
+		var rowNode = this.grid.gridOptions.api.getDisplayedRowAtIndex(rowId);
+		if (operationKey==='hoppath') {
+			fetchHopPath(rowNode.data.id);
+		}else if (operationKey==='import') {
+			$('#popup-window-import-input').show();
 		}
-
-		return searchCondition;
 	}
 
 

@@ -3,6 +3,68 @@ function renderHopPathIcon(params){
 	return "<a href='javascript: fetchHopPath(" + id + ");'><i class='fas fa-link'></i></a>";
 }
 
+var gridOptionsCandidate={
+	suppressRowClickSelection: true,
+	rowSelection: 'multiple',
+	defaultColDef: {
+		resizable: true,
+		filter: true,
+		sortable: true
+	},
+	rowData: [],
+	components: {
+		renderHopPathIcon: renderHopPathIcon
+	},
+	columnDefs: [
+		// {headerName: "Action", field: "id", width: 100, cellRenderer: 'renderHopPathIcon'},
+		{headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
+		{headerName: "URL", field: "url", width: 1200, filter: true},
+		{headerName: "Type", field: "contentType", width: 120, filter: true, pinned: 'right'},
+		{headerName: "Status", field: "statusCode", width: 100, filter: 'agNumberColumnFilter', pinned: 'right'},
+		{headerName: "Length", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', pinned: 'right'}
+	]
+};
+
+var gridOptionsPrune={
+	// suppressRowClickSelection: true,
+	rowSelection: 'multiple',
+	defaultColDef: {
+		resizable: true,
+		filter: true,
+		sortable: true
+	},
+	rowData: [],
+	components: {
+		renderHopPathIcon: renderHopPathIcon
+	},
+	columnDefs: [
+		// {headerName: "Action", field: "id", width: 100, pinned: "left", cellRenderer: 'renderHopPathIcon'},
+		{headerName: "URL", field: "url", width: 200},
+		{headerName: "ContentType", field: "contentType", width: 120},
+		{headerName: "StatusCode", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
+		{headerName: "ContentLength", field: "contentLength", width: 100, filter: 'agNumberColumnFilter'}
+	]
+};
+
+var gridOptionsImport={
+	// suppressRowClickSelection: true,
+	// rowSelection: 'single',
+	defaultColDef: {
+	resizable: true,
+	filter: true,
+	sortable: true
+	},
+	rowData: [],
+	columnDefs: [
+		{headerName: "Action", field: "id", width: 100},
+		{headerName: "URL", field: "url", width: 200, pinned: "left"},
+		{headerName: "ContentType", field: "contentType", width: 120},
+		{headerName: "StatusCode", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
+		{headerName: "Size", field: "size", width: 100, filter: 'agNumberColumnFilter'},
+		{headerName: "Date", field: "size", width: 100}
+	]
+};
+
 
 class CustomizedAgGrid{
 	constructor(jobId, harvestResultNumber, gridContainer, gridOptions, menuItems){
@@ -158,12 +220,8 @@ class PopupModifyHarvest{
 		this.gridImport=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-import', gridOptionsImport, contextMenuItemsImport);
 	}
 
-	addModifyUrls(searchCondition){
-		this.checkUrls(searchCondition, this.gridCandidate);
-	}
-
-	addPruneUrls(searchCondition){
-		this.checkUrls(searchCondition, this.gridPrune);
+	addPruneUrlsViaDomain(domainNode){
+		this.checkUrls(domainNode.title);
 	}
 
 	addPruneUrlsViaQueryCondition(){
@@ -184,7 +242,28 @@ class PopupModifyHarvest{
 	}
 
 
-	checkUrls(searchCondition, grid){
+	checkUrls(domainName, contentType, statusCode){
+		var aryDomainName=[];
+		if (domainName && domainName!==null && domainName!=="null") {
+			aryDomainName.push(domainName);
+		}
+
+		var aryContentType=[];
+		if(contentType && contentType!==null && contentType!=="null"){
+			aryContentType.push(contentType);
+		}
+
+		var aryStatusCode=[];
+		if(statusCode && statusCode > 0){
+			aryStatusCode.push(statusCode);
+		}
+
+		var searchCondition={
+			"domainNames": aryDomainName,
+			"contentTypes": aryContentType,
+			"statusCodes": aryStatusCode
+		}
+
 		var that=this;
 		var sourceUrl="/curator/networkmap/search/urls?job=" + this.jobId + "&harvestResultNumber=" + this.harvestResultNumber;
 		fetch(sourceUrl, {
@@ -197,7 +276,7 @@ class PopupModifyHarvest{
 			return response.json();
 		}).then((rawData) => {
 			var data=formatStringArrayToJsonArray(rawData);
-			grid.processResponse(data);
+			that.gridCandidate.processResponse(data);
 			$('#popup-window-modify-harvest').show();
 		});
 	}

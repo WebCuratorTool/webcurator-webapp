@@ -23,10 +23,7 @@ html,body,canvas{
 	display: block;
 }
 
-.nav-divider{
-	display: inline-block;
-	width: 20px;
-}
+
 .spin-overlay {
     width: 80px;
     height: 80px;
@@ -110,7 +107,10 @@ html,body,canvas{
 }
 
 
-
+.window-modify-grid{
+	width: 100%;
+	height: 70vh;
+}
 
 
 .popup-modal{
@@ -126,17 +126,13 @@ html,body,canvas{
 }
 
 #popup-window-modify-harvest-card{
-	width: 70vw; 
-	height: 82vh;
-	margin: 9vh 15vw 9vh 15vw;
+	width: 80vw; 
+	height: 92vh;
+	margin: 4vh 10vw 4vh 10vw;
 	border: 5px solid #343a40; 
 	border-radius: 10px;
 	background: #F1E4E1;
 	padding-bottom: 10px;
-}
-.window-modify-grid{
-	width: 100%;
-	height: 62vh;
 }
 
 #popup-window-hop-path-card{
@@ -153,13 +149,16 @@ html,body,canvas{
 	z-index: 2002;
 }
 
-#popup-window-import-input-content{
+#popup-window-import-input{
+	display: none;
+	position: absolute;
 	width: 50vw; 
 	height: 40vh;
 	margin: 30vh 25vw 30vh 25vw;
 	border: 5px solid #007bff;
 	border-radius: 10px;
 	background: #F1E4E1;
+	z-index: 2002;
 }
 
 #popup-window-hierarchy{
@@ -176,7 +175,7 @@ html,body,canvas{
 	/*padding: 5vh 5vw 5vh 5vw;*/
 	/*border-radius: 10px;*/
 	background: #F1E4E1;
-	z-index: 2000;
+	z-index: 3002;
 }
 
 .fixed-size {

@@ -40,7 +40,7 @@ to get the desired effect
       <button type="button" class="btn btn-default" onclick="networkmap.graph.reload();">Reload</button>
       <button type="button" class="btn btn-default" onclick="networkmap.graph.reset();">Reset</button>
       <button type="button" class="btn btn-default" onclick="networkmap.graph.collapseAll();">Collapse All</button>
-      <!-- <button type="button" class="btn btn-default" onclick="hierarchy();"><i class="fab fa-think-peaks"></i> &nbsp; Check URL</button> -->
+      <button type="button" class="btn btn-default" onclick="hierarchy();"><i class="fab fa-think-peaks"></i> &nbsp; Check URL</button>
       <button type="button" class="btn btn-default" onclick="modifyHarvest();"><i class="fas fa-edit"></i> &nbsp; Modify Harvest</button>
     </div>
 
@@ -75,80 +75,43 @@ to get the desired effect
 
 <div class="popup-window"  id="popup-window-modify-harvest">
   <div id="popup-window-modify-harvest-card">
-      <div class="row">
-        <div class="col-6">
-          <nav class="main-header navbar navbar-expand navbar-dark" style="margin: 0;">
-              <!-- Left navbar links -->
-              <ul class="navbar-nav">
-                <li class="nav-item">
-                  <button type="button" class="btn btn-flat btn-primary text-light"><i class="fas fa-search"></i> &nbsp; Query</button>
-                </li>
-                <li class="nav-divider"></li>
-                <li class="nav-item">
-                  <div class="btn-group">
-                    <button type="button" class="btn btn-flat btn-primary text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
-                      More
-                      <span class="sr-only">Toggle Dropdown</span>
-                      <div class="dropdown-menu" role="menu">
-                        <a class="dropdown-item" href="#"><i class="fas fa-search"></i> &nbsp; Query</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="javascript: hierarchy();"><i class="fab fa-think-peaks"></i> &nbsp; Hierarchy URL</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#"><i class="far fa-trash-alt"></i> &nbsp; Clear</a>
-                      </div>
-                    </button>
+      <nav class="main-header navbar navbar-expand navbar-dark" style="margin: 0;">
+          <!-- Left navbar links -->
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <div class="btn-group btn-primary btn-nav-tab" tab="#card-tab-prune">
+                <button type="button" class="btn btn-flat text-light">To Be Pruned</button>
+              </div>
+            </li>
+            <li class="nav-divider"></li>
+            <li class="nav-item">
+              <div class="btn-group btn-outline-primary btn-nav-tab"  tab="#card-tab-import">
+                <button type="button" class="btn btn-flat text-light">To Be Imported</button>
+                <button type="button" class="btn btn-flat text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                  <span class="sr-only">Toggle Dropdown</span>
+                  <div class="dropdown-menu" role="menu">
+                    <a class="dropdown-item" href="#">New Import</a>
                   </div>
-                </li>
-              </ul>
-              <ul class="navbar-nav ml-auto">
-                <li class="nav-item"><input class="form-control" type="search" placeholder="Filter" aria-label="Search"></li>
-              </ul>
-          </nav>
+                </button>
+              </div>
+            </li>
+          </ul>
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+            <input class="form-control" type="search" placeholder="Filter" aria-label="Search">
+            </li>
+          </ul>
+      </nav>
 
-          <div class="tab-content">
-            <div id="grid-modify-candidate" class="ag-theme-balham window-modify-grid"> </div>
-          </div>
+      <div class="tab-content">
+        <div class="active tab-pane" id="card-tab-prune">
+            <div id="grid-modify-prune" class="ag-theme-balham window-modify-grid"> </div>
         </div>
-        <div class="col-6">
-          <nav class="main-header navbar navbar-expand navbar-dark" style="margin: 0;">
-              <!-- Left navbar links -->
-              <ul class="navbar-nav">
-                <li class="nav-item">
-                  <div class="btn-group btn-primary btn-nav-tab" tab="#card-tab-prune">
-                    <button type="button" class="btn btn-flat text-light">To Be Pruned</button>
-                  </div>
-                </li>
-                <li class="nav-divider"></li>
-                <li class="nav-item">
-                  <div class="btn-group btn-outline-primary btn-nav-tab"  tab="#card-tab-import">
-                    <button type="button" class="btn btn-flat text-light">To Be Imported</button>
-                    <button type="button" class="btn btn-flat text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
-                      <span class="sr-only">Toggle Dropdown</span>
-                      <div class="dropdown-menu" role="menu">
-                        <a class="dropdown-item" href="#">New Import</a>
-                      </div>
-                    </button>
-                  </div>
-                </li>
-              </ul>
-              <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                <input class="form-control" type="search" placeholder="Filter" aria-label="Search">
-                </li>
-              </ul>
-          </nav>
-
-          <div class="tab-content">
-            <div class="active tab-pane" id="card-tab-prune">
-                <div id="grid-modify-prune" class="ag-theme-balham window-modify-grid"> </div>
-            </div>
-            <div class="tab-pane" id="card-tab-import">
-                <div id="grid-modify-import" class="ag-theme-balham window-modify-grid"> </div>
-            </div>
-          </div>
+        <div class="tab-pane" id="card-tab-import">
+            <div id="grid-modify-import" class="ag-theme-balham window-modify-grid"> </div>
         </div>
       </div>
-
+    
       <div class="row">
         <div class="col-11" style="padding: 10px;">
             <textarea class="form-control" rows="4" placeholder="Provenance Note ..." style="resize: none;"></textarea>
@@ -178,15 +141,14 @@ to get the desired effect
     <!-- /.card-tools -->
   </div>
   <!-- /.card-header -->
-  <div class="card-body none-margin-padding" style="height: 85vh; background: white;">
+  <div class="card-body none-margin-padding" style="height: 85vh;">
       <div id="hoppath-canvas"></div>
   </div>   <!-- /.card-body -->
 </div> <!-- /.card -->
 </div>
 
 <!-- Popup Import Input-->
-<div class="popup-window" id="popup-window-import-input">
-<div class="card card-primary" id="popup-window-import-input-content">
+<div class="card card-primary"  id="popup-window-import-input">
   <div class="card-header">
     <h3 class="card-title">Import Content For URL</h3>
     <div class="card-tools">
@@ -245,7 +207,7 @@ to get the desired effect
     </div>
   </div>
 </div> <!-- /.card -->
-</div>
+
 
 <!-- Popup Hierarchy-->
 <div id="popup-window-hierarchy">
@@ -276,6 +238,8 @@ to get the desired effect
 
 
   <div class="fixed-size">
+      <div id="grid-modify-candidate" class="ag-theme-balham" style="width: 100%; height: 100%; outline: none;"> </div>
+
       <table id="hierachy-tree" style="width: 99vw; outline: none; display: none;">
           <colgroup>
               <col width="50px">
@@ -291,7 +255,7 @@ to get the desired effect
           <thead>
           <tr>
               <th>Action</th>
-              <th>URL</th>
+              <th>Title</th>
               <th>Type</th>
               <th>Status</th>
               <th>Size</th>
@@ -379,8 +343,9 @@ to get the desired effect
       var node=networkmap.graph.getSelectedNode();
       if(node){
         gPopupModifyHarvest.addPruneUrlsViaDomain(node);
+      }else{
+        $('#popup-window-modify-harvest').show();
       }
-      $('#popup-window-modify-harvest').show();
     }
 
     function hierarchy(){

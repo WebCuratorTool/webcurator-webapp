@@ -135,21 +135,19 @@ function formatContentLengthAg(params){
 
 
 
-function contextMenuCallback(key, data, source, target){
+function contextMenuCallback(key, data, target){
   if (key==='pruneHarvestCurrent') {
-    target.pruneHarvest([data]);
+    target.pruneHarvestCurrent(data);
   }else if(key==='pruneHarvestSelected'){
-    var dataset=source.getSelectedNodes();
-    target.pruneHarvest(dataset);
+    target.pruneHarvestSelected(data);
   }else if(key==='modifyHarvestCurrent'){
     target.modifyHarvestCurrent(data);
   }else if(key==='modifyHarvestSelected'){
-    var dataset=source.getSelectedNodes();
-    target.modifyHarvestSelected(dataset);
+    target.modifyHarvestSelected(data);
   }else if(key==='hoppath'){
     visHopPath.draw(data.id);
   }else if(key==='import'){
-    $('#specifyTargetUrlInput').val(data.url);
+    $('#specifyTargetUrlInput').text(data.url);
     $('#popup-window-import-input').show();
   }else if(key==='reviewUrl'){
     
@@ -172,14 +170,9 @@ var itemsPruneHarvest={
                   "pruneHarvestCurrent": {"name": "Current"},
                   "pruneHarvestSelected": {"name": "Selected"}
               };
-var itemsPruneHarvestCascade={
-                  "pruneHarvestCurrentCascade": {"name": "Current"},
-                  "pruneHarvestSelectedCascade": {"name": "Selected"}
-              };
-var itemsClearHarvest={
-                  "clearHarvestCurrent": {"name": "Current"},
-                  "clearHarvestSelected": {"name": "Selected"},
-                  "clearHarvestAll": {"name": "All"},
+var itemsModifyHarvest={
+                  "modifyHarvestCurrent": {"name": "Current"},
+                  "modifyHarvestSelected": {"name": "Selected"}
               };
 var itemsBrowse={
                   "reviewUrl": {name: "Review this URL", icon: "fas fa-dice-one"},
@@ -194,10 +187,9 @@ var contextMenuItemsUrlBasic={
                   "hoppath": {name: "HopPath", icon: "fas fa-link"},
                   "import": {name: "Import", icon: "fas fa-file-import"},
                   "sep1": "---------",
-                  "pruneHarvest": {name: "Prune", icon: "far fa-times-circle", items: itemsPruneHarvest},
-                  "pruneHarvestCascade": {name: "Cascade Prune", icon: "fas fa-times-circle", items: itemsPruneHarvestCascade},
+                  "pruneHarvest": {name: "Prune", icon: "cut", items: itemsPruneHarvest},
                   "sep2": "---------",
-                  "clearHarvest": {name: "Clear", icon: "delete", items: itemsClearHarvest},
+                  "modifyHarvest": {name: "Modify", icon: "far fa-edit", items: itemsModifyHarvest},
                   "sep3": "---------",
                   "browseUrl": {name: "Browse", icon: "fab fa-chrome", items: itemsBrowse}
                 };
@@ -222,76 +214,4 @@ var contextMenuItemsImport={
                   "undoImportAll": {name: "All"}
             }
     },
-};
-
-
-var gridOptionsCandidate={
-  suppressRowClickSelection: true,
-  rowSelection: 'multiple',
-  defaultColDef: {
-    resizable: true,
-    filter: true,
-    sortable: true
-  },
-  rowData: [],
-  components: {
-    renderHopPathIcon: renderHopPathIcon
-  },
-  columnDefs: [
-    // {headerName: "Action", field: "id", width: 100, cellRenderer: 'renderHopPathIcon'},
-    {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
-    {headerName: "URL", field: "url", width: 400, filter: true},
-    {headerName: "Type", field: "contentType", width: 120, filter: true},
-    {headerName: "Status", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Size", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
-    {headerName: "TotUrls", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Failed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Success", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "TotSize", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg}
-  ]
-};
-
-var gridOptionsPrune={
-  // suppressRowClickSelection: true,
-  rowSelection: 'multiple',
-  defaultColDef: {
-    resizable: true,
-    filter: true,
-    sortable: true
-  },
-  rowData: [],
-  components: {
-    renderHopPathIcon: renderHopPathIcon
-  },
-  columnDefs: [
-    // {headerName: "Action", field: "id", width: 100, cellRenderer: 'renderHopPathIcon'},
-    {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
-    {headerName: "URL", field: "url", width: 400, filter: true},
-    {headerName: "Type", field: "contentType", width: 120, filter: true},
-    {headerName: "Status", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Size", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
-    {headerName: "TotUrls", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Failed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Success", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "TotSize", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg}
-  ]
-};
-
-var gridOptionsImport={
-  // suppressRowClickSelection: true,
-  // rowSelection: 'single',
-  defaultColDef: {
-  resizable: true,
-  filter: true,
-  sortable: true
-  },
-  rowData: [],
-  columnDefs: [
-    {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
-    {headerName: "URL", field: "url", width: 400},
-    {headerName: "ContentType", field: "contentType", width: 120},
-    {headerName: "StatusCode", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Size", field: "size", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Date", field: "size", width: 100}
-  ]
 };
