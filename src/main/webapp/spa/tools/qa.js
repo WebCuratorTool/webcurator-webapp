@@ -129,11 +129,15 @@ function formatContentLength(l){
   }
 }
 
+function renderCascadeIcon(params){
+  if(params.data.flagCascade){
+    return "<i class='fab fa-gg text-failed'></i>";
+  }
+}
+
 function formatContentLengthAg(params){
     return formatContentLength(params.value);
 }
-
-
 
 function contextMenuCallback(key, data, source, target){
   if (key==='pruneHarvestCurrent') {
@@ -141,11 +145,11 @@ function contextMenuCallback(key, data, source, target){
   }else if(key==='pruneHarvestSelected'){
     var dataset=source.getSelectedNodes();
     target.pruneHarvest(dataset);
-  }else if(key==='modifyHarvestCurrent'){
-    target.modifyHarvestCurrent(data);
-  }else if(key==='modifyHarvestSelected'){
+  }else if (key==='pruneHarvestCurrentCascade') {
+    target.pruneHarvestCascade([data]);
+  }else if(key==='pruneHarvestSelectedCascade'){
     var dataset=source.getSelectedNodes();
-    target.modifyHarvestSelected(dataset);
+    target.pruneHarvestCascade(dataset);
   }else if(key==='hoppath'){
     visHopPath.draw(data.id);
   }else if(key==='import'){
@@ -163,10 +167,23 @@ function contextMenuCallback(key, data, source, target){
     
   }else if(key==='webArchive'){
     
+  }else if(key==='undoCurrent'){
+    target.undo([data], source);
+  }else if(key==='undoSelected'){
+    var dataset=source.getSelectedNodes();
+    target.undo(dataset, source);
+  }else if(key==='undoAll'){
+    var dataset=source.getAllNodes();
+    target.undo(dataset, source);
+  }else if(key==='clearHarvestCurrent'){
+    source.remove([data]);
+  }else if(key==='clearHarvestSelected'){
+    var dataset=source.getSelectedNodes();
+    source.remove(dataset);
+  }else if(key==='clearHarvestAll'){
+    source.clear();
   }
 }
-
-
 
 var itemsPruneHarvest={
                   "pruneHarvestCurrent": {"name": "Current"},
@@ -189,6 +206,11 @@ var itemsBrowse={
                   "archiveTwo": {name: "Archive Two", icon: "fas fa-dice-five"},
                   "webArchive": {name: "Web Archive", icon: "fas fa-dice-six"}
                 };
+var itemsUndo={
+                  "undoCurrent": {name: "Current"},
+                  "undoSelected": {name: "Selected"},
+                  "undoAll": {name: "All"}
+                };
 
 var contextMenuItemsUrlBasic={
                   "hoppath": {name: "HopPath", icon: "fas fa-link"},
@@ -205,25 +227,33 @@ var contextMenuItemsUrlBasic={
 var contextMenuItemsPrune={
     "hoppath": {name: "HopPath", icon: "fas fa-link"},
     "sep1": "---------",
-    "undo": {name: "Undo", icon: "fas fa-undo", items: {
-                  "undoPruneCurrent": {name: "Current"},
-                  "undoPruneSelected": {name: "Selected"},
-                  "undoPruneAll": {name: "All"}
-            }
-    },
+    "undo": {name: "Undo", icon: "fas fa-undo", items: itemsUndo},
     "sep2": "---------",
     "browseUrl": {name: "Browse", icon: "fab fa-chrome", items: itemsBrowse}
 };
 
 var contextMenuItemsImport={
-  "undo": {name: "Undo", icon: "fas fa-undo", items: {
-                  "undoImportCurrent": {name: "Current"},
-                  "undoImportSelected": {name: "Selected"},
-                  "undoImportAll": {name: "All"}
-            }
-    },
+  "undo": {name: "Undo", icon: "fas fa-undo", items: itemsUndo},
 };
 
+function formatModifyHavestGridRow(params){
+  // console.log(this.gridContainer);
+  // console.log(params);
+  if (params.data.flagDelete) {
+    return 'grid-row-delete';
+  }else if (params.data.flagNew) {
+    return 'grid-row-new';
+  }else{
+    // return 'grid-row-normal';
+    return null;
+  }
+};
+
+var gridRowClassRules={
+  'grid-row-normal': function(params){return !params.data.flagDelete && !params.data.flagNew},
+  'grid-row-delete': function(params){return params.data.flagDelete},
+  'grid-row-new': function(params){return params.data.flagNew}
+}
 
 var gridOptionsCandidate={
   suppressRowClickSelection: true,
@@ -234,11 +264,7 @@ var gridOptionsCandidate={
     sortable: true
   },
   rowData: [],
-  components: {
-    renderHopPathIcon: renderHopPathIcon
-  },
   columnDefs: [
-    // {headerName: "Action", field: "id", width: 100, cellRenderer: 'renderHopPathIcon'},
     {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
     {headerName: "URL", field: "url", width: 400, filter: true},
     {headerName: "Type", field: "contentType", width: 120, filter: true},
@@ -248,11 +274,13 @@ var gridOptionsCandidate={
     {headerName: "Failed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
     {headerName: "Success", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
     {headerName: "TotSize", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg}
-  ]
+  ],
+  // rowClassRules: gridRowClassRules,
+  getRowClass: formatModifyHavestGridRow
 };
 
 var gridOptionsPrune={
-  // suppressRowClickSelection: true,
+  suppressRowClickSelection: true,
   rowSelection: 'multiple',
   defaultColDef: {
     resizable: true,
@@ -261,10 +289,9 @@ var gridOptionsPrune={
   },
   rowData: [],
   components: {
-    renderHopPathIcon: renderHopPathIcon
+    renderCascadeIcon: renderCascadeIcon
   },
   columnDefs: [
-    // {headerName: "Action", field: "id", width: 100, cellRenderer: 'renderHopPathIcon'},
     {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
     {headerName: "URL", field: "url", width: 400, filter: true},
     {headerName: "Type", field: "contentType", width: 120, filter: true},
@@ -273,17 +300,19 @@ var gridOptionsPrune={
     {headerName: "TotUrls", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'},
     {headerName: "Failed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
     {headerName: "Success", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "TotSize", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg}
-  ]
+    {headerName: "TotSize", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
+    {headerName: "Cascade", field: "flagCascade", width: 40, filter: true, pinned: 'right', cellRenderer: 'renderCascadeIcon', cellClass: 'grid-cell-centered'}
+  ],
+  rowClassRules: gridRowClassRules
 };
 
 var gridOptionsImport={
-  // suppressRowClickSelection: true,
-  // rowSelection: 'single',
+  suppressRowClickSelection: true,
+  rowSelection: 'multiple',
   defaultColDef: {
-  resizable: true,
-  filter: true,
-  sortable: true
+    resizable: true,
+    filter: true,
+    sortable: true
   },
   rowData: [],
   columnDefs: [
@@ -293,5 +322,6 @@ var gridOptionsImport={
     {headerName: "StatusCode", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
     {headerName: "Size", field: "size", width: 100, filter: 'agNumberColumnFilter'},
     {headerName: "Date", field: "size", width: 100}
-  ]
+  ],
+  // getRowClass: formatModifyHavestGridRow
 };

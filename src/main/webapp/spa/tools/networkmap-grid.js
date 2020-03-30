@@ -43,11 +43,14 @@ class NetworkMapGrid{
             	var rowId=$(this).attr('row-id');
             	var node = that.grid.gridOptions.api.getRowNode(rowId); //getDisplayedRowAtIndex
 				if(node){
-					if(this.key === 'statusCode'){
+					if(that.key === 'statusCode'){
 						searchCondition.statusCodes.push(node.data.name);
 					}else{
 						searchCondition.contentTypes.push(node.data.name);
 					}
+				}
+				if(that.domain.title){
+					searchCondition.domainNames.push(that.domain.title);
 				}
 
                 networkmap.contextMenuCallback(key, searchCondition, that);
@@ -64,12 +67,13 @@ class NetworkMapGrid{
 		this.grid = new agGrid.Grid(eGridDiv, this.gridOptions);
   	}
 
-	draw(dataNode){
-		if(!dataNode || !this.grid){
+	draw(domain){
+		if(!domain || !this.grid){
 			return;
 		}
+		this.domain=domain;
 
-		var dataset=this.summary(dataNode);
+		var dataset=this.summary(domain);
 		this.grid.gridOptions.api.setRowData(dataset);
 	}
 
@@ -81,6 +85,15 @@ class NetworkMapGrid{
         }
 
 		var rows=this.grid.gridOptions.api.getSelectedRows();
+		if(!rows || rows.length === 0){
+			alert("Please select some rows!")
+			return;
+		}
+
+		if(this.domain.title){
+			searchCondition.domainNames.push(this.domain.title);
+		}
+
 		for(var i=0; i<rows.length; i++){
 			var node=rows[i];
 			if(this.key === 'statusCode'){
@@ -92,7 +105,6 @@ class NetworkMapGrid{
 
 		return searchCondition;
 	}
-
 
 	summary(node){
 	    var statMap={};

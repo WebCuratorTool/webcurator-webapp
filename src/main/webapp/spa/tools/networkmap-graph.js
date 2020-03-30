@@ -60,8 +60,12 @@ class NetworkMapGraph{
                   "statusCodes": []
                 }
 
-                if(node){
+                if(node && node.children.length==0){
                   searchCondition.domainNames.push(node.title);
+                }else if(node && node.children.length>0){
+                  for(var i=0;i<node.children.length;i++){
+                    searchCondition.domainNames.push(node.children[i].title);
+                  }
                 }
 
                 networkmap.contextMenuCallback(key, searchCondition, that);

@@ -1,9 +1,3 @@
-function renderHopPathIcon(params){
-	var id=params.data.id;
-	return "<a href='javascript: fetchHopPath(" + id + ");'><i class='fas fa-link'></i></a>";
-}
-
-
 class CustomizedAgGrid{
 	constructor(jobId, harvestResultNumber, gridContainer, gridOptions, menuItems){
 		this.jobId=jobId;
@@ -11,7 +5,6 @@ class CustomizedAgGrid{
 		this.gridContainer=gridContainer;
 		this.gridOptions=gridOptions;
 		this.menuItems=menuItems;
-
 		this.grid=new agGrid.Grid(document.querySelector(this.gridContainer), this.gridOptions);
 		this.dataMap={};
 
@@ -30,27 +23,35 @@ class CustomizedAgGrid{
 		}
 	}
 
-	processResponse(data){
-		for(var i=0; i<data.length; i++){
-			var node=data[i];
-			if(!this.dataMap[node.id]){
-				this.dataMap[node.id]=node;
-			}
+	getSelectedNodes(){
+		var rows=this.grid.gridOptions.api.getSelectedRows();
+		if(!rows || rows.length === 0){
+			alert("Please select some rows!")
+			return;
 		}
-
-		var dataset=[];
-		for(var key in this.dataMap){
-			var node=this.dataMap[key];
-			dataset.push(node);
-		}
-
-		//Draw grid data
-		this.grid.gridOptions.api.setRowData(dataset);
+		return rows;
 	}
 
+	getAllNodes(){
+		var data=[];
+		this.grid.gridOptions.api.forEachNode(function(node, index){
+			data.push(node.data);
+		});
+		return data;
+	}
 
-	getSelectedNodes(){
-		return this.grid.gridOptions.api.getSelectedRows();
+	clear(){
+		this.grid.gridOptions.api.setRowData([]);
+	}
+
+	remove(dataMap){
+		var dataset=[];
+		this.grid.gridOptions.api.forEachNode(function(node, index){
+			if(dataMap[node.data.id]){
+				dataset.push(node.data);
+			}
+		});
+		this.grid.gridOptions.api.updateRowData({remove: dataset});
 	}
 }
 
@@ -158,14 +159,6 @@ class PopupModifyHarvest{
 		this.gridImport=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-import', gridOptionsImport, contextMenuItemsImport);
 	}
 
-	addModifyUrls(searchCondition){
-		this.checkUrls(searchCondition, this.gridCandidate);
-	}
-
-	addPruneUrls(searchCondition){
-		this.checkUrls(searchCondition, this.gridPrune);
-	}
-
 	addPruneUrlsViaQueryCondition(){
 
 	}
@@ -178,29 +171,171 @@ class PopupModifyHarvest{
 		
 	}
 
+	undo(data, source){
+		var map={};
+		for(var i=0; i< data.length; i++){
+			var node=data[i];
+			map[node.id]=node;
+		}
 
-	pruneHarvest(data){
-		this.gridPrune.gridOptions.api.updateRowData({ add: data});
+		this.gridCandidate.gridOptions.api.forEachNode(function(node, index){
+			if(map[node.data.id]){
+				delete map[node.data.id];
+				node.data.flagNew=true;
+			}else{
+				node.data.flagNew=false;
+			}		
+		});
+		this.gridCandidate.gridOptions.api.redrawRows(true);
+
+		var dataset=[];
+		for(var key in map){
+			var node=map[key];
+			node.flagNew=true;
+			dataset.push(node);
+		}
+		this.gridCandidate.gridOptions.api.updateRowData({ add: dataset});
+
+		source.remove(data);
 	}
 
+	pruneHarvest(data){
+		if(!data){
+			return;
+		}
 
-	checkUrls(searchCondition, grid){
+		var map={};
+		for(var i=0; i< data.length; i++){
+			var node=data[i];
+			node.flagNew=true;
+			node.flagCascade=false;
+			map[node.id]=node;
+		}
+
+		this.gridCandidate.remove(map);
+
+		// Add to 'to be pruned' grid, and marked as new
+		this.gridPrune.gridOptions.api.forEachNode(function(node, index){
+			if(map[node.data.id]){
+				delete map[node.data.id];
+				node.data.flagNew=true;
+			}else{
+				node.data.flagNew=false;
+			}		
+			
+		});
+		this.gridPrune.gridOptions.api.redrawRows(true);
+
+		var dataset=[];
+		for(var key in map){
+			var node=map[key];
+			dataset.push(node);
+		}
+		this.gridPrune.gridOptions.api.updateRowData({ add: dataset});
+	}
+
+	pruneHarvestCascade(data){
+		if(!data){
+			return;
+		}
+
+		var map={};
+		for(var i=0; i< data.length; i++){
+			var node=data[i];
+			node.flagNew=true;
+			node.flagCascade=true;
+			map[node.id]=node;			
+		}
+
+		this.gridCandidate.remove(map);
+
+		// Add to 'to be pruned' grid, and marked as new
+		this.gridPrune.gridOptions.api.forEachNode(function(node, index){
+			if(map[node.data.id]){
+				delete map[node.data.id];
+				node.data.flagNew=true;
+			}else{
+				node.data.flagNew=false;
+			}		
+			
+		});
+		this.gridPrune.gridOptions.api.redrawRows(true);
+
+		var dataset=[];
+		for(var key in map){
+			var node=map[key];
+			node.flagNew=true;
+			dataset.push(node);
+		}
+		this.gridPrune.gridOptions.api.updateRowData({ add: dataset});
+	}
+
+	modifyHarvest(data){
+		if(!data){
+			return;
+		}
+		
+		var map={};
+		for(var i=0; i< data.length; i++){
+			var node=data[i];
+			map[node.id]=node;
+		}
+
+		this.gridCandidate.gridOptions.api.forEachNode(function(node, index){
+			if(map[node.data.id]){
+				delete map[node.data.id];
+				node.data.flagNew=true;
+			}else{
+				node.data.flagNew=false;
+			}		
+			
+		});
+		this.gridCandidate.gridOptions.api.redrawRows(true);
+
+		this.gridPrune.gridOptions.api.forEachNode(function(node, index){
+			if(map[node.data.id]){
+				delete map[node.data.id];
+			}
+		});
+		this.gridImport.gridOptions.api.forEachNode(function(node, index){
+			if(map[node.data.id]){
+				delete map[node.data.id];
+			}
+		});
+
+		var dataset=[];
+		for(var key in map){
+			var node=map[key];
+			node.flagNew=true;
+			dataset.push(node);
+		}
+		this.gridCandidate.gridOptions.api.updateRowData({ add: dataset});
+	}
+
+	checkUrls(searchCondition, flag){
+		if(!searchCondition || !flag){
+			console.log('Invalid input, searchCondition='+searchCondition+', flag='+flag);
+			return;
+		}
+
+		$('#popup-window-loading').show();
 		var that=this;
 		var sourceUrl="/curator/networkmap/search/urls?job=" + this.jobId + "&harvestResultNumber=" + this.harvestResultNumber;
 		fetch(sourceUrl, {
 			method: 'POST',
-			headers: {
-			  'Content-Type': 'application/json',
-			},
+			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify(searchCondition)
 		}).then((response) => {
 			return response.json();
 		}).then((rawData) => {
 			var data=formatStringArrayToJsonArray(rawData);
-			grid.processResponse(data);
+			if(flag==='prune'){
+				that.pruneHarvest(data);
+			}else if(flag==='modify'){
+				that.modifyHarvest(data);
+			}
+			$('#popup-window-loading').hide();
 			$('#popup-window-modify-harvest').show();
 		});
-	}
+	}	
 }
-
-

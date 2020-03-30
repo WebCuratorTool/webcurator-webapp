@@ -68,20 +68,17 @@ class NetworkMap{
 
 	contextMenuCallback(key, condition, source){
 		if (key==='pruneHarvestCurrent') {
-			gPopupModifyHarvest.addPruneUrls(condition);
+			gPopupModifyHarvest.checkUrls(condition, 'prune');
 		}else if(key==='pruneHarvestSelected'){
 			var c=source.getSelectedNodes();
-			gPopupModifyHarvest.addPruneUrls(c);
+			gPopupModifyHarvest.checkUrls(c, 'prune');
 		}else if(key==='modifyHarvestCurrent'){
-			gPopupModifyHarvest.addModifyUrls(condition);
+			gPopupModifyHarvest.checkUrls(condition, 'modify');
 		}else if(key==='modifyHarvestSelected'){
 			var c=source.getSelectedNodes();
-			gPopupModifyHarvest.addModifyUrls(c);
+			gPopupModifyHarvest.checkUrls(c, 'modify');
 		}
 	}
-
-
-
 
 	static contextMenuItemsGrid={
         "pruneHarvestCurrent": {"name": "Prune Current", icon: "far fa-trash-alt"},

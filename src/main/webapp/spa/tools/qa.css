@@ -9,7 +9,6 @@ html,body,canvas{
 	user-select: none; /* Non-prefixed version, currently  supported by Chrome, Opera and Firefox */
 }
 
-
 .none-margin-padding{
 	margin: 0;
 	padding: 0;
@@ -77,12 +76,28 @@ html,body,canvas{
     }
 }
 
-/*.spin-overlay i{
-	line-height: 1.5;
-	display: inline-block;
-	vertical-align: middle;
+.grid-row-normal{
+	text-decoration: none;
+	font-style: normal;
+	font-weight: normal;
 }
-*/
+.grid-row-delete{
+	text-decoration: line-through;
+	font-style: italic;
+	font-weight: normal;
+}
+.grid-row-new{
+	font-weight: bold;
+}
+.grid-cell-centered{
+	text-align: center;
+	color: #6610f2;
+	font-weight: normal;
+}
+.grid-modify-harvest{
+	width: 100%;
+	height: 62vh;
+}
 
 .popup-window{
 	display: none;
@@ -96,64 +111,31 @@ html,body,canvas{
 	background: rgba(0,0,0,0.2);
 }
 
-.popup-window-opacity{
-	display: none;
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 2001;
-	/*padding: 8vh 10vw 0vh 10vw;*/
-	background: white;
-	opacity: 0.7;
-}
-
-
-
-
-
-.popup-modal{
-	display: none;
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	z-index: 2002;
-	padding: 8vh 10vw 8vh 10vw;
-	background: rgba(0,0,0,0.2);
-}
-
-#popup-window-modify-harvest-card{
-	width: 70vw; 
-	height: 82vh;
+#popup-window-modify-harvest .popup-content{
+	display: block;
+	width: 70vw;
+	/*height: 82vh;*/
 	margin: 9vh 15vw 9vh 15vw;
 	border: 5px solid #343a40; 
-	border-radius: 10px;
-	background: #F1E4E1;
+	/*#6c757d*/
+	/*border-radius: 10px;*/
+	/*background: #F1E4E1;*/
+	background: #f8f9fa;
 	padding-bottom: 10px;
 }
-.window-modify-grid{
-	width: 100%;
-	height: 62vh;
-}
 
-#popup-window-hop-path-card{
-	/*display: none;*/
-	/*position: absolute;*/
-	/*top: 0;*/
-	/*left: 0;*/
+
+#popup-window-hop-path .popup-content{
+	display: block;
 	width: 70vw; 
 	height: 90vh;
 	margin: 5vh 15vw 5vh 15vw;
 	border: 5px solid #007bff;
 	border-radius: 10px;
 	background: #F1E4E1;
-	z-index: 2002;
 }
 
-#popup-window-import-input-content{
+#popup-window-import-input .popup-content{
 	width: 50vw; 
 	height: 40vh;
 	margin: 30vh 25vw 30vh 25vw;
@@ -196,10 +178,10 @@ html,body,canvas{
     height: 100%;
 }
 
-#hoppath-canvas{
+/*#hoppath-canvas{
 	width: 100%;
 	height: 100%;
-}
+}*/
 
 
 
