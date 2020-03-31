@@ -144,22 +144,7 @@ html,body,canvas{
 	background: #F1E4E1;
 }
 
-#popup-window-hierarchy{
-	display: none;
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100vw; 
-	height: 100vh;
-	/*margin: 5vh 5vw 5vh 5vw;*/
-	/*border: 5px solid #007bff;*/
-	/*border: solid;*/
-	/*border-color: rgba(30,30,30,0.5); */
-	/*padding: 5vh 5vw 5vh 5vw;*/
-	/*border-radius: 10px;*/
-	background: #F1E4E1;
-	z-index: 2000;
-}
+
 
 .fixed-size {
 	width: 100vw;

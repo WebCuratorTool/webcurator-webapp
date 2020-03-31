@@ -177,6 +177,7 @@ class PopupModifyHarvest{
 			var node=data[i];
 			map[node.id]=node;
 		}
+		source.remove(map);
 
 		this.gridCandidate.gridOptions.api.forEachNode(function(node, index){
 			if(map[node.data.id]){
@@ -195,8 +196,6 @@ class PopupModifyHarvest{
 			dataset.push(node);
 		}
 		this.gridCandidate.gridOptions.api.updateRowData({ add: dataset});
-
-		source.remove(data);
 	}
 
 	pruneHarvest(data){
