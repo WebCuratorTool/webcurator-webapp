@@ -93,8 +93,13 @@ html,body,canvas{
 }
 .grid-row-import div{
 	/*text-decoration: line-through;*/
-	font-style: italic;
+	/*font-style: italic;*/
 	/*font-weight: normal;*/
+	color: red;
+}
+.grid-row-delete-import div{
+  	text-decoration: line-through;
+ 	color: red;
 }
 .grid-row-new div{
 	font-weight: bold;
@@ -165,7 +170,7 @@ html,body,canvas{
 
 .networkmap-insight{
 	width: 100%;
-	height: calc(100vh - 55px);
+	height: calc(100vh - 50px);
 }
 
 #urls-grid-container{

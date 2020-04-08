@@ -173,23 +173,13 @@ class PopupModifyHarvest{
 		this.gridCandidate=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-candidate', gridOptionsCandidate, contextMenuItemsUrlBasic);
 		this.gridPrune=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-prune', gridOptionsPrune, contextMenuItemsPrune);
 		this.gridImport=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-import', gridOptionsImport, contextMenuItemsImport);
-	}
-
-	addPruneUrlsViaQueryCondition(){
-
-	}
-
-	addImportUrlsViaInputPage(){
-
-	}
-
-	addImportUrlsViaInputFile(){
-		
+		this.uriSeedUrl="/curator/networkmap/get/root/urls?job=" + this.jobId + "&harvestResultNumber=" + this.harvestResultNumber;
+		this.uriInvalidUrl="/curator/networkmap/get/malformed/urls?job=" + this.jobId + "&harvestResultNumber=" + this.harvestResultNumber;
 	}
 
 	undo(data, source){
 		source.clear(data);
-		
+
 		var map={};
 		for(var i=0; i< data.length; i++){
 			var node=data[i];
@@ -292,17 +282,6 @@ class PopupModifyHarvest{
 			map[node.id]=node;
 		}
 
-		// this.gridCandidate.gridOptions.api.forEachNode(function(node, index){
-		// 	if(map[node.data.id]){
-		// 		delete map[node.data.id];
-		// 		node.data.flagNew=true;
-		// 	}else{
-		// 		node.data.flagNew=false;
-		// 	}		
-			
-		// });
-		// this.gridCandidate.gridOptions.api.redrawRows(true);
-
 		this.gridPrune.gridOptions.api.forEachNode(function(node, index){
 			if(map[node.data.id]){
 				// delete map[node.data.id];
@@ -350,5 +329,33 @@ class PopupModifyHarvest{
 			$('#popup-window-loading').hide();
 			$('#popup-window-modify-harvest').show();
 		});
-	}	
+	}
+
+	loadUrls(uri){
+		var decision=confirm("The current candidates will be removed before loading URL. \n Please confirm you want to load data?");
+		if(!decision){
+			return;
+		}
+
+		$('#popup-window-loading').show();
+		var that=this;
+		fetch(uri, {
+			method: 'POST',
+			headers: {'Content-Type': 'application/json'},
+		}).then((response) => {
+			return response.json();
+		}).then((rawData) => {
+			var data=formatStringArrayToJsonArray(rawData);
+			that.gridCandidate.setRowData(data);
+			$('#popup-window-loading').hide();
+		});
+	}
+
+	loadSeedUrls(){
+		this.loadUrls(this.uriSeedUrl);
+	}
+
+	loadInvalidUrls(){
+		this.loadUrls(this.uriInvalidUrl);
+	}
 }
