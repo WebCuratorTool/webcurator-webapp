@@ -40,8 +40,12 @@ class CustomizedAgGrid{
 		return data;
 	}
 
-	clear(){
+	clearAll(){
 		this.grid.gridOptions.api.setRowData([]);
+	}
+
+	clear(dataset){
+		this.grid.gridOptions.api.updateRowData({remove: dataset});
 	}
 
 	remove(dataMap){
@@ -52,6 +56,18 @@ class CustomizedAgGrid{
 			}
 		});
 		this.grid.gridOptions.api.updateRowData({remove: dataset});
+	}
+
+	filter(keyWord){
+		this.grid.gridOptions.api.setQuickFilter(keyWord);
+	}
+
+	setRowData(dataset){
+		this.grid.gridOptions.api.setRowData(dataset);
+	}
+
+	deselectAll(){
+		this.grid.gridOptions.api.deselectAll();
 	}
 }
 
@@ -172,33 +188,25 @@ class PopupModifyHarvest{
 	}
 
 	undo(data, source){
+		source.clear(data);
+		
 		var map={};
 		for(var i=0; i< data.length; i++){
 			var node=data[i];
 			map[node.id]=node;
 		}
-		source.remove(map);
 
 		this.gridCandidate.gridOptions.api.forEachNode(function(node, index){
 			if(map[node.data.id]){
-				delete map[node.data.id];
-				node.data.flagNew=true;
-			}else{
-				node.data.flagNew=false;
-			}		
+				node.data.flag='normal';
+			}	
 		});
 		this.gridCandidate.gridOptions.api.redrawRows(true);
-
-		var dataset=[];
-		for(var key in map){
-			var node=map[key];
-			node.flagNew=true;
-			dataset.push(node);
-		}
-		this.gridCandidate.gridOptions.api.updateRowData({ add: dataset});
 	}
 
 	pruneHarvest(data){
+		$('#tab-btn-prune').trigger('click');
+
 		if(!data){
 			return;
 		}
@@ -206,34 +214,38 @@ class PopupModifyHarvest{
 		var map={};
 		for(var i=0; i< data.length; i++){
 			var node=data[i];
-			node.flagNew=true;
-			node.flagCascade=false;
+			node.flag='prune';
 			map[node.id]=node;
 		}
 
-		this.gridCandidate.remove(map);
+		// this.gridCandidate.remove(map);
+		this.gridCandidate.gridOptions.api.redrawRows(true);
+
 
 		// Add to 'to be pruned' grid, and marked as new
 		this.gridPrune.gridOptions.api.forEachNode(function(node, index){
 			if(map[node.data.id]){
 				delete map[node.data.id];
-				node.data.flagNew=true;
+				node.data.flag='new';
 			}else{
-				node.data.flagNew=false;
-			}		
-			
+				node.data.flag='normal';
+			}
 		});
 		this.gridPrune.gridOptions.api.redrawRows(true);
 
+		map=JSON.parse(JSON.stringify(map));
 		var dataset=[];
 		for(var key in map){
 			var node=map[key];
+			node.flag='new';
 			dataset.push(node);
 		}
 		this.gridPrune.gridOptions.api.updateRowData({ add: dataset});
 	}
 
 	pruneHarvestCascade(data){
+		$('#tab-btn-prune').trigger('click');
+
 		if(!data){
 			return;
 		}
@@ -269,7 +281,7 @@ class PopupModifyHarvest{
 		this.gridPrune.gridOptions.api.updateRowData({ add: dataset});
 	}
 
-	modifyHarvest(data){
+	inspectHarvest(data){
 		if(!data){
 			return;
 		}
@@ -280,35 +292,37 @@ class PopupModifyHarvest{
 			map[node.id]=node;
 		}
 
-		this.gridCandidate.gridOptions.api.forEachNode(function(node, index){
-			if(map[node.data.id]){
-				delete map[node.data.id];
-				node.data.flagNew=true;
-			}else{
-				node.data.flagNew=false;
-			}		
+		// this.gridCandidate.gridOptions.api.forEachNode(function(node, index){
+		// 	if(map[node.data.id]){
+		// 		delete map[node.data.id];
+		// 		node.data.flagNew=true;
+		// 	}else{
+		// 		node.data.flagNew=false;
+		// 	}		
 			
-		});
-		this.gridCandidate.gridOptions.api.redrawRows(true);
+		// });
+		// this.gridCandidate.gridOptions.api.redrawRows(true);
 
 		this.gridPrune.gridOptions.api.forEachNode(function(node, index){
 			if(map[node.data.id]){
-				delete map[node.data.id];
+				// delete map[node.data.id];
+				map[node.data.id].flag='prune';
 			}
 		});
 		this.gridImport.gridOptions.api.forEachNode(function(node, index){
 			if(map[node.data.id]){
-				delete map[node.data.id];
+				// delete map[node.data.id];
+				map[node.data.id].flag='import';
 			}
 		});
 
 		var dataset=[];
 		for(var key in map){
 			var node=map[key];
-			node.flagNew=true;
 			dataset.push(node);
 		}
-		this.gridCandidate.gridOptions.api.updateRowData({ add: dataset});
+		// this.gridCandidate.gridOptions.api.updateRowData({ add: dataset});
+		this.gridCandidate.setRowData(dataset)
 	}
 
 	checkUrls(searchCondition, flag){
@@ -330,8 +344,8 @@ class PopupModifyHarvest{
 			var data=formatStringArrayToJsonArray(rawData);
 			if(flag==='prune'){
 				that.pruneHarvest(data);
-			}else if(flag==='modify'){
-				that.modifyHarvest(data);
+			}else if(flag==='inspect'){
+				that.inspectHarvest(data);
 			}
 			$('#popup-window-loading').hide();
 			$('#popup-window-modify-harvest').show();

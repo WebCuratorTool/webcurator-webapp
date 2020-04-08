@@ -140,84 +140,69 @@ function formatContentLengthAg(params){
 }
 
 function contextMenuCallback(key, data, source, target){
-  if (key==='pruneHarvestCurrent') {
-    target.pruneHarvest([data]);
-  }else if(key==='pruneHarvestSelected'){
-    var dataset=source.getSelectedNodes();
-    target.pruneHarvest(dataset);
-  }else if (key==='pruneHarvestCurrentCascade') {
-    target.pruneHarvestCascade([data]);
-  }else if(key==='pruneHarvestSelectedCascade'){
-    var dataset=source.getSelectedNodes();
-    target.pruneHarvestCascade(dataset);
-  }else if(key==='hoppath'){
+  var keyItems=key.split('-');
+  var action=keyItems[0], scope=keyItems[1];
+  var dataset;
+  if(scope==='current'){
+    dataset=[data];
+  }else if(scope==='selected'){
+    dataset=source.getSelectedNodes();
+    source.deselectAll();
+  }else if(scope==='all'){
+    dataset=source.getAllNodes();
+  }
+
+  if(action==='hoppath'){
     visHopPath.draw(data.id);
-  }else if(key==='import'){
+  }else if(action==='import'){
     $('#specifyTargetUrlInput').val(data.url);
     $('#popup-window-import-input').show();
-  }else if(key==='reviewUrl'){
-    
-  }else if(key==='reviewInAccessTool'){
-    
-  }else if(key==='liveSite'){
-    
-  }else if(key==='archiveOne'){
-    
-  }else if(key==='archiveTwo'){
-    
-  }else if(key==='webArchive'){
-    
-  }else if(key==='undoCurrent'){
-    target.undo([data], source);
-  }else if(key==='undoSelected'){
-    var dataset=source.getSelectedNodes();
+  }else if(action==='outlinks'){
+
+  }else if(action==='prune'){
+    target.pruneHarvest(dataset);
+  }else if(action==='browse'){
+    // 
+  }else if(action==='undo'){
     target.undo(dataset, source);
-  }else if(key==='undoAll'){
-    var dataset=source.getAllNodes();
-    target.undo(dataset, source);
-  }else if(key==='clearHarvestCurrent'){
-    source.remove([data]);
-  }else if(key==='clearHarvestSelected'){
-    var dataset=source.getSelectedNodes();
-    source.remove(dataset);
-  }else if(key==='clearHarvestAll'){
-    source.clear();
+  }else if(action==='clear'){
+    source.clear(dataset);
   }
 }
 
 var itemsPruneHarvest={
-                  "pruneHarvestCurrent": {"name": "Current"},
-                  "pruneHarvestSelected": {"name": "Selected"}
+                  "prune-current": {"name": "Current"},
+                  "prune-selected": {"name": "Selected"}
               };
 var itemsPruneHarvestCascade={
                   "pruneHarvestCurrentCascade": {"name": "Current"},
                   "pruneHarvestSelectedCascade": {"name": "Selected"}
               };
 var itemsClearHarvest={
-                  "clearHarvestCurrent": {"name": "Current"},
-                  "clearHarvestSelected": {"name": "Selected"},
-                  "clearHarvestAll": {"name": "All"},
+                  "clear-current": {"name": "Current"},
+                  "clear-selected": {"name": "Selected"},
+                  "clear-all": {"name": "All"},
               };
 var itemsBrowse={
-                  "reviewUrl": {name: "Review this URL", icon: "fas fa-dice-one"},
-                  "reviewInAccessTool": {name: "Review in Access Tool", icon: "fas fa-dice-two"},
-                  "liveSite": {name: "Live Site", icon: "fas fa-dice-three"},
-                  "archiveOne": {name: "Archive One", icon: "fas fa-dice-four"},
-                  "archiveTwo": {name: "Archive Two", icon: "fas fa-dice-five"},
-                  "webArchive": {name: "Web Archive", icon: "fas fa-dice-six"}
+                  "browse-Url": {name: "Review this URL", icon: "fas fa-dice-one"},
+                  "browse-InAccessTool": {name: "Review in Access Tool", icon: "fas fa-dice-two"},
+                  "browse-LiveSite": {name: "Live Site", icon: "fas fa-dice-three"},
+                  "browse-ArchiveOne": {name: "Archive One", icon: "fas fa-dice-four"},
+                  "browse-ArchiveTwo": {name: "Archive Two", icon: "fas fa-dice-five"},
+                  "browse-WebArchive": {name: "Web Archive", icon: "fas fa-dice-six"}
                 };
 var itemsUndo={
-                  "undoCurrent": {name: "Current"},
-                  "undoSelected": {name: "Selected"},
-                  "undoAll": {name: "All"}
+                  "undo-current": {name: "Current"},
+                  "undo-selected": {name: "Selected"},
+                  "undo-all": {name: "All"}
                 };
 
 var contextMenuItemsUrlBasic={
-                  "hoppath": {name: "HopPath", icon: "fas fa-link"},
-                  "import": {name: "Import", icon: "fas fa-file-import"},
+                  "hoppath-current": {name: "HopPath", icon: "fas fa-link"},
+                  "import-current": {name: "Import", icon: "fas fa-file-import"},
+                  "outlinks-current": {name: "Inspect Outlinks", icon: "fab fa-think-peaks"},
                   "sep1": "---------",
                   "pruneHarvest": {name: "Prune", icon: "far fa-times-circle", items: itemsPruneHarvest},
-                  "pruneHarvestCascade": {name: "Cascade Prune", icon: "fas fa-times-circle", items: itemsPruneHarvestCascade},
                   "sep2": "---------",
                   "clearHarvest": {name: "Clear", icon: "delete", items: itemsClearHarvest},
                   "sep3": "---------",
@@ -225,7 +210,7 @@ var contextMenuItemsUrlBasic={
                 };
 
 var contextMenuItemsPrune={
-    "hoppath": {name: "HopPath", icon: "fas fa-link"},
+    "hoppath-current": {name: "HopPath", icon: "fas fa-link"},
     "sep1": "---------",
     "undo": {name: "Undo", icon: "fas fa-undo", items: itemsUndo},
     "sep2": "---------",
@@ -237,16 +222,19 @@ var contextMenuItemsImport={
 };
 
 function formatModifyHavestGridRow(params){
-  // console.log(this.gridContainer);
-  // console.log(params);
-  if (params.data.flagDelete) {
-    return 'grid-row-delete';
-  }else if (params.data.flagNew) {
-    return 'grid-row-new';
-  }else{
-    // return 'grid-row-normal';
-    return null;
+  if(!params.data.flag){
+    return 'grid-row-normal';
   }
+
+  if (params.data.flag==='prune') {
+    return 'grid-row-delete';
+  }else if (params.data.flag==='import') {
+    return 'grid-row-import';
+  }else if (params.data.flag==='new') {
+    return 'grid-row-new';
+  }
+
+  return 'grid-row-normal';
 };
 
 var gridRowClassRules={
@@ -266,14 +254,18 @@ var gridOptionsCandidate={
   rowData: [],
   columnDefs: [
     {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
-    {headerName: "URL", field: "url", width: 400, filter: true},
-    {headerName: "Type", field: "contentType", width: 120, filter: true},
-    {headerName: "Status", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Size", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
-    {headerName: "TotUrls", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Failed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Success", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "TotSize", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg}
+    {headerName: "Normal", children:[
+      {headerName: "URL", field: "url", width: 400, filter: true},
+      {headerName: "Type", field: "contentType", width: 120, filter: true},
+      {headerName: "Status", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
+      {headerName: "Size", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
+    ]},
+    {headerName: "Outlinks", children:[
+        {headerName: "TotUrl", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'},
+        {headerName: "Failed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
+        {headerName: "Success", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
+        {headerName: "TotSize", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
+    ]},
   ],
   // rowClassRules: gridRowClassRules,
   getRowClass: formatModifyHavestGridRow
@@ -293,17 +285,22 @@ var gridOptionsPrune={
   },
   columnDefs: [
     {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
-    {headerName: "URL", field: "url", width: 400, filter: true},
-    {headerName: "Type", field: "contentType", width: 120, filter: true},
-    {headerName: "Status", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Size", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
-    {headerName: "TotUrls", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Failed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Success", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "TotSize", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
-    {headerName: "Cascade", field: "flagCascade", width: 40, filter: true, pinned: 'right', cellRenderer: 'renderCascadeIcon', cellClass: 'grid-cell-centered'}
+    {headerName: "Normal", children:[
+      {headerName: "URL", field: "url", width: 400, filter: true},
+      {headerName: "Type", field: "contentType", width: 120, filter: true},
+      {headerName: "Status", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
+      {headerName: "Size", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
+    ]},
+    {headerName: "Outlinks", children:[
+        {headerName: "Tot", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'},
+        {headerName: "Failed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
+        {headerName: "Success", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
+        {headerName: "Size", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
+    ]},
+    // {headerName: "Cascade", field: "flagCascade", width: 40, filter: true, pinned: 'right', cellRenderer: 'renderCascadeIcon', cellClass: 'grid-cell-centered'}
   ],
-  rowClassRules: gridRowClassRules
+  // rowClassRules: gridRowClassRules
+  getRowClass: formatModifyHavestGridRow
 };
 
 var gridOptionsImport={
@@ -324,4 +321,5 @@ var gridOptionsImport={
     {headerName: "Date", field: "size", width: 100}
   ],
   // getRowClass: formatModifyHavestGridRow
+  getRowClass: formatModifyHavestGridRow
 };

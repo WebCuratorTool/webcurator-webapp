@@ -67,31 +67,27 @@ class NetworkMap{
 	}
 
 	contextMenuCallback(key, condition, source){
-		if (key==='pruneHarvestCurrent') {
-			gPopupModifyHarvest.checkUrls(condition, 'prune');
-		}else if(key==='pruneHarvestSelected'){
-			var c=source.getSelectedNodes();
-			gPopupModifyHarvest.checkUrls(c, 'prune');
-		}else if(key==='modifyHarvestCurrent'){
-			gPopupModifyHarvest.checkUrls(condition, 'modify');
-		}else if(key==='modifyHarvestSelected'){
-			var c=source.getSelectedNodes();
-			gPopupModifyHarvest.checkUrls(c, 'modify');
+		var keyItems=key.split('-');
+		var action=keyItems[0], scope=keyItems[1];
+		if(scope==='selected'){
+			condition=source.getSelectedNodes();
 		}
+
+		gPopupModifyHarvest.checkUrls(condition, action);
 	}
 
 	static contextMenuItemsGrid={
-        "pruneHarvestCurrent": {"name": "Prune Current", icon: "far fa-trash-alt"},
-		"pruneHarvestSelected": {"name": "Prune Selected", icon: "fas fa-trash-alt"},
+        "prune-current": {"name": "Prune Current", icon: "far fa-trash-alt"},
+		"prune-selected": {"name": "Prune Selected", icon: "fas fa-trash-alt"},
     	"sep1": "---------",
-    	"modifyHarvestCurrent": {"name": "Modify Current", icon: "far fa-edit"},
-		"modifyHarvestSelected": {"name": "Modify Selected", icon: "fas fa-edit"}
+    	"inspect-current": {"name": "Inspect Current", icon: "far fa-eye"},
+		"inspect-selected": {"name": "Inspect Selected", icon: "fas fa-eye"}
     };
 
     static contextMenuItemsGraph={
-        "pruneHarvestCurrent": {"name": "Prune", icon: "far fa-trash-alt"},
+        "prune-current": {"name": "Prune", icon: "far fa-trash-alt"},
     	"sep1": "---------",
-    	"modifyHarvestCurrent": {"name": "Modify", icon: "far fa-edit"},
+    	"inspect-current": {"name": "Inspect", icon: "far fa-eye"},
     };
 }
 
