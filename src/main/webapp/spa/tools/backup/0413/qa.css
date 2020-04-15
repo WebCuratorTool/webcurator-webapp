@@ -26,14 +26,6 @@ html,body,canvas{
 	display: none;
 }
 
-.bg-black{
-	background: black;
-}
-.btn-side-label span{
-	color: white;
-	/*font-weight: bold;*/
-	font-size: 18px;
-}
 .nav-divider{
 	display: inline-block;
 	width: 20px;
@@ -170,8 +162,8 @@ html,body,canvas{
 
 
 .fixed-size {
-	width: 100%;
-	height: 53vh;
+	width: 100vw;
+	height: 94vh;
 	overflow: auto;
 	position: relative;
 }

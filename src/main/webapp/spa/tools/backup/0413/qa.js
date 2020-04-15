@@ -6,24 +6,24 @@ function getUrlVars() {
     return vars;
 }
 
-// var status='on';
-function toggleNetworkMapGrid(status){
+var status='on';
+function toggleNetworkMapGrid(){
   if (status === 'on') {
-    $('#network-map-canvas').width('calc(100vw - 30px)');
+    $('#network-map-canvas').width('calc(100vw - 22px)');
     $('#networkmap-side-container').hide();
-    // status='off';
+    status='off';
   }else{
     $('#network-map-canvas').width('75vw');
     $('#networkmap-side-container').show();
-    // status='on';
+    status='on';
   }
 }
 
 
-// function spNetworkMapSideTab(key){
-//   $(".networkmap-insight").hide();
-//   $("#"+key).show();
-// }
+function spNetworkMapSideTab(key){
+  $(".networkmap-insight").hide();
+  $("#"+key).show();
+}
 
 
 function formatStringArrayToJsonArray(listStr){
@@ -147,7 +147,7 @@ function contextMenuCallback(key, data, source, target){
     dataset=[data];
   }else if(scope==='selected'){
     dataset=source.getSelectedNodes();
-    // source.deselectAll();
+    source.deselectAll();
   }else if(scope==='all'){
     dataset=source.getAllNodes();
   }
@@ -158,7 +158,7 @@ function contextMenuCallback(key, data, source, target){
     $('#specifyTargetUrlInput').val(data.url);
     $('#popup-window-import-input').show();
   }else if(action==='outlinks'){
-    target.showOutlinks(dataset);
+
   }else if(action==='prune'){
     target.pruneHarvest(dataset);
   }else if(action==='browse'){
@@ -174,9 +174,9 @@ var itemsPruneHarvest={
                   "prune-current": {"name": "Current"},
                   "prune-selected": {"name": "Selected"}
               };
-var itemsHierarchyOutlink={
-                  "outlinks-current": {"name": "Current"},
-                  "outlinks-selected": {"name": "Selected"}
+var itemsPruneHarvestCascade={
+                  "pruneHarvestCurrentCascade": {"name": "Current"},
+                  "pruneHarvestSelectedCascade": {"name": "Selected"}
               };
 var itemsClearHarvest={
                   "clear-current": {"name": "Current"},
@@ -200,23 +200,15 @@ var itemsUndo={
 var contextMenuItemsUrlBasic={
                   "hoppath-current": {name: "HopPath", icon: "fas fa-link"},
                   "import-current": {name: "Import", icon: "fas fa-file-import"},
+                  "outlinks-current": {name: "Inspect Outlinks", icon: "fab fa-think-peaks"},
                   "sep1": "---------",
                   "pruneHarvest": {name: "Prune", icon: "far fa-times-circle", items: itemsPruneHarvest},
                   "sep2": "---------",
-                  // "clearHarvest": {name: "Clear", icon: "delete", items: itemsClearHarvest},
-                  // "hierarchyOutlinks": {name: "Inspect Outlinks", icon: "fab fa-think-peaks", items: itemsHierarchyOutlink},
-                  "hierarchyOutlinks": {name: "Inspect Outlinks", icon: "far fa-eye", items: itemsHierarchyOutlink},
+                  "clearHarvest": {name: "Clear", icon: "delete", items: itemsClearHarvest},
                   "sep3": "---------",
                   "browseUrl": {name: "Browse", icon: "fab fa-chrome", items: itemsBrowse}
                 };
-var contextMenuItemsUrlTree={
-                  "hoppath-current": {name: "HopPath", icon: "fas fa-link"},
-                  "import-current": {name: "Import", icon: "fas fa-file-import"},
-                  "sep1": "---------",
-                  "pruneHarvest": {name: "Prune", icon: "far fa-times-circle", items: itemsPruneHarvest},
-                  "sep2": "---------",
-                  "browseUrl": {name: "Browse", icon: "fab fa-chrome", items: itemsBrowse}
-                };
+
 var contextMenuItemsPrune={
     "hoppath-current": {name: "HopPath", icon: "fas fa-link"},
     "sep1": "---------",
@@ -269,10 +261,10 @@ var gridOptionsCandidate={
       {headerName: "Size", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
     ]},
     {headerName: "Outlinks", children:[
-        {headerName: "TotOutlinks", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'},
-        {headerName: "FailedOutlinks", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
-        {headerName: "SucOutlinks", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
-        {headerName: "TotSizeOfOutlinks", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
+        {headerName: "TotUrl", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'},
+        {headerName: "Failed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
+        {headerName: "Success", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
+        {headerName: "TotSize", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
     ]},
   ],
   // rowClassRules: gridRowClassRules,
@@ -293,18 +285,18 @@ var gridOptionsPrune={
   },
   columnDefs: [
     {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
-    // {headerName: "Normal", children:[
+    {headerName: "Normal", children:[
       {headerName: "URL", field: "url", width: 400, filter: true},
       {headerName: "Type", field: "contentType", width: 120, filter: true},
       {headerName: "Status", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
       {headerName: "Size", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
-    // ]},
-    // {headerName: "Outlinks", children:[
-        {headerName: "TotOutlinks", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'},
-        {headerName: "FailedOutlinks", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
-        {headerName: "SucOutlinks", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
-        {headerName: "TotSizeOfOutlinks", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
-     // ]},
+    ]},
+    {headerName: "Outlinks", children:[
+        {headerName: "Tot", field: "totUrls", width: 100, filter: 'agNumberColumnFilter'},
+        {headerName: "Failed", field: "totFailed", width: 100, filter: 'agNumberColumnFilter'},
+        {headerName: "Success", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
+        {headerName: "Size", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
+    ]},
     // {headerName: "Cascade", field: "flagCascade", width: 40, filter: true, pinned: 'right', cellRenderer: 'renderCascadeIcon', cellClass: 'grid-cell-centered'}
   ],
   // rowClassRules: gridRowClassRules

@@ -76,7 +76,7 @@ class HierarchyTree{
 		this.container=container;
 		this.jobId=jobId;
 		this.harvestResultNumber=harvestResultNumber;
-		this.sourceUrlRootUrls="/curator/networkmap/get/hierarchy/urls?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber;
+		this.sourceUrlRootUrls="/curator/networkmap/get/root/urls?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber;
 
 		this.options={
 			extensions: ["table", "wide"],
@@ -128,72 +128,36 @@ class HierarchyTree{
 		            // console.log(node);
 		            contextMenuCallback(key, node, that, gPopupModifyHarvest);
 		        },
-		        items: contextMenuItemsUrlTree
+		        items: contextMenuItemsUrlBasic
     	});
 	} 
 
-	draw(dataset){
-		var searchCondition=[];
-		for(var i=0;i<dataset.length;i++){
-			var node=dataset[i];
-			searchCondition.push(node.id);
-		}
-
+	draw(){
 		var that=this;
-		fetch(this.sourceUrlRootUrls, {
-			method: 'POST',
-			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify(searchCondition)
-		}).then((response) => {
-		    if(response.status===200){
+		fetch(this.sourceUrlRootUrls).then((response) => {
+		    if(response.status==200){
 		      if (response.redirected) {
 		        alert("Please login!")
 		        return null;
 		      }else{
-		      	// console.log(response.json());
 		        return response.json();
 		      }
 		    }
 		}).then((data)=>{
 		  if(data!=null){
-		  	// data=formatStringArrayToJsonArray(data);
-  			data=that.formatDataForTreeGrid(data);
+		  	data=formatStringArrayToJsonArray(data);
+  			data=formatDataForTreeGrid(data);
   			that.options.source=data;
   			$(that.container).fancytree(that.options);
 		  }
 		});
 	}
 
-	setRowData(dataset){
-		var data=this.formatDataForTreeGrid(dataset);
-		this.options.source=data;
-  		$(this.container).fancytree(this.options);
-	}
-
-	formatDataForTreeGrid(dataset){
-	  if (!dataset) {return;}
-	  for(var i=0;i<dataset.length;i++){
-	    var e=dataset[i];
-	    e.title=e.url;
-	    if (e.totUrls>1) {
-	      e.lazy=true;
-	    }else{
-	      e.lazy=false;
-	    }
-	    // formatDataForTreeGrid(e.children);
-	   	delete e["children"];
-	    delete e["outlinks"];
-	  }
-	  return dataset;
-	}
-
-
 	getSelectedNodes(){
 		var selData=[];
 		var selNodes = $.ui.fancytree.getTree(this.container).getSelectedNodes();
 		for(var i=0; i<selNodes.length; i++){
 			selData.push(selNodes[i].data);
-			$.ui.fancytree.getTree(this.container).applyCommand('indent', selNodes[i]);
 		}
 
 		console.log(selData);
@@ -269,14 +233,42 @@ class PopupModifyHarvest{
 		this.gridPrune.gridOptions.api.updateRowData({ add: dataset});
 	}
 
-	showOutlinks(data){
+	pruneHarvestCascade(data){
+		$('#tab-btn-prune').trigger('click');
+
 		if(!data){
 			return;
 		}
-		$('#grid-modify-candidate').hide();
-		$('#popup-window-hierarchy').show();
 
-		this.hierarchyTree.setRowData(data);
+		var map={};
+		for(var i=0; i< data.length; i++){
+			var node=data[i];
+			node.flagNew=true;
+			node.flagCascade=true;
+			map[node.id]=node;			
+		}
+
+		this.gridCandidate.remove(map);
+
+		// Add to 'to be pruned' grid, and marked as new
+		this.gridPrune.gridOptions.api.forEachNode(function(node, index){
+			if(map[node.data.id]){
+				delete map[node.data.id];
+				node.data.flagNew=true;
+			}else{
+				node.data.flagNew=false;
+			}		
+			
+		});
+		this.gridPrune.gridOptions.api.redrawRows(true);
+
+		var dataset=[];
+		for(var key in map){
+			var node=map[key];
+			node.flagNew=true;
+			dataset.push(node);
+		}
+		this.gridPrune.gridOptions.api.updateRowData({ add: dataset});
 	}
 
 	inspectHarvest(data){
