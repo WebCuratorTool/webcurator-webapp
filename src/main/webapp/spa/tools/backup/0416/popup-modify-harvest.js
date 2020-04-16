@@ -86,6 +86,20 @@ class HierarchyTree{
 			table: {checkboxColumnIdx: 0, nodeColumnIdx: 1},
 			// viewport: {enabled: true, count: 3200},
 			source: [],
+			
+			lazyLoad: function(event, data) {
+				// data.result = {url: "domain.json", debugDelay: 1000};
+				var dfd = new $.Deferred();
+				data.result = dfd.promise();
+				var outlinks="/curator/networkmap/get/outlinks?job=" + jobId + "&harvestResultNumber=" + harvestResultNumber + "&id=" + data.node.data.id;
+				fetch(outlinks).then((response) => {
+				    return response.json();
+				}).then((lazydata) => {
+				    lazydata=formatStringArrayToJsonArray(lazydata);
+				    lazydata=formatDataForTreeGrid(lazydata);
+				    dfd.resolve(lazydata);
+				});
+			},
 			renderColumns: function(event, data) {
 				var node = data.node;
 				var $tdList = $(node.tr).find(">td");
@@ -99,6 +113,17 @@ class HierarchyTree{
 
 				$(node.tr).attr("data", JSON.stringify(node.data));
 				$(node.tr).attr("id", "tree-row-"+node.data.id);
+
+				if(prunedDataMap[node.data.id]){
+					if(!importDataMap[node.data.id]){
+						$(node.tr).children("td").addClass("tree-row-delete");
+					}else{
+						$(node.tr).children("td").addClass("tree-row-delete-import");
+
+					}
+				}else if(importDataMap[node.data.id]){
+						$(node.tr).children("td").addClass("tree-row-import");
+				}
 			},
 			
 	    };
@@ -140,11 +165,11 @@ class HierarchyTree{
 		    }
 		}).then((data)=>{
 		  if(data!=null){
+		  	// data=formatStringArrayToJsonArray(data);
 		  	if($.ui.fancytree.getTree(that.container)){
 				$.ui.fancytree.getTree(that.container).destroy();
 			}
-  			that.formatDataForTreeGrid(data);
-  			console.log(data);
+  			data=that.formatDataForTreeGrid(data);
   			that.options.source=data;
   			$(that.container).fancytree(that.options);
 		  }
@@ -155,8 +180,8 @@ class HierarchyTree{
 		if($.ui.fancytree.getTree(this.container)){
 			$.ui.fancytree.getTree(this.container).destroy();
 		}
-		this.formatDataForTreeGrid(dataset);
-		this.options.source=dataset;
+		var data=this.formatDataForTreeGrid(dataset);
+		this.options.source=data;
   		$(this.container).fancytree(this.options);
 	}
 
@@ -165,10 +190,16 @@ class HierarchyTree{
 	  for(var i=0;i<dataset.length;i++){
 	    var e=dataset[i];
 	    e.title=e.url;
-	    delete e['lazy'];
-	    delete e['outlinks'];
-	    this.formatDataForTreeGrid(e.children);
+	    if (e.totUrls>1) {
+	      e.lazy=true;
+	    }else{
+	      e.lazy=false;
+	    }
+	    // formatDataForTreeGrid(e.children);
+	   	delete e["children"];
+	    delete e["outlinks"];
 	  }
+	  return dataset;
 	}
 
 	getSelectedNodes(){
