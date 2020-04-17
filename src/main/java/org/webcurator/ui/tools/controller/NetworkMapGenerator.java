@@ -66,12 +66,13 @@ public class NetworkMapGenerator {
                 }
                 domainMap.put(currentDomainName, currentDomain);
             }
-            currentDomain.increase(harvestResource.getStatusCode(), harvestResource.getLength(), harvestResource.getContentType());
+//            currentDomain.increase(harvestResource.getStatusCode(), harvestResource.getLength(), harvestResource.getContentType());
             currentDomain.addNode(harvestResource.getOid());
 
-            String parentDomainName = URLResolverFunc.url2domain(harvestResource.getViaName());
+            String parentDomainName = null;
+                    //URLResolverFunc.url2domain(harvestResource.getViaName());
             if (parentDomainName == null) {
-                System.out.println(harvestResource.getViaName());
+//                System.out.println(harvestResource.getViaName());
                 continue;
             }
 

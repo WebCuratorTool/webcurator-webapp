@@ -253,7 +253,8 @@ to get the desired effect
               <label class="custom-file-label" for="importFromFileInput">Choose file</label>
             </div>
             <div class="input-group-append">
-              <span class="input-group-text" id="">Upload</span>
+              <!-- <span class="input-group-text" id="">Upload</span> -->
+              <!-- <input type="submit" value="import" id="submit"/> -->
             </div>
           </div>
     
@@ -264,9 +265,9 @@ to get the desired effect
           </div>
           <div class="input-group">
             <input type="input" class="form-control" id="importFromUrlInput" placeholder="Source URL">
-            <div class="input-group-append">
+            <!-- <div class="input-group-append">
               <span class="input-group-text" id="">Download</span>
-            </div>
+            </div> -->
           </div>
         </div>
     </form>
@@ -277,7 +278,8 @@ to get the desired effect
       <div class="col-8"></div>
       <div class="col-2">
           <!-- <button type="button" class="btn btn-block btn-primary" onclick="spPrunedImported($('#tab-btn-import'));">Import</button> -->
-          <button type="button" class="btn btn-block btn-primary" onclick="$('#tab-btn-import').trigger('click');">Import</button>
+          <!-- <button type="button" class="btn btn-block btn-primary" onclick="$('#tab-btn-import').trigger('click');">Import</button> -->
+          <input type="submit" value="import" class="btn btn-block btn-primary" id="submit"/>
       </div>
       <div class="col-2">
           <button type="button" class="btn btn-block btn-secondary" onclick="$('#popup-window-import-input').hide();">Close</button>
