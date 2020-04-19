@@ -51,6 +51,9 @@ class NetworkMapGrid{
 				}
 				if(that.domain.title){
 					searchCondition.domainNames.push(that.domain.title);
+					if(that.domain.children.length>0){
+						searchCondition.domainLevel='high';
+					}
 				}
 
                 networkmap.contextMenuCallback(key, searchCondition, that);
@@ -92,6 +95,9 @@ class NetworkMapGrid{
 
 		if(this.domain.title){
 			searchCondition.domainNames.push(this.domain.title);
+			if(this.domain.children.length>0){
+				searchCondition.domainLevel='high';
+			}
 		}
 
 		for(var i=0; i<rows.length; i++){

@@ -60,13 +60,20 @@ class NetworkMapGraph{
                   "statusCodes": []
                 }
 
-                if(node && node.children.length==0){
+                if(node){
                   searchCondition.domainNames.push(node.title);
-                }else if(node && node.children.length>0){
-                  for(var i=0;i<node.children.length;i++){
-                    searchCondition.domainNames.push(node.children[i].title);
+                  if(node.children.length > 0){
+                    searchCondition.domainLevel='high';
                   }
                 }
+
+                // if(node && node.children.length==0){
+                //   searchCondition.domainNames.push(node.title);
+                // }else if(node && node.children.length>0){
+                //   for(var i=0;i<node.children.length;i++){
+                //     searchCondition.domainNames.push(node.children[i].title);
+                //   }
+                // }
 
                 networkmap.contextMenuCallback(key, searchCondition, that);
             },
@@ -156,7 +163,7 @@ class NetworkMapGraph{
       if(!node){
         return;
       }
-
+      networkmap.switchNode(node);
       that.network.selectNodes([node]);
 
       that.x=params.event.x;

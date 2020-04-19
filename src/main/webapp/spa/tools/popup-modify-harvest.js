@@ -253,7 +253,6 @@ class PopupModifyHarvest{
 
 	pruneHarvest(data){
 		$('#tab-btn-prune').trigger('click');
-
 		if(!data){
 			return;
 		}
@@ -300,6 +299,9 @@ class PopupModifyHarvest{
 	}
 
 	inspectHarvest(data){
+		$('#popup-window-hierarchy').hide();
+		$('#grid-modify-candidate').show();
+		
 		if(!data){
 			return;
 		}
