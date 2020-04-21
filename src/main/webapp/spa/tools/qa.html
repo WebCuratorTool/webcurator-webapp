@@ -189,14 +189,13 @@ to get the desired effect
           </div>
         </div>
       </div>
-      
       <div class="row">
         <div class="col-11" style="padding: 10px 10px 0px 10px;">
             <textarea class="form-control" rows="4" placeholder="Provenance Note ..." style="resize: none;"></textarea>
         </div>
         <div class="col-1">
           <div style="width: 90px; margin: 0; position: absolute; top: 50%; left: 5px; -ms-transform: translateY(-50%); transform: translateY(-50%);">
-            <button type="button" class="btn btn-block btn-primary">Apply</button>
+            <button type="button" class="btn btn-block btn-primary" onclick="applyRecrawl();">Apply</button>
             <br>
             <button type="button" class="btn btn-block btn-secondary" onclick="$('#popup-window-modify-harvest').hide();">Close</button>
           </div>
@@ -227,65 +226,72 @@ to get the desired effect
 <div class="popup-window" id="popup-window-import-input">
 <div class="card card-primary popup-content">
   <div class="card-header">
-    <h3 class="card-title">Import Content For URL</h3>
+    <h3 class="card-title">Re-crawl Content For URL</h3>
     <div class="card-tools">
       <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
     </div>
     <!-- /.card-tools -->
   </div>
   <!-- /.card-header -->
-  <div class="card-body" style="height: 35vh;">
+    <!-- <form role="form" id="importform" action="javascript: uploadRecrawlFiles();" method="post" enctype="multipart/form-data"> -->
     <form role="form">
-        <div class="form-group">
-          <label for="specifyTargetUrlInput">Specify Target URL</label>
-          <input type="input" class="form-control" id="specifyTargetUrlInput" placeholder="Specify Target URL">
-        </div>
+        <div class="card-body" style="height: 35vh;">
+              <div class="form-group">
+                <label for="specifyTargetUrlInput">Specify Target URL</label>
+                <input type="input" class="form-control" id="specifyTargetUrlInput" placeholder="Specify Target URL">
+              </div>
 
-        <div class="form-group">
-          <!-- <label for="importFromFileInput">Import from disk file</label> -->
-          <div class="custom-control custom-radio">
-            <input class="custom-control-input" type="radio" id="customRadio1" name="customRadio" checked>
-            <label for="customRadio1" class="custom-control-label">Option 1: Import from disk file</label>
-          </div>
-          <div class="input-group">
-            <div class="custom-file">
-              <input type="file" class="custom-file-input" id="importFromFileInput">
-              <label class="custom-file-label" for="importFromFileInput">Choose file</label>
-            </div>
-            <div class="input-group-append">
-              <!-- <span class="input-group-text" id="">Upload</span> -->
-              <!-- <input type="submit" value="import" id="submit"/> -->
-            </div>
-          </div>
-    
-          <!-- <label for="importFromUrlInput">Import from URL</label> -->
-          <div class="custom-control custom-radio">
-            <input class="custom-control-input" type="radio" id="customRadio2" name="customRadio">
-            <label for="customRadio2" class="custom-control-label">Option 2: Import from URL</label>
-          </div>
-          <div class="input-group">
-            <input type="input" class="form-control" id="importFromUrlInput" placeholder="Source URL">
-            <!-- <div class="input-group-append">
-              <span class="input-group-text" id="">Download</span>
-            </div> -->
-          </div>
-        </div>
+              <div class="form-group">
+                <!-- <label for="importFromFileInput">Import from disk file</label> -->
+                <div class="custom-control custom-radio">
+                  <input class="custom-control-input" type="radio" id="customRadio1" name="customRadio" checked>
+                  <label for="customRadio1" class="custom-control-label">Option 1: Re-crawl from disk file</label>
+                </div>
+                <div class="input-group">
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="sourceFile" name="sourceFile">
+                    <label class="custom-file-label" for="sourceFile" id="label-source-file">Choose file</label>
+                  </div>
+                  <div class="input-group-append">
+                    <!-- <span class="input-group-text" id="">Upload</span> -->
+                    <!-- <input type="submit" value="import" id="submit"/> -->
+                  </div>
+                </div>
+                <br/>
+                <!-- <label for="importFromUrlInput">Import from URL</label> -->
+                <div class="custom-control custom-radio">
+                  <input class="custom-control-input" type="radio" id="customRadio2" name="customRadio">
+                  <label for="customRadio2" class="custom-control-label">Option 2: Re-crawl from URL</label>
+                </div>
+                <div class="input-group">
+                  <input type="input" class="form-control" id="importFromUrlInput" placeholder="Source URL">
+                  <!-- <div class="input-group-append">
+                    <span class="input-group-text" id="">Download</span>
+                  </div> -->
+                </div>
+              </div>
+        </div>  <!-- /.card-body -->
     </form>
-  </div>  <!-- /.card-body -->
 
   <div class="card-footer" style="width: 100%; position: absolute; bottom: 0;">
     <div class="row">
-      <div class="col-8"></div>
+      <div class="col-8">
+        <div class="custom-control custom-checkbox">
+          <input class="custom-control-input" type="checkbox" id="checkbox-prune-of-recrawle" checked>
+          <label for="checkbox-prune-of-recrawle" class="custom-control-label">Prune the existing content when exist</label>
+        </div>
+      </div>
       <div class="col-2">
           <!-- <button type="button" class="btn btn-block btn-primary" onclick="spPrunedImported($('#tab-btn-import'));">Import</button> -->
-          <!-- <button type="button" class="btn btn-block btn-primary" onclick="$('#tab-btn-import').trigger('click');">Import</button> -->
-          <input type="submit" value="import" class="btn btn-block btn-primary" id="submit"/>
+          <button type="button" class="btn btn-block btn-primary" onclick="insertRecrawlItem();">Re-crawl</button>
+          <!-- <input type="submit" value="Re-crawl" class="btn btn-block btn-primary" id="submit"/> -->
       </div>
       <div class="col-2">
           <button type="button" class="btn btn-block btn-secondary" onclick="$('#popup-window-import-input').hide();">Close</button>
       </div>
     </div>
   </div>
+
 </div> <!-- /.card -->
 </div>
 
@@ -293,6 +299,7 @@ to get the desired effect
 <script src="../dist/jquery/jquery-3.4.1.min.js"></script>
 <!-- <script src="../dist/jquery/require.js"></script> -->
 <script src="../dist/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="../dist/plugins/bs-custom-file-input.min.js"></script>
 <script src="../dist/adminlte/js/adminlte.js"></script>
 <script src="../dist/vis/vis-network.js"></script>
 <script src="../dist/fancytree/jquery.fancytree-all-deps.min.js"></script>
@@ -326,9 +333,11 @@ to get the desired effect
     var visHopPath=new HopPath('hoppath-canvas', jobId, harvestResultNumber);
     var networkmap=new NetworkMap();
     var gPopupModifyHarvest=new PopupModifyHarvest(jobId, harvestResultNumber);
-    var hierarchyTree=new HierarchyTree("#hierachy-tree", jobId, harvestResultNumber);
+    // var hierarchyTree=new HierarchyTree("#hierachy-tree", jobId, harvestResultNumber);
     
     $(function(){
+        bsCustomFileInput.init();
+
         // document.addEventListener('contextmenu', event => event.preventDefault());
         sp("networkmap");
         

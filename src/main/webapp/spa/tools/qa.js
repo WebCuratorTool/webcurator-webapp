@@ -105,15 +105,51 @@ function formatDataForTreeGrid(listObj){
   return listObj;
 }
 
-// function drawHopPathFromSelectedURLs(){
-//   var selectedRows = grid.gridOptions.api.getSelectedRows();
-//   if (selectedRows.length==1) {
-//     sp("hoppath");
-//     visHopPath.draw(selectedRows[0].id);
-//   }else{
-//     alert("Please select one and only one row!");
-//   }
-// }
+function uploadRecrawlFiles2(){
+  var file=$('#sourceFile')[0].files[0];
+  var uri = "../../curator/tools/modify-import";
+  // var xhr = new XMLHttpRequest();
+  var reader = new FileReader();  
+  
+  // xhr.open("POST", uri, true);
+  // xhr.onreadystatechange = function() {
+  //     if (xhr.readyState == 4 && xhr.status == 200) {
+  //         alert(xhr.responseText); // handle response.
+  //     }
+  // };;
+  // var buf=file.files[0].arrayBuffer();
+  // xhr.send(buf);
+  reader.onload = function(evt) {
+    // xhr.send(evt.target.result);
+    var arrayBuffer = reader.result;
+    console.log(arrayBuffer.byteLength);
+    console.log(arrayBuffer);
+    var doc=new Int8Array(arrayBuffer);
+    console.log(doc);
+  };  // Initiate a multipart/form-data upload
+  reader.readAsArrayBuffer(file);
+}
+
+var aryFiles=[];
+function uploadRecrawlFiles(){
+    var file=$('#sourceFile')[0].files[0];
+    aryFiles.push(file);
+    console.log(aryFiles);
+    // var reader = new FileReader();
+
+    // reader.addEventListener("loadend", function () {
+    //   var formData = new FormData();
+    //   formData.append("content", reader.result);
+    //   fetch("../../curator/tools/modify-import", { 
+    //     method: 'POST',
+    //     headers: {'Content-Type': 'application/json'},
+    //     body: reader.result });
+    //   // reader.removeEventListener("loadend");
+    // });
+
+    // reader.readAsDataURL(file);
+}
+
 
 
 var K=1024, M=K*1024, G=M*1024;
@@ -321,12 +357,20 @@ var gridOptionsImport={
   },
   rowData: [],
   columnDefs: [
-    {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
-    {headerName: "URL", field: "url", width: 400},
-    {headerName: "ContentType", field: "contentType", width: 120},
-    {headerName: "StatusCode", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Size", field: "size", width: 100, filter: 'agNumberColumnFilter'},
-    {headerName: "Date", field: "size", width: 100}
+    {headerName: "Option", field: "option", width:80, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
+    {headerName: "Normal", children:[
+      {headerName: "URL", field: "url", width: 400},
+      {headerName: "ContentType", field: "contentType", width: 120},
+      {headerName: "StatusCode", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
+      {headerName: "Size", field: "size", width: 100, filter: 'agNumberColumnFilter'},
+    ]},
+    {headerName: "File/SourceURL", children:[
+      // {headerName: "Option", field: "option", width: 80},
+      {headerName: "Name", field: "srcName", width: 200},
+      {headerName: "Size", field: "srcSize", width: 100},
+      {headerName: "Type", field: "srcType", width: 100},
+      {headerName: "ModifyDate", field: "srcLastModified", width: 100},
+    ]},
   ],
   // getRowClass: formatModifyHavestGridRow
   getRowClass: formatModifyHavestGridRow

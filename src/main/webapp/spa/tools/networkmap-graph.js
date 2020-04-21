@@ -67,14 +67,6 @@ class NetworkMapGraph{
                   }
                 }
 
-                // if(node && node.children.length==0){
-                //   searchCondition.domainNames.push(node.title);
-                // }else if(node && node.children.length>0){
-                //   for(var i=0;i<node.children.length;i++){
-                //     searchCondition.domainNames.push(node.children[i].title);
-                //   }
-                // }
-
                 networkmap.contextMenuCallback(key, searchCondition, that);
             },
             position: function(opt, x, y){
@@ -227,8 +219,8 @@ class NetworkMapGraph{
 
 
       if(dataNode.group==="expanded"){ //Only add links to it's direct children
-        for(var j=0;j<dataNode.outlinks.length;j++){
-          var outlinkNode=this.dataMap[dataNode.outlinks[j]];
+        for(var j=0;j<dataNode.children.length;j++){
+          var outlinkNode=dataNode.children[j];
           if(!outlinkNode || outlinkNode.parentId!==dataNode.id){
             continue;
           }

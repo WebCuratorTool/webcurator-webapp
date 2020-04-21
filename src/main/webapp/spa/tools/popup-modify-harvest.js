@@ -58,6 +58,10 @@ class CustomizedAgGrid{
 		this.grid.gridOptions.api.updateRowData({remove: dataset});
 	}
 
+	insert(dataset){
+		this.grid.gridOptions.api.updateRowData({add: dataset});
+	}
+
 	filter(keyWord){
 		this.grid.gridOptions.api.setQuickFilter(keyWord);
 	}
@@ -389,5 +393,25 @@ class PopupModifyHarvest{
 
 	loadInvalidUrls(){
 		this.loadUrls(this.uriInvalidUrl);
+	}
+
+	
+
+	applyRecrawl(){
+	  for(var i=0; i<aryFiles.length; i++){
+	    var file=aryFiles[i];
+	    var reader = new FileReader();
+
+	    reader.addEventListener("loadend", function () {
+	      fetch("../../curator/tools/modify-import", { 
+	        method: 'POST',
+	        headers: {'Content-Type': 'application/json'},
+	        body: reader.result });
+	      // reader.removeEventListener("loadend");
+	    });
+
+	    reader.readAsDataURL(file);
+	  }
+	  aryFiles=[];
 	}
 }
