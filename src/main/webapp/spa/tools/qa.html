@@ -265,9 +265,9 @@ to get the desired effect
                 </div>
                 <div class="input-group">
                   <input type="input" class="form-control" id="importFromUrlInput" placeholder="Source URL">
-                  <!-- <div class="input-group-append">
-                    <span class="input-group-text" id="">Download</span>
-                  </div> -->
+                  <div class="input-group-append">
+                    <span class="input-group-text" onclick="useTargetURL();">Use Target URL</span>
+                  </div>
                 </div>
               </div>
         </div>  <!-- /.card-body -->
@@ -424,6 +424,11 @@ to get the desired effect
         $('#hierachy-tree').hide();
         $('#grid-modify-candidate').show();
       }
+    }
+
+    function useTargetURL(){
+      var url=$("#specifyTargetUrlInput").val();
+      $('#importFromUrlInput').val(url);
     }
 </script>
 </body>

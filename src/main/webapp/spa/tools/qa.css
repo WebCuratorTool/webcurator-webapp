@@ -119,7 +119,7 @@ html,body,canvas{
 }
 .grid-modify-harvest{
 	width: 100%;
-	height: 62vh;
+	height: 72vh;
 }
 
 .tree-row-delete{
@@ -149,9 +149,9 @@ html,body,canvas{
 
 #popup-window-modify-harvest .popup-content{
 	display: block;
-	width: 70vw;
+	width: 90vw;
 	/*height: 82vh;*/
-	margin: 9vh 15vw 9vh 15vw;
+	margin: 5vh 5vw 5vh 5vw;
 	border: 5px solid #343a40; 
 	/*#6c757d*/
 	/*border-radius: 10px;*/
