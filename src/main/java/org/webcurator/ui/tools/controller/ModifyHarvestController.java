@@ -19,6 +19,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -50,7 +55,7 @@ public class ModifyHarvestController {
     public ModifyHarvestCommand handle(@RequestBody ModifyHarvestCommand cmd) {
         String tmpFileName = null;
 
-        if (cmd.getOption().equalsIgnoreCase("doc")) { //import from local file
+        if (cmd.getOption().equalsIgnoreCase("File")) { //import from local file
             String dataAsUrl = cmd.getContent();
             if (dataAsUrl == null || !dataAsUrl.startsWith("data")) {
                 log.error("Invalid request body: " + dataAsUrl);
@@ -70,6 +75,10 @@ public class ModifyHarvestController {
                 buf.append(cmd.getSrcType() + "\n");
                 buf.append("Content-Length: ");
                 buf.append(cmd.getSrcSize() + "\n");
+                LocalDateTime ldt = LocalDateTime.ofEpochSecond(cmd.getSrcLastModified() / 1000, 0, ZoneOffset.UTC);
+                OffsetDateTime odt = ldt.atOffset(ZoneOffset.UTC);
+                buf.append("Date: ");
+                buf.append(odt.format(DateTimeFormatter.RFC_1123_DATE_TIME) + "\n");
                 buf.append("Connection: close\n");
                 tmpFileName = write2file(buf, doc);
             } catch (IOException e) {
@@ -92,17 +101,41 @@ public class ModifyHarvestController {
                 Header[] headers = getMethod.getResponseHeaders();
                 StringBuffer buf = new StringBuffer();
                 buf.append("HTTP/1.1 200 OK\n");
+                String strDatetime = null;
                 for (int i = 0; i < headers.length; i++) {
                     buf.append(headers[i].getName() + ": ");
                     buf.append(headers[i].getValue() + "\n");
-                    if (headers[i].getName().equalsIgnoreCase("Content-type")) {
+                    if (headers[i].getName().equalsIgnoreCase("Content-Type")) {
                         cmd.setSrcType(headers[i].getValue());
                     }
-                    if (headers[i].getName().equalsIgnoreCase("Content-length")) {
+                    if (headers[i].getName().equalsIgnoreCase("Content-Length")) {
                         cmd.setSrcSize(Long.parseLong(headers[i].getValue()));
                     }
+                    if (headers[i].getName().equalsIgnoreCase("Date")) {
+                        strDatetime = headers[i].getValue();
+
+                    }
                 }
-                tmpFileName = write2file(buf, getMethod.getResponseBody());
+                byte[] content = getMethod.getResponseBody();
+                if (cmd.getSrcSize() == 0) {
+                    cmd.setSrcSize(content.length);
+                    buf.append("Content-Length: ");
+                    buf.append(cmd.getSrcSize() + "\n");
+                }
+
+                LocalDateTime ldt = null;
+                if (strDatetime == null) {
+                    ldt = LocalDateTime.now();
+                } else {
+                    ldt = LocalDateTime.parse(strDatetime, DateTimeFormatter.RFC_1123_DATE_TIME);
+                }
+                OffsetDateTime odt = ldt.atOffset(ZoneOffset.UTC);
+                cmd.setSrcLastModified(odt.toEpochSecond() * 1000);
+                if (strDatetime == null) {
+                    buf.append("Date: ");
+                    buf.append(odt.format(DateTimeFormatter.RFC_1123_DATE_TIME) + "\n");
+                }
+                tmpFileName = write2file(buf, content);
             } catch (Exception e) {
                 cmd.setRespCode(RESP_CODE_ERROR_NETWORK_IO);
                 cmd.setRespMsg(e.getMessage());

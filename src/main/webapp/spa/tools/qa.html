@@ -45,7 +45,7 @@ to get the desired effect
     </div>
 
     <!-- Right Side card -->
-    <div class="bg-default" style="position: absolute; right: 22px; top: 0px; width: calc(25vw - 30px);" id="networkmap-side-container">
+    <div class="bg-default" style="position: absolute; right: 30px; top: 0px; width: calc(25vw - 30px);" id="networkmap-side-container">
       <nav class="main-header navbar navbar-expand" style="margin: 0; height: 50px; border: solid 1px; border-color: #D3D3D3;">
         <h5 id="networkmap-side-title">Domain: root</h5>
       </nav>
@@ -88,7 +88,7 @@ to get the desired effect
                       <div class="dropdown-menu" role="menu">
                         <a class="dropdown-item" href="#"><i class="fas fa-search"></i> &nbsp; Inspect By Query</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-link text-primary"></i> &nbsp;Inspect Seed URLs</a>
+                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-link text-primary"></i> &nbsp;Inspect Starting URLs</a>
                         <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadInvalidUrls();"><i class="fas fa-link text-warning"></i> &nbsp;Inspect Invalid URLs</a>
                         <!-- <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="javascript: hierarchy();"><i class="fab fa-think-peaks"></i> &nbsp; Hierarchy URL</a> -->
@@ -244,7 +244,7 @@ to get the desired effect
               <div class="form-group">
                 <!-- <label for="importFromFileInput">Import from disk file</label> -->
                 <div class="custom-control custom-radio">
-                  <input class="custom-control-input" type="radio" id="customRadio1" name="customRadio" checked>
+                  <input class="custom-control-input" type="radio" id="customRadio1" name="customRadio" flag="File" checked>
                   <label for="customRadio1" class="custom-control-label">Option 1: Re-crawl from disk file</label>
                 </div>
                 <div class="input-group">
@@ -260,7 +260,7 @@ to get the desired effect
                 <br/>
                 <!-- <label for="importFromUrlInput">Import from URL</label> -->
                 <div class="custom-control custom-radio">
-                  <input class="custom-control-input" type="radio" id="customRadio2" name="customRadio">
+                  <input class="custom-control-input" type="radio" id="customRadio2" name="customRadio" flag="URL">
                   <label for="customRadio2" class="custom-control-label">Option 2: Re-crawl from URL</label>
                 </div>
                 <div class="input-group">
@@ -283,7 +283,7 @@ to get the desired effect
       </div>
       <div class="col-2">
           <!-- <button type="button" class="btn btn-block btn-primary" onclick="spPrunedImported($('#tab-btn-import'));">Import</button> -->
-          <button type="button" class="btn btn-block btn-primary" onclick="insertRecrawlItem();">Re-crawl</button>
+          <button type="button" class="btn btn-block btn-primary" onclick="gPopupModifyHarvest.processorImport.insertRecrawlItem();">Re-crawl</button>
           <!-- <input type="submit" value="Re-crawl" class="btn btn-block btn-primary" id="submit"/> -->
       </div>
       <div class="col-2">
@@ -319,6 +319,7 @@ to get the desired effect
 <script src="networkmap-menumap.js"></script>
 <!-- <script src="networkmap-sunburst.js"></script> -->
 <script src="networkmap.js"></script>
+<script src="popup-modify-harvest-import.js"></script>
 <script src="popup-modify-harvest.js"></script>
 <script src="popup-hop-path.js"></script>
 

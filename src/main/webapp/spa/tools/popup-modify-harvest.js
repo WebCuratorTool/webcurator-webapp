@@ -201,6 +201,7 @@ class PopupModifyHarvest{
 		this.gridCandidate=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-candidate', gridOptionsCandidate, contextMenuItemsUrlBasic);
 		this.gridPrune=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-prune', gridOptionsPrune, contextMenuItemsPrune);
 		this.gridImport=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-import', gridOptionsImport, contextMenuItemsImport);
+		this.processorImport=new ImportModifyHarvestProcessor(jobId, harvestResultNumber);
 		this.uriSeedUrl="/curator/networkmap/get/root/urls?job=" + this.jobId + "&harvestResultNumber=" + this.harvestResultNumber;
 		this.uriInvalidUrl="/curator/networkmap/get/malformed/urls?job=" + this.jobId + "&harvestResultNumber=" + this.harvestResultNumber;
 	}
@@ -288,6 +289,12 @@ class PopupModifyHarvest{
 		this.gridPrune.gridOptions.api.updateRowData({ add: dataset});
 
 		this.setRowStyle();
+	}
+
+	showImport(data){
+		$('#specifyTargetUrlInput').val(data.url);
+    	$('#popup-window-import-input').show();
+    	this.processorImport.setNode(data);
 	}
 
 	showOutlinks(data){

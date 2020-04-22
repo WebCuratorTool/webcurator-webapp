@@ -1,11 +1,11 @@
-class ImportModifyHarvest{
+class ImportModifyHarvestProcessor{
 	constructor(jobId, harvestResultNumber){
 		this.jobId=jobId;
 		this.harvestResultNumber=harvestResultNumber;
 	}
 
-	setUrl(node){
-		this.node=JSON.parse(JSON.stringify(node));
+	setNode(node){
+		this.targetNode=JSON.parse(JSON.stringify(node));
 	}
 
 	uploadFile(reqBody){
@@ -22,8 +22,15 @@ class ImportModifyHarvest{
 	}
 
 	callback(resp){
-		var node=this.node;
-		if(node){
+		//Check result
+		if(resp.respCode!=0){
+			alert(resp.respMsg);
+			return;
+		}
+
+		var node;
+		if(this.targetNode){
+			node=this.targetNode;
 			node.option=resp.option;
 			node.srcName=resp.srcName;
 			node.srcSize=resp.srcSize;
@@ -34,7 +41,11 @@ class ImportModifyHarvest{
 			node=resp;
 		}
 		$('#tab-btn-import').trigger('click');
+		if(this.tobeReplaceNode){
+			gPopupModifyHarvest.gridImport.gridOptions.api.updateRowData({remove: [this.tobeReplaceNode]});
+		}
 		gPopupModifyHarvest.gridImport.insert([node]);
+		$('#popup-window-import-input').hide();
 	}
 
 	insertRecrawlItem(){
@@ -42,10 +53,33 @@ class ImportModifyHarvest{
 		var reqBody={
 			targetUrl: $("#specifyTargetUrlInput").val(),
 		};
-		var option=$("#customRadio1").val();
-		if(option==='on'){
-			reqBody.option='doc';
+
+		// Check if targetURL exist in "to be imported" table
+		this.tobeReplaceNode=null;
+		gPopupModifyHarvest.gridImport.gridOptions.api.forEachNode(function(node, index){
+			if(reqBody.targetUrl===node.data.url){
+				that.tobeReplaceNode=node.data;
+			}
+		});
+		if (this.tobeReplaceNode) {
+			var decision=confirm("The targetUrl has been exist in the ToBeImported table. \n Would you replace it?");
+			if(!decision){
+				return;
+			}
+		}
+
+		// var option=$("#customRadio1").attr("");
+		reqBody.option=$("input[type='radio']:checked").attr("flag");
+		if(reqBody.option==='File'){
+			if(!reqBody.targetUrl.toLowerCase().startsWith("http://")){
+				alert("You must specify a valid target URL.");
+				return;
+			}
 			var file=$('#sourceFile')[0].files[0];
+			if(!file){
+				alert("You must specify a source file name to import.");
+				return;
+			}
 			reqBody.srcName=file.name;
 			reqBody.srcSize=file.size;
 			reqBody.srcType=file.type;
@@ -56,15 +90,24 @@ class ImportModifyHarvest{
 			reader.addEventListener("loadend", function () {
 				reqBody.content=reader.result;
 				that.uploadFile(reqBody);
-				reader.removeEventListener("loadend");
 			});
 
 			reader.readAsDataURL(file);
-
 		}else{
-			reqBody.option='url';
+			if(!reqBody.targetUrl.toLowerCase().startsWith("http://") &&
+				!reqBody.targetUrl.toLowerCase().startsWith("https://")){
+				alert("You must specify a valid target URL.");
+				return;
+			}
+
 			reqBody.srcName=$('#importFromUrlInput').val();
-			uploadFile(reqBody);
+			if(!reqBody.srcName.toLowerCase().startsWith("http://") &&
+				!reqBody.srcName.toLowerCase().startsWith("https://")){
+				alert("You must specify a valid source URL.");
+				return;
+			}
+
+			that.uploadFile(reqBody);
 		}
 	}
 }

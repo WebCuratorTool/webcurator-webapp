@@ -6,7 +6,7 @@ public class ModifyHarvestCommand {
     private String srcName;
     private long srcSize;
     private String srcType;
-    private String srcLastModified;
+    private long srcLastModified;
     private String content;
     private String tmpFileName;
     private int respCode;
@@ -52,11 +52,11 @@ public class ModifyHarvestCommand {
         this.srcType = srcType;
     }
 
-    public String getSrcLastModified() {
+    public long getSrcLastModified() {
         return srcLastModified;
     }
 
-    public void setSrcLastModified(String srcLastModified) {
+    public void setSrcLastModified(long srcLastModified) {
         this.srcLastModified = srcLastModified;
     }
 

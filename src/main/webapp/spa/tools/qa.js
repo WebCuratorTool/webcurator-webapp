@@ -165,9 +165,12 @@ function formatContentLength(l){
   }
 }
 
-function renderCascadeIcon(params){
-  if(params.data.flagCascade){
-    return "<i class='fab fa-gg text-failed'></i>";
+function renderImportOption(params){
+  if(params.data.option && params.data.option==='doc'){
+    return '<i class="far fa-file-alt text-danger">File</i>';
+  }
+  if(params.data.option && params.data.option==='url'){
+    return '<i class="fas fa-link text-primary>URL</i>';
   }
 }
 
@@ -191,8 +194,7 @@ function contextMenuCallback(key, data, source, target){
   if(action==='hoppath'){
     visHopPath.draw(data.id);
   }else if(action==='import'){
-    $('#specifyTargetUrlInput').val(data.url);
-    $('#popup-window-import-input').show();
+    target.showImport(data);
   }else if(action==='outlinks'){
     target.showOutlinks(dataset);
   }else if(action==='prune'){
@@ -299,7 +301,13 @@ var gridOptionsCandidate={
   columnDefs: [
     {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
     {headerName: "Normal", children:[
-      {headerName: "URL", field: "url", width: 400, filter: true},
+      {headerName: "URL", field: "url", width: 400, filter: true, cellRenderer:  (row) => {
+          if(row.data.seed){
+            return row.data.url + '<span class="right badge badge-danger">Seed</span>';
+          }else{
+            return row.data.url;
+          }
+      }},
       {headerName: "Type", field: "contentType", width: 120, filter: true},
       {headerName: "Status", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
       {headerName: "Size", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
@@ -325,7 +333,7 @@ var gridOptionsPrune={
   },
   rowData: [],
   components: {
-    renderCascadeIcon: renderCascadeIcon
+    renderImportOption: renderImportOption
   },
   columnDefs: [
     {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
@@ -341,7 +349,7 @@ var gridOptionsPrune={
         {headerName: "Success", field: "totSuccess", width: 100, filter: 'agNumberColumnFilter'},
         {headerName: "TotSize", field: "totSize", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
      ]},
-    // {headerName: "Cascade", field: "flagCascade", width: 40, filter: true, pinned: 'right', cellRenderer: 'renderCascadeIcon', cellClass: 'grid-cell-centered'}
+    // {headerName: "Cascade", field: "flagCascade", width: 40, filter: true, pinned: 'right', cellRenderer: 'renderImportOption', cellClass: 'grid-cell-centered'}
   ],
   // rowClassRules: gridRowClassRules
   getRowClass: formatModifyHavestGridRow
@@ -356,20 +364,27 @@ var gridOptionsImport={
     sortable: true
   },
   rowData: [],
+  components: {
+    renderImportOption: renderImportOption
+  },
   columnDefs: [
-    {headerName: "Option", field: "option", width:80, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
-    {headerName: "Normal", children:[
+    {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
+    {headerName: "Option", field: "option", width:80, cellClass: function(params) { return (params.value==='File'?'text-primary':'text-danger');} },
+    {headerName: "TargetURL", children:[
       {headerName: "URL", field: "url", width: 400},
-      {headerName: "ContentType", field: "contentType", width: 120},
+      {headerName: "Type", field: "contentType", width: 120},
       {headerName: "StatusCode", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
-      {headerName: "Size", field: "size", width: 100, filter: 'agNumberColumnFilter'},
+      {headerName: "Size", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
     ]},
     {headerName: "File/SourceURL", children:[
       // {headerName: "Option", field: "option", width: 80},
-      {headerName: "Name", field: "srcName", width: 200},
-      {headerName: "Size", field: "srcSize", width: 100},
+      {headerName: "Name", field: "srcName", width: 400},
+      {headerName: "Size", field: "srcSize", width: 100, valueFormatter: formatContentLengthAg},
       {headerName: "Type", field: "srcType", width: 100},
-      {headerName: "ModifyDate", field: "srcLastModified", width: 100},
+      {headerName: "ModifyDate", field: "srcLastModified", width: 160, cellRenderer:  (row) => {
+         var dt=new Date(row.data.srcLastModified);
+         return dt.toLocaleDateString() + " " + dt.toLocaleTimeString();
+      }},
     ]},
   ],
   // getRowClass: formatModifyHavestGridRow
