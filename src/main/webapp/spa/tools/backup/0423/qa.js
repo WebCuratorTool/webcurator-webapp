@@ -302,14 +302,10 @@ var gridOptionsCandidate={
     {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
     {headerName: "Normal", children:[
       {headerName: "URL", field: "url", width: 400, filter: true, cellRenderer:  (row) => {
-          if(row.data.seedType===-1 || row.data.seedType===2){
+          if(row.data.seed){
+            return row.data.url + '<span class="right badge badge-danger">Seed</span>';
+          }else{
             return row.data.url;
-          }
-          if(row.data.seedType===0){
-            return '<span class="right badge badge-danger">P</span>' + row.data.url;
-          }
-          if(row.data.seedType===1){
-            return '<span class="right badge badge-warning">S</span>' + row.data.url;
           }
       }},
       {headerName: "Type", field: "contentType", width: 120, filter: true},

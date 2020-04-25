@@ -1,0 +1,24 @@
+	new file:   src/main/java/org/webcurator/domain/model/dto/SeedHistoryDTO.java
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   src/main/java/org/webcurator/core/harvester/coordinator/DasCallback.java
+	modified:   src/main/java/org/webcurator/core/harvester/coordinator/HarvestAgentListenerService.java
+	modified:   src/main/java/org/webcurator/core/harvester/coordinator/HarvestCoordinatorPaths.java
+	modified:   src/main/java/org/webcurator/core/networkmap/ResourceExtractor.java
+	modified:   src/main/java/org/webcurator/core/networkmap/ResourceExtractorArc.java
+	modified:   src/main/java/org/webcurator/core/networkmap/ResourceExtractorWarc.java
+	modified:   src/main/java/org/webcurator/core/networkmap/WCTResourceIndexer.java
+	modified:   src/main/java/org/webcurator/core/networkmap/bdb/BDBNetworkMap.java
+	modified:   src/main/java/org/webcurator/core/networkmap/bdb/BDBNetworkMapPool.java
+	modified:   src/main/java/org/webcurator/core/networkmap/metadata/NetworkMapNode.java
+	modified:   src/main/java/org/webcurator/core/networkmap/service/NetworkMapLocalClient.java
+	modified:   src/main/java/org/webcurator/core/networkmap/service/NetworkMapServiceSearchCommand.java
+	modified:   src/main/java/org/webcurator/core/store/Indexer.java
+	modified:   src/main/java/org/webcurator/core/store/IndexerBase.java
+	modified:   src/main/java/org/webcurator/core/store/WCTIndexer.java
+	modified:   src/main/java/org/webcurator/core/util/WebServiceEndPoint.java
+	modified:   src/main/java/org/webcurator/domain/model/dto/SeedHistoryDTO.java
+	modified:   src/test/java/org/webcurator/core/networkmap/BDBNetworkMapTest.java

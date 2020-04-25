@@ -78,7 +78,7 @@ to get the desired effect
                 <!-- <li class="nav-divider"></li> -->
                 <li class="nav-item">
                   <div class="btn-group">
-                    <button type="button" class="btn btn-primary text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                    <button type="button" class="btn btn-flat btn-primary text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
                       Action
                       <span class="sr-only">Toggle Dropdown</span>
                       <div class="dropdown-menu" role="menu">
@@ -154,30 +154,40 @@ to get the desired effect
               <!-- Left navbar links -->
               <ul class="navbar-nav">
                 <li class="nav-item">
-                  <button type="button" class="btn btn-primary text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                  <button type="button" class="btn btn-flat btn-danger text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
                     Action
                     <span class="sr-only">Toggle Dropdown</span>
-                    <div class="dropdown-menu" role="menu">                      
-                      <a class="dropdown-item" href="#" onclick="$('#popup-window-query-input').show();"><i class="fas fa-file-upload text-primary"></i> &nbsp; New Import</a>
-                        <a class="dropdown-item" href="#" onclick="$('#popup-window-query-input').show();"><i class="fas fa-file-import text-warning"></i> &nbsp; Bulk Import</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-file-export text-danger"></i> &nbsp;Export Data</a>
+                    <div class="dropdown-menu" role="menu">
+                      <a class="dropdown-item" href="#" onclick="$('#popup-window-query-input').show();"><i class="fas fa-search"></i> &nbsp; Inspect By Query</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-link text-primary"></i> &nbsp;Inspect Starting URLs</a>
+                      <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadInvalidUrls();"><i class="fas fa-link text-warning"></i> &nbsp;Inspect Invalid URLs</a>
+                      <!-- <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="javascript: hierarchy();"><i class="fab fa-think-peaks"></i> &nbsp; Hierarchy URL</a> -->
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.gridCandidate.clearAll();"><i class="far fa-trash-alt"></i> &nbsp; Clear</a>
                     </div>
                   </button>
                 </li>
-                <li class="nav-divider" style="width: 20px;"></li>
+                <li class="nav-divider" style="width: 200px;"></li>                
                 <li class="nav-item">
-                  <input class="form-control" type="search" placeholder="Filter" aria-label="Search" for="prune">
-                  <input class="form-control hidden" type="search" placeholder="Filter" aria-label="Search" for="import">
-                </li>               
+                  <div class="btn-group btn-primary btn-nav-tab" for="prune" id="tab-btn-prune">
+                    <button type="button" class="btn btn-flat text-light">To Be Pruned</button>
+                  </div>
+                  <div class="btn-group btn-outline-primary btn-nav-tab" for="import" id="tab-btn-import">
+                    <button type="button" class="btn btn-flat text-light">To Be Imported</button>
+                  </div>
+                </li>
+                
+                           
+                    
+                
               </ul>
               <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                  <div class="btn-group btn-nav-tab">
-                    <button type="button" class="btn btn-info text-light" for="prune" id="tab-btn-prune">To Be Pruned</button>
-                    <button type="button" class="btn btn-outline-info text-light" for="import" id="tab-btn-import">To Be Imported</button>
-                  </div>
-                </li>  
+                <input class="form-control" type="search" placeholder="Filter" aria-label="Search" for="prune">
+                <input class="form-control hidden" type="search" placeholder="Filter" aria-label="Search" for="import">
+                </li>
               </ul>
           </nav>
           <div class="tab-content" id="grid-tobe-modified">
@@ -434,11 +444,11 @@ to get the desired effect
           }
         });
 
-        $(".btn-nav-tab button").on("click", function(e){
-          $(".btn-nav-tab button").removeClass("btn-info");
-          $(".btn-nav-tab button").addClass("btn-outline-info");
-          $(this).removeClass("btn-outline-info");
-          $(this).addClass("btn-info");
+        $(".btn-nav-tab").on("click", function(e){
+          $(".btn-nav-tab").removeClass("btn-primary");
+          $(".btn-nav-tab").addClass("btn-outline-primary");
+          $(this).removeClass("btn-outline-primary");
+          $(this).addClass("btn-primary");
 
           var tab=$(this).attr("for");
           $("#grid-tobe-modified .grid-modify-harvest").hide();
