@@ -80,7 +80,7 @@ to get the desired effect
                 <!-- <li class="nav-divider"></li> -->
                 <li class="nav-item">
                   <div class="btn-group">
-                    <button type="button" class="btn btn-info text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                    <button type="button" class="btn btn-primary text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
                       Action
                       <span class="sr-only">Toggle Dropdown</span>
                       <div class="dropdown-menu" role="menu">
@@ -88,11 +88,8 @@ to get the desired effect
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-link text-primary"></i> &nbsp;Inspect Starting URLs</a>
                         <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadInvalidUrls();"><i class="fas fa-link text-warning"></i> &nbsp;Inspect Invalid URLs</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.showImport();"><i class="fas fa-file-upload text-primary"></i> &nbsp; New Import</a>
-                        <a class="dropdown-item" href="#" onclick="$('#bulkImportMetadataFile').trigger('click');"><i class="fas fa-file-import text-warning"></i> &nbsp; Bulk Import</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-file-upload text-success"></i> &nbsp;Upload File</a>
+                        <!-- <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="javascript: hierarchy();"><i class="fab fa-think-peaks"></i> &nbsp; Hierarchy URL</a> -->
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.gridCandidate.clearAll();"><i class="far fa-trash-alt"></i> &nbsp; Clear</a>
                       </div>
@@ -159,17 +156,32 @@ to get the desired effect
               <!-- Left navbar links -->
               <ul class="navbar-nav">
                 <li class="nav-item">
+                  <button type="button" class="btn btn-primary text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                    Action
+                    <span class="sr-only">Toggle Dropdown</span>
+                    <div class="dropdown-menu" role="menu">                  
+                        <a class="dropdown-item" href="#" onclick="$('#popup-window-query-input').show();"><i class="fas fa-file-upload text-primary"></i> &nbsp; New Import</a>
+                        <a class="dropdown-item" href="#" onclick="$('#popup-window-bulk-import').show();"><i class="fas fa-file-import text-warning"></i> &nbsp; Bulk Import</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-file-export text-danger"></i> &nbsp;Export Data</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-file-upload text-success"></i> &nbsp;Upload File</a>
+                    </div>
+                  </button>
+                </li>
+                <li class="nav-divider" style="width: 20px;"></li>
+                <li class="nav-item">
+                  <input class="form-control" type="search" placeholder="Filter" aria-label="Search" for="prune">
+                  <input class="form-control hidden" type="search" placeholder="Filter" aria-label="Search" for="import">
+                </li>               
+              </ul>
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
                   <div class="btn-group btn-nav-tab">
                     <button type="button" class="btn btn-info text-light" for="prune" id="tab-btn-prune">To Be Pruned</button>
                     <button type="button" class="btn btn-outline-info text-light" for="import" id="tab-btn-import">To Be Imported</button>
                   </div>
-                </li>         
-              </ul>
-              <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                  <input class="form-control" type="search" placeholder="Filter" aria-label="Search" for="prune">
-                  <input class="form-control hidden" type="search" placeholder="Filter" aria-label="Search" for="import">
-                </li> 
+                </li>  
               </ul>
           </nav>
           <div class="tab-content" id="grid-tobe-modified">
@@ -212,12 +224,12 @@ to get the desired effect
 </div>
 
 <!-- Popup Import Input-->
-<div class="popup-window" id="popup-window-single-import">
+<div class="popup-window" id="popup-window-import-input">
 <div class="card card-primary popup-content">
   <div class="card-header">
     <h3 class="card-title">Re-crawl Content For URL</h3>
     <div class="card-tools">
-      <button type="button" class="btn btn-tool" onclick="$('#popup-window-single-import').hide();"><i class="fas fa-times"></i></button>
+      <button type="button" class="btn btn-tool" onclick="$('#popup-window-import-input').hide();"><i class="fas fa-times"></i></button>
     </div>
     <!-- /.card-tools -->
   </div>
@@ -276,7 +288,7 @@ to get the desired effect
           <!-- <input type="submit" value="Re-crawl" class="btn btn-block btn-primary" id="submit"/> -->
       </div>
       <div class="col-2">
-          <button type="button" class="btn btn-block btn-secondary" onclick="$('#popup-window-single-import').hide();">Close</button>
+          <button type="button" class="btn btn-block btn-secondary" onclick="$('#popup-window-import-input').hide();">Close</button>
       </div>
     </div>
   </div>
@@ -297,7 +309,7 @@ to get the desired effect
       <div class="form-group">
         <label for="specifyTargetUrlInput">Please upload a METADATA file:</label>
         <div class="custom-file">
-          <input type="file" class="custom-file-input" id="bulkImportMetadataFile" onchange="gPopupModifyHarvest.processorImport.bulkImport();">
+          <input type="file" class="custom-file-input" id="bulkImportMetadataFile" name="sourceFile">
           <label class="custom-file-label" for="bulkImportMetadataFile" id="label-bulk-import-metadata-file">Choose file</label>
         </div>
       </div>
@@ -526,10 +538,6 @@ to get the desired effect
         });
 
         $("#datetimepicker1").datetimepicker();
-
-        $("#bulkImportMetadataFile").on('change', function(){
-
-        });
     });
 
     function hierarchy(){
@@ -552,9 +560,7 @@ to get the desired effect
     }
 
     function openBulkImportSchemaFile(){
-      // $("#label-bulk-import-file").trigger('click');
-      $("#bulkImportMetadataFile").trigger('click');
-
+      $("#label-bulk-import-file").trigger('click');
     }
 </script>
 </body>

@@ -184,7 +184,7 @@ html,body,canvas{
 	background: #F1E4E1;
 }
 
-#popup-window-single-import .popup-content{
+#popup-window-import-input .popup-content{
 	width: 50vw; 
 	/*height: 40vh;*/
 	margin: 30vh 25vw 30vh 25vw;

@@ -337,7 +337,7 @@ class PopupModifyHarvest{
 			$('#specifyTargetUrlInput').val('');
 		}
 
-    	$('#popup-window-single-import').show();
+    	$('#popup-window-import-input').show();
     	// this.processorImport.setNode(data);
 	}
 

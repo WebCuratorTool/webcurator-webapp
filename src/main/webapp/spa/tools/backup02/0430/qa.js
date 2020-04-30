@@ -202,7 +202,7 @@ var itemsUndo={
 
 var contextMenuItemsUrlBasic={
                   "hoppath-current": {name: "HopPath", icon: "fas fa-link"},
-                  "import-current": {name: "Import Current", icon: "fas fa-file-import"},
+                  "import-current": {name: "Import", icon: "fas fa-file-import"},
                   "sep1": "---------",
                   "pruneHarvest": {name: "Prune", icon: "far fa-times-circle", items: itemsPruneHarvest},
                   "sep2": "---------",
@@ -210,7 +210,7 @@ var contextMenuItemsUrlBasic={
                   // "hierarchyOutlinks": {name: "Inspect Outlinks", icon: "fab fa-think-peaks", items: itemsHierarchyOutlink},
                   "hierarchyOutlinks": {name: "Inspect Outlinks", icon: "far fa-eye", items: itemsHierarchyOutlink},
                   "sep3": "---------",
-                  "browseUrl": {name: "Browse Current", icon: "fab fa-chrome", items: itemsBrowse},
+                  "browseUrl": {name: "Browse", icon: "fab fa-chrome", items: itemsBrowse},
                   "sep4": "---------",
                   "exportLinks": {name: "Export Data", icon: "fas fa-file-export", items: itemsExportLinks}
                 };

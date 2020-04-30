@@ -37,7 +37,7 @@ class ImportModifyHarvestProcessor{
 			gPopupModifyHarvest.gridImport.gridOptions.api.updateRowData({remove: [this.tobeReplaceNode]});
 		}
 		gPopupModifyHarvest.gridImport.insert([node]);
-		$('#popup-window-single-import').hide();
+		$('#popup-window-import-input').hide();
 
 		if(node.pruneFlag){
 			gPopupModifyHarvest.pruneHarvestByUrls([node]);
@@ -109,59 +109,5 @@ class ImportModifyHarvestProcessor{
 			// that.uploadFile(cmd);
 			this.callback(null, node);
 		}
-	}
-
-
-	bulkImport(){
-		var file=$('#bulkImportMetadataFile')[0].files[0];
-		if(!file){
-			alert("You must specify a metadata file name to import.");
-			return;
-		}
-
-		var reader = new FileReader();
-		reader.addEventListener("loadend", function () {
-			var text=reader.result;
-			console.log(text);
-
-			var lines=text.split('\n');
-			for(var i=0;i<lines.length;i++){
-				var line=lines[i].trim();
-				var columns=line.split('\t'); //Type, Target, Source, Datetime
-				if(columns.length!==4){
-					alert("Invalid metadata format");
-					return;
-				}
-
-				var type=columns[0], target=columns[1], source=columns[2], modifydatetime=columns[3];
-				if(type.toLowerCase()==="file"){
-					if(!target.toLowerCase().startsWith("http://")){
-						alert("You must specify a valid target URL at line:" + (i+1) + ". URL starts with: http://");
-						return;
-					}
-				}else if(type.toLowerCase()==='url'){
-					if(!target.toLowerCase().startsWith("http://") &&
-						!target.toLowerCase().startsWith("https://")){
-						alert("You must specify a valid target URL at line:" + (i+1));
-						return;
-					}
-
-					if(!source.toLowerCase().startsWith("http://") &&
-						!source.toLowerCase().startsWith("https://")){
-						alert("You must specify a valid source URL at line:" + (i+1));
-						return;
-					}
-				}else{
-					alert("Import type must be 'file' or 'url' at line: " + (i+1));
-					return;
-				}
-
-				
-			}
-		});
-
-		// reader.readAsDataURL(file);
-		reader.readAsText(file);
-
 	}
 }
