@@ -13,8 +13,6 @@
   <link rel="stylesheet" href="../dist/fancytree/skin-win8/ui.fancytree.min.css">
   <!-- <link rel="stylesheet" href="../dist/fancytree/modules/plain-scrollbar.css"> -->
   <link rel="stylesheet" href="../dist/jquery/menu/jquery.contextMenu.css">
-  <!-- <link rel="stylesheet" href="../dist/plugins/tempusdominus-bootstrap-4.css"> -->
-  <link rel="stylesheet" href="../dist/plugins/datetimepicker-bootstrap-4.min.css">
   <link rel="stylesheet" href="../dist/ag-grid/ag-grid.css">
   <link rel="stylesheet" href="../dist/ag-grid/ag-theme-balham.css">
   <link rel="stylesheet" href="../dist/ag-grid/ag-theme-balham-dark.css">
@@ -159,13 +157,11 @@ to get the desired effect
                   <button type="button" class="btn btn-primary text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
                     Action
                     <span class="sr-only">Toggle Dropdown</span>
-                    <div class="dropdown-menu" role="menu">                  
-                        <a class="dropdown-item" href="#" onclick="$('#popup-window-query-input').show();"><i class="fas fa-file-upload text-primary"></i> &nbsp; New Import</a>
-                        <a class="dropdown-item" href="#" onclick="$('#popup-window-bulk-import').show();"><i class="fas fa-file-import text-warning"></i> &nbsp; Bulk Import</a>
+                    <div class="dropdown-menu" role="menu">                      
+                      <a class="dropdown-item" href="#" onclick="$('#popup-window-query-input').show();"><i class="fas fa-file-upload text-primary"></i> &nbsp; New Import</a>
+                        <a class="dropdown-item" href="#" onclick="$('#popup-window-query-input').show();"><i class="fas fa-file-import text-warning"></i> &nbsp; Bulk Import</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-file-export text-danger"></i> &nbsp;Export Data</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-file-upload text-success"></i> &nbsp;Upload File</a>
                     </div>
                   </button>
                 </li>
@@ -229,7 +225,7 @@ to get the desired effect
   <div class="card-header">
     <h3 class="card-title">Re-crawl Content For URL</h3>
     <div class="card-tools">
-      <button type="button" class="btn btn-tool" onclick="$('#popup-window-import-input').hide();"><i class="fas fa-times"></i></button>
+      <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
     </div>
     <!-- /.card-tools -->
   </div>
@@ -278,8 +274,8 @@ to get the desired effect
     <div class="row">
       <div class="col-8">
         <div class="custom-control custom-checkbox">
-          <input class="custom-control-input" type="checkbox" id="checkbox-prune-of-single-import" checked>
-          <label for="checkbox-prune-of-single-import" class="custom-control-label">Prune the existing content when exist</label>
+          <input class="custom-control-input" type="checkbox" id="checkbox-prune-of-recrawle" checked>
+          <label for="checkbox-prune-of-recrawle" class="custom-control-label">Prune the existing content when exist</label>
         </div>
       </div>
       <div class="col-2">
@@ -295,73 +291,6 @@ to get the desired effect
 
 </div> <!-- /.card -->
 </div>
-
-
-<!-- Popup Bulk Import-->
-<div class="popup-window" id="popup-window-bulk-import">
-<div class="card card-primary popup-content">
-  <div class="card-header">
-    <h3 class="card-title">Bulk Import</h3>
-    <div class="card-tools"><button type="button" class="btn btn-tool" onclick="$('#popup-window-bulk-import').hide();"><i class="fas fa-times"></i></button></div>
-    <!-- /.card-tools -->
-  </div>  <!-- /.card-header -->
-  <div class="card-body">
-      <div class="form-group">
-        <label for="specifyTargetUrlInput">Please upload a METADATA file:</label>
-        <div class="custom-file">
-          <input type="file" class="custom-file-input" id="bulkImportMetadataFile" name="sourceFile">
-          <label class="custom-file-label" for="bulkImportMetadataFile" id="label-bulk-import-metadata-file">Choose file</label>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Column separator:</label>
-        <select class="custom-select" id="bulk-import-column-separator">
-          <option>Tab</option>
-          <option>,</option>
-          <option>|</option>
-        </select>
-      </div>
-
-     <div class="form-group">
-                <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-                    <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1"/>
-                    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                    </div>
-                </div>
-            </div>
-
-
-      <!-- <div class="ag-theme-balham" id="grid-bulk-import-prepare" style="width: 100%; height: 30vh;"> </div>
-      <div class="form-group">
-        <label for="specifyTargetUrlInput">Please upload a METADATA file:</label>
-        <div class="custom-file">
-          <input type="file" class="custom-file-input" id="bulkImportContentFile" name="sourceFile" multiple>
-          <label class="custom-file-label" for="bulkImportContentFile" id="label-bulk-import-content-file">Choose file</label>
-        </div>
-      </div> -->
-  </div>  <!-- /.card-body -->
-
-  <div class="card-footer">
-    <div class="row">
-      <div class="col-8">
-        <div class="custom-control custom-checkbox">
-          <input class="custom-control-input" type="checkbox" id="checkbox-prune-of-bulk-import" checked>
-          <label for="checkbox-prune-of-bulk-import" class="custom-control-label">Prune the existing content when exist</label>
-        </div>
-      </div>
-      <div class="col-2">
-          <button type="button" class="btn btn-block btn-primary" step="1">Next</button>
-      </div>
-      <div class="col-2">
-          <button type="button" class="btn btn-block btn-secondary" onclick="$('#popup-window-bulk-import').hide();">Close</button>
-      </div>
-    </div>
-  </div>
-
-</div> <!-- /.card -->
-</div>
-
 
 <!-- Popup Query Input-->
 <div class="popup-window" id="popup-window-query-input">
@@ -435,11 +364,7 @@ to get the desired effect
 <script src="../dist/jquery/menu/jquery.ui.position.js"></script>
 <script src="../dist/ag-grid/ag-grid-community.js"></script>
 <!-- <script src="../dist/google/loader.js"></script> -->
-<!-- <script src="../dist/d3/d3.js"></script> -->
-<script src="../dist/plugins/moment-with-locales.min.js"></script>
-<script src="../dist/plugins/moment-timezone-with-data-2012-2022.min.js"></script>
-<script src="../dist/plugins/datetimepicker-bootstrap-4.min.js"></script>
-
+<script src="../dist/d3/d3.js"></script>
 <script src="networkmap-graph.js"></script>
 <script src="networkmap-grid.js"></script>
 <script src="networkmap-menumap.js"></script>
@@ -536,8 +461,6 @@ to get the desired effect
           }
           target.filter(val);
         });
-
-        $("#datetimepicker1").datetimepicker();
     });
 
     function hierarchy(){
@@ -557,10 +480,6 @@ to get the desired effect
     function useTargetURL(){
       var url=$("#specifyTargetUrlInput").val();
       $('#importFromUrlInput').val(url);
-    }
-
-    function openBulkImportSchemaFile(){
-      $("#label-bulk-import-file").trigger('click');
     }
 </script>
 </body>

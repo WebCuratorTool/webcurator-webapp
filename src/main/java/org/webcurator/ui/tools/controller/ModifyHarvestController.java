@@ -6,31 +6,32 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.webcurator.core.harvester.coordinator.HarvestLogManager;
 import org.webcurator.core.scheduler.TargetInstanceManager;
 import org.webcurator.core.store.tools.QualityReviewFacade;
 import org.webcurator.ui.tools.command.ModifyHarvestCommand;
+import org.webcurator.ui.tools.command.ModifyHarvestUploadFileItem;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.net.HttpURLConnection;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 public class ModifyHarvestController {
     private static final Logger log = LoggerFactory.getLogger(ModifyHarvestController.class);
     private static final int RESP_CODE_SUCCESS = 0;
+    private static final int RESP_CODE_FILE_EXIST = 1;
     private static final int RESP_CODE_INVALID_REQUEST = 1000;
     private static final int RESP_CODE_ERROR_FILE_IO = 2000;
     private static final int RESP_CODE_ERROR_NETWORK_IO = 3000;
@@ -50,6 +51,78 @@ public class ModifyHarvestController {
 
     @Autowired
     private TreeToolControllerAttribute treeToolControllerAttribute;
+
+    @RequestMapping(path = "/curator/tools/upload-file-stream", method = RequestMethod.POST)
+    public ModifyHarvestCommand uploadFileStream(@RequestParam String fileName, @RequestParam boolean replaceFlag, @RequestBody byte[] doc) {
+        ModifyHarvestCommand cmd=new ModifyHarvestCommand();
+        File uploadedFilePath = new File(treeToolControllerAttribute.uploadedFilesDir, fileName);
+        if (uploadedFilePath.exists()) {
+            if (replaceFlag) {
+                uploadedFilePath.deleteOnExit();
+            } else {
+                cmd.setRespCode(RESP_CODE_FILE_EXIST);
+                cmd.setRespMsg(String.format("File %s has been exist, return without replacement.", cmd.getSrcName()));
+                return cmd;
+            }
+        }
+
+        try {
+            Files.write(uploadedFilePath.toPath(), doc);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            cmd.setRespCode(RESP_CODE_ERROR_FILE_IO);
+            cmd.setRespMsg("Failed to write upload file to " + uploadedFilePath.getAbsolutePath());
+            return cmd;
+        }
+
+        cmd.setRespCode(RESP_CODE_SUCCESS);
+        return cmd;
+    }
+
+    @RequestMapping(path = "/curator/tools/upload-files", method = RequestMethod.POST)
+    public ModifyHarvestCommand uploadFile(@RequestBody ModifyHarvestCommand cmd) {
+        File uploadedFilePath = new File(treeToolControllerAttribute.uploadedFilesDir, cmd.getSrcName());
+        if (uploadedFilePath.exists()) {
+            if (cmd.isReplaceFlag()) {
+                uploadedFilePath.deleteOnExit();
+            } else {
+                cmd.setRespCode(RESP_CODE_FILE_EXIST);
+                cmd.setRespMsg(String.format("File %s has been exist, return without replacement.", cmd.getSrcName()));
+                return cmd;
+            }
+        }
+
+        String[] items = cmd.getContent().split(";");
+        String base64Doc = items[1].replace("base64,", "");
+        byte[] doc = Base64.getDecoder().decode(base64Doc);
+
+        try {
+            Files.write(uploadedFilePath.toPath(), doc);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            cmd.setRespCode(RESP_CODE_ERROR_FILE_IO);
+            cmd.setRespMsg("Failed to write upload file to " + uploadedFilePath.getAbsolutePath());
+            return cmd;
+        }
+
+        cmd.setRespCode(RESP_CODE_SUCCESS);
+        return cmd;
+    }
+
+    @RequestMapping(path = "/curator/tools/check-files", method = RequestMethod.POST)
+    public List<ModifyHarvestUploadFileItem> checkFiles(@RequestBody List<String> listFileNames) {
+        List<ModifyHarvestUploadFileItem> listResultFileNames=new ArrayList<>();
+        listFileNames.forEach(fileName->{
+            File uploadedFilePath = new File(treeToolControllerAttribute.uploadedFilesDir, fileName);
+            ModifyHarvestUploadFileItem item=new ModifyHarvestUploadFileItem();
+            item.setFileName(fileName);
+            item.setExistFlag(uploadedFilePath.exists());
+            listResultFileNames.add(item);
+        });
+
+        return listResultFileNames;
+    }
+
 
     @RequestMapping(path = "/curator/tools/modify-import", method = RequestMethod.POST)
     public ModifyHarvestCommand handle(@RequestBody ModifyHarvestCommand cmd) {

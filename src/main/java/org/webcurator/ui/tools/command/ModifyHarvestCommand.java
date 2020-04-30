@@ -11,6 +11,7 @@ public class ModifyHarvestCommand {
     private String tmpFileName;
     private int respCode;
     private String respMsg;
+    private boolean replaceFlag;
 
     public String getTargetUrl() {
         return targetUrl;
@@ -90,5 +91,13 @@ public class ModifyHarvestCommand {
 
     public void setRespMsg(String respMsg) {
         this.respMsg = respMsg;
+    }
+
+    public boolean isReplaceFlag() {
+        return replaceFlag;
+    }
+
+    public void setReplaceFlag(boolean replaceFlag) {
+        this.replaceFlag = replaceFlag;
     }
 }

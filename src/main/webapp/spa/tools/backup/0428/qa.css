@@ -193,15 +193,6 @@ html,body,canvas{
 	background: #F1E4E1;
 }
 
-#popup-window-bulk-import .popup-content{
-	width: 50vw; 
-	/*height: 40vh;*/
-	margin: 20vh 25vw 20vh 25vw;
-	border: 5px solid #007bff;
-	border-radius: 10px;
-	background: #F1E4E1;
-} 
-
 #popup-window-query-input .popup-content{
 	width: 50vw; 
 	/*height: 60vh;*/

@@ -4,61 +4,56 @@ class ImportModifyHarvestProcessor{
 		this.harvestResultNumber=harvestResultNumber;
 	}
 
-	setNode(node){
-		this.targetNode=JSON.parse(JSON.stringify(node));
-	}
+	// setNode(node){
+	// 	this.targetNode=JSON.parse(JSON.stringify(node));
+	// }
 
-	uploadFile(reqBody){
+	uploadFile(cmd, content){
+		var url="../../curator/tools/upload-file-stream?fileName="+cmd.srcName+"&replaceFlag=true";
 		var that=this;
-		fetch("../../curator/tools/modify-import", { 
+		fetch(url, { 
 			method: 'POST',
-			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify(reqBody) 
+			headers: {'Content-Type': 'application/octet-stream'},
+			body: content
 		}).then((response) => {
 			return response.json();
 		}).then((response) => {
-			that.callback(response);
+			that.callback(response, cmd);
 		});
 	}
 
-	callback(resp){
+	callback(resp, node){
+		node.url=node.targetUrl;
+		
 		//Check result
-		if(resp.respCode!=0){
+		if(resp && resp.respCode!=0){
 			alert(resp.respMsg);
 			return;
 		}
-
-		var node;
-		if(this.targetNode){
-			node=this.targetNode;
-			node.option=resp.option;
-			node.srcName=resp.srcName;
-			node.srcSize=resp.srcSize;
-			node.srcType=resp.srcType;
-			node.srcLastModified=resp.srcLastModified;
-			node.tmpFileName=resp.tmpFileName;
-		}else{
-			node=resp;
-		}
+		
 		$('#tab-btn-import').trigger('click');
 		if(this.tobeReplaceNode){
 			gPopupModifyHarvest.gridImport.gridOptions.api.updateRowData({remove: [this.tobeReplaceNode]});
 		}
 		gPopupModifyHarvest.gridImport.insert([node]);
 		$('#popup-window-import-input').hide();
+
+		if(node.pruneFlag){
+			gPopupModifyHarvest.pruneHarvestByUrls([node]);
+		}
 	}
 
 	insertRecrawlItem(){
 		var that=this;
-		var reqBody={
+		var node={
 			targetUrl: $("#specifyTargetUrlInput").val(),
 		};
 
 		// Check if targetURL exist in "to be imported" table
 		this.tobeReplaceNode=null;
-		gPopupModifyHarvest.gridImport.gridOptions.api.forEachNode(function(node, index){
-			if(reqBody.targetUrl===node.data.url){
-				that.tobeReplaceNode=node.data;
+		gPopupModifyHarvest.gridImport.gridOptions.api.forEachNode(function(row, index){
+			if(node.targetUrl===row.data.url){
+				that.tobeReplaceNode=row.data;
 			}
 		});
 		if (this.tobeReplaceNode) {
@@ -68,11 +63,13 @@ class ImportModifyHarvestProcessor{
 			}
 		}
 
+		node.pruneFlag=$("#checkbox-prune-of-single-import").is(":checked");
+
 		// var option=$("#customRadio1").attr("");
-		reqBody.option=$("input[type='radio']:checked").attr("flag");
-		if(reqBody.option==='File'){
-			if(!reqBody.targetUrl.toLowerCase().startsWith("http://")){
-				alert("You must specify a valid target URL.");
+		node.option=$("input[type='radio']:checked").attr("flag");
+		if(node.option==='File'){
+			if(!node.targetUrl.toLowerCase().startsWith("http://")){
+				alert("You must specify a valid target URL. Starts with: http://");
 				return;
 			}
 			var file=$('#sourceFile')[0].files[0];
@@ -80,34 +77,36 @@ class ImportModifyHarvestProcessor{
 				alert("You must specify a source file name to import.");
 				return;
 			}
-			reqBody.srcName=file.name;
-			reqBody.srcSize=file.size;
-			reqBody.srcType=file.type;
-			reqBody.srcLastModified=file.lastModified;
+			node.srcName=file.name;
+			node.srcSize=file.size;
+			node.srcType=file.type;
+			node.srcLastModified=file.lastModified;
 			// reqBody.file=file;
 
 			var reader = new FileReader();
 			reader.addEventListener("loadend", function () {
-				reqBody.content=reader.result;
-				that.uploadFile(reqBody);
+				// reqBody.content=reader.result;
+				that.uploadFile(node, reader.result);
 			});
 
-			reader.readAsDataURL(file);
+			// reader.readAsDataURL(file);
+			reader.readAsArrayBuffer(file);
 		}else{
-			if(!reqBody.targetUrl.toLowerCase().startsWith("http://") &&
-				!reqBody.targetUrl.toLowerCase().startsWith("https://")){
+			if(!node.targetUrl.toLowerCase().startsWith("http://") &&
+				!node.targetUrl.toLowerCase().startsWith("https://")){
 				alert("You must specify a valid target URL.");
 				return;
 			}
 
-			reqBody.srcName=$('#importFromUrlInput').val();
-			if(!reqBody.srcName.toLowerCase().startsWith("http://") &&
-				!reqBody.srcName.toLowerCase().startsWith("https://")){
+			node.srcName=$('#importFromUrlInput').val();
+			if(!node.srcName.toLowerCase().startsWith("http://") &&
+				!node.srcName.toLowerCase().startsWith("https://")){
 				alert("You must specify a valid source URL.");
 				return;
 			}
 
-			that.uploadFile(reqBody);
+			// that.uploadFile(cmd);
+			this.callback(null, node);
 		}
 	}
 }

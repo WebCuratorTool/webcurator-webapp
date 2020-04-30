@@ -19,6 +19,13 @@ function toggleNetworkMapGrid(status){
   }
 }
 
+
+// function spNetworkMapSideTab(key){
+//   $(".networkmap-insight").hide();
+//   $("#"+key).show();
+// }
+
+
 function formatStringArrayToJsonArray(listStr){
   var listObj=[];
   for(var i=0;i<listStr.length;i++){
@@ -30,6 +37,7 @@ function formatStringArrayToJsonArray(listStr){
   return listObj;
 }
 
+
 function sp(id){
   $(".main-nav-link").removeClass("active");
   $("#"+id).addClass("active");
@@ -40,6 +48,7 @@ function sp(id){
   $(".content-page").hide();
   $("#page-"+id).show();
 }
+
 
 function checkUrls(domainName, contentType, statusCode){
   var aryDomainName=[];
@@ -95,6 +104,53 @@ function formatDataForTreeGrid(listObj){
   }
   return listObj;
 }
+
+function uploadRecrawlFiles2(){
+  var file=$('#sourceFile')[0].files[0];
+  var uri = "../../curator/tools/modify-import";
+  // var xhr = new XMLHttpRequest();
+  var reader = new FileReader();  
+  
+  // xhr.open("POST", uri, true);
+  // xhr.onreadystatechange = function() {
+  //     if (xhr.readyState == 4 && xhr.status == 200) {
+  //         alert(xhr.responseText); // handle response.
+  //     }
+  // };;
+  // var buf=file.files[0].arrayBuffer();
+  // xhr.send(buf);
+  reader.onload = function(evt) {
+    // xhr.send(evt.target.result);
+    var arrayBuffer = reader.result;
+    console.log(arrayBuffer.byteLength);
+    console.log(arrayBuffer);
+    var doc=new Int8Array(arrayBuffer);
+    console.log(doc);
+  };  // Initiate a multipart/form-data upload
+  reader.readAsArrayBuffer(file);
+}
+
+var aryFiles=[];
+function uploadRecrawlFiles(){
+    var file=$('#sourceFile')[0].files[0];
+    aryFiles.push(file);
+    console.log(aryFiles);
+    // var reader = new FileReader();
+
+    // reader.addEventListener("loadend", function () {
+    //   var formData = new FormData();
+    //   formData.append("content", reader.result);
+    //   fetch("../../curator/tools/modify-import", { 
+    //     method: 'POST',
+    //     headers: {'Content-Type': 'application/json'},
+    //     body: reader.result });
+    //   // reader.removeEventListener("loadend");
+    // });
+
+    // reader.readAsDataURL(file);
+}
+
+
 
 var K=1024, M=K*1024, G=M*1024;
 function formatContentLength(l){
@@ -317,24 +373,23 @@ var gridOptionsImport={
   },
   columnDefs: [
     {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
-    {headerName: "Option", field: "option", width:80, cellClass: function(params) { return (params.value==='File'?'text-primary':'text-danger');}},
-    {headerName: "Target", field: "targetUrl", width: 400},
-    {headerName: "Source", field: "srcName", width: 400},
-    {headerName: "ModifyDate", field: "srcLastModified", width: 160, cellRenderer:  (row) => {
-       var dt=new Date(row.data.srcLastModified);
-       return dt.toLocaleDateString() + " " + dt.toLocaleTimeString();
-    }},
-    {headerName: "Progress", field: "progress", width: 80, pinned: "right", cellRenderer:  (row) => {
-          if(row.data.progress===1){
-            return '<i class="fas fa-check text-success"></i>';
-          }
-          if(row.data.seedType===-1){
-            return '<i class="fas fa-times text-danger"></i>';
-          }
-          if(row.data.seedType===0){
-            return '-';
-          }
-      }}
+    {headerName: "Option", field: "option", width:80, cellClass: function(params) { return (params.value==='File'?'text-primary':'text-danger');} },
+    {headerName: "TargetURL", children:[
+      {headerName: "URL", field: "url", width: 400},
+      {headerName: "Type", field: "contentType", width: 120},
+      {headerName: "StatusCode", field: "statusCode", width: 100, filter: 'agNumberColumnFilter'},
+      {headerName: "Size", field: "contentLength", width: 100, filter: 'agNumberColumnFilter', valueFormatter: formatContentLengthAg},
+    ]},
+    {headerName: "File/SourceURL", children:[
+      // {headerName: "Option", field: "option", width: 80},
+      {headerName: "Name", field: "srcName", width: 400},
+      {headerName: "Size", field: "srcSize", width: 100, valueFormatter: formatContentLengthAg},
+      {headerName: "Type", field: "srcType", width: 100},
+      {headerName: "ModifyDate", field: "srcLastModified", width: 160, cellRenderer:  (row) => {
+         var dt=new Date(row.data.srcLastModified);
+         return dt.toLocaleDateString() + " " + dt.toLocaleTimeString();
+      }},
+    ]},
   ],
   // getRowClass: formatModifyHavestGridRow
   getRowClass: formatModifyHavestGridRow

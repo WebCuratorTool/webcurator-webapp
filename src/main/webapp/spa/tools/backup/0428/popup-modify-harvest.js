@@ -209,11 +209,11 @@ class PopupModifyHarvest{
 	setRowStyle(){
 		prunedDataMap={};
 		this.gridPrune.gridOptions.api.forEachNode(function(node, index){
-			prunedDataMap[node.data.id]=true;
+			prunedDataMap[node.data.id]=0;
 		});
 		importDataMap={};
 		this.gridImport.gridOptions.api.forEachNode(function(node, index){
-			importDataMap[node.data.id]=true;
+			importDataMap[node.data.id]=0;
 		});
 
 		//Set class for tree view
@@ -256,11 +256,6 @@ class PopupModifyHarvest{
 		this.setRowStyle();
 	}
 
-	pruneHarvestByUrls(dataset){
-		this.gridPrune.gridOptions.api.updateRowData({ add: dataset});
-		this.setRowStyle();
-	}
-
 	pruneHarvest(data){
 		$('#tab-btn-prune').trigger('click');
 		if(!data){
@@ -299,7 +294,7 @@ class PopupModifyHarvest{
 	showImport(data){
 		$('#specifyTargetUrlInput').val(data.url);
     	$('#popup-window-import-input').show();
-    	// this.processorImport.setNode(data);
+    	this.processorImport.setNode(data);
 	}
 
 	showOutlinks(data){
