@@ -89,8 +89,8 @@ to get the desired effect
                         <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-link text-primary"></i> &nbsp;Inspect Starting URLs</a>
                         <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadInvalidUrls();"><i class="fas fa-link text-warning"></i> &nbsp;Inspect Invalid URLs</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.showImport();"><i class="fas fa-file-upload text-primary"></i> &nbsp; New Import</a>
-                        <a class="dropdown-item" href="#" onclick="$('#bulkImportMetadataFile').trigger('click');"><i class="fas fa-file-import text-warning"></i> &nbsp; Bulk Import</a>
+                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.showImport();"><i class="fas fa-file-upload text-primary"></i> &nbsp; Single Import</a>
+                        <a class="dropdown-item" href="#" onclick="$('#popup-window-bulk-import').show();"><i class="fas fa-file-import text-warning"></i> &nbsp; Bulk Import</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-file-upload text-success"></i> &nbsp;Upload File</a>
                         <div class="dropdown-divider"></div>
@@ -215,7 +215,7 @@ to get the desired effect
 <div class="popup-window" id="popup-window-single-import">
 <div class="card card-primary popup-content">
   <div class="card-header">
-    <h3 class="card-title">Re-crawl Content For URL</h3>
+    <h3 class="card-title">Single Import</h3>
     <div class="card-tools">
       <button type="button" class="btn btn-tool" onclick="$('#popup-window-single-import').hide();"><i class="fas fa-times"></i></button>
     </div>
@@ -297,7 +297,7 @@ to get the desired effect
       <div class="form-group">
         <label for="specifyTargetUrlInput">Please upload a METADATA file:</label>
         <div class="custom-file">
-          <input type="file" class="custom-file-input" id="bulkImportMetadataFile" onchange="gPopupModifyHarvest.processorImport.bulkImport();">
+          <input type="file" class="custom-file-input" id="bulkImportMetadataFile">
           <label class="custom-file-label" for="bulkImportMetadataFile" id="label-bulk-import-metadata-file">Choose file</label>
         </div>
       </div>
@@ -310,7 +310,7 @@ to get the desired effect
         </select>
       </div>
 
-     <div class="form-group">
+     <!-- <div class="form-group">
                 <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
                     <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1"/>
                     <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
@@ -318,7 +318,7 @@ to get the desired effect
                     </div>
                 </div>
             </div>
-
+ -->
 
       <!-- <div class="ag-theme-balham" id="grid-bulk-import-prepare" style="width: 100%; height: 30vh;"> </div>
       <div class="form-group">
@@ -339,7 +339,7 @@ to get the desired effect
         </div>
       </div>
       <div class="col-2">
-          <button type="button" class="btn btn-block btn-primary" step="1">Next</button>
+          <button type="button" class="btn btn-block btn-primary" onclick="gPopupModifyHarvest.processorImport.bulkImport();">Re-crawl</button>
       </div>
       <div class="col-2">
           <button type="button" class="btn btn-block btn-secondary" onclick="$('#popup-window-bulk-import').hide();">Close</button>
@@ -526,10 +526,6 @@ to get the desired effect
         });
 
         $("#datetimepicker1").datetimepicker();
-
-        $("#bulkImportMetadataFile").on('change', function(){
-
-        });
     });
 
     function hierarchy(){

@@ -11,7 +11,7 @@ import org.webcurator.core.harvester.coordinator.HarvestLogManager;
 import org.webcurator.core.scheduler.TargetInstanceManager;
 import org.webcurator.core.store.tools.QualityReviewFacade;
 import org.webcurator.ui.tools.command.ModifyHarvestCommand;
-import org.webcurator.ui.tools.command.ModifyHarvestUploadFileItem;
+import org.webcurator.ui.tools.command.ModifyHarvestImportItemCommand;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -54,7 +54,7 @@ public class ModifyHarvestController {
 
     @RequestMapping(path = "/curator/tools/upload-file-stream", method = RequestMethod.POST)
     public ModifyHarvestCommand uploadFileStream(@RequestParam String fileName, @RequestParam boolean replaceFlag, @RequestBody byte[] doc) {
-        ModifyHarvestCommand cmd=new ModifyHarvestCommand();
+        ModifyHarvestCommand cmd = new ModifyHarvestCommand();
         File uploadedFilePath = new File(treeToolControllerAttribute.uploadedFilesDir, fileName);
         if (uploadedFilePath.exists()) {
             if (replaceFlag) {
@@ -110,14 +110,16 @@ public class ModifyHarvestController {
     }
 
     @RequestMapping(path = "/curator/tools/check-files", method = RequestMethod.POST)
-    public List<ModifyHarvestUploadFileItem> checkFiles(@RequestBody List<String> listFileNames) {
-        List<ModifyHarvestUploadFileItem> listResultFileNames=new ArrayList<>();
-        listFileNames.forEach(fileName->{
-            File uploadedFilePath = new File(treeToolControllerAttribute.uploadedFilesDir, fileName);
-            ModifyHarvestUploadFileItem item=new ModifyHarvestUploadFileItem();
-            item.setFileName(fileName);
-            item.setExistFlag(uploadedFilePath.exists());
-            listResultFileNames.add(item);
+    public List<ModifyHarvestImportItemCommand> checkFiles(@RequestBody List<ModifyHarvestImportItemCommand> listFileNames) {
+        List<ModifyHarvestImportItemCommand> listResultFileNames = new ArrayList<>();
+        listFileNames.stream().forEach(e -> {
+            if (e.getOption().equalsIgnoreCase("file")) {
+                File uploadedFilePath = new File(treeToolControllerAttribute.uploadedFilesDir, e.getSrcName());
+                e.setUploadedFlag(uploadedFilePath.exists());
+            }else{
+                e.setUploadedFlag(true);
+            }
+            listResultFileNames.add(e);
         });
 
         return listResultFileNames;

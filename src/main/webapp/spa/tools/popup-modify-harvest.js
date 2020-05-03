@@ -480,7 +480,6 @@ class PopupModifyHarvest{
 		this.loadUrls(this.uriInvalidUrl);
 	}
 
-	
 
 	applyRecrawl(){
 	  for(var i=0; i<aryFiles.length; i++){
@@ -530,5 +529,10 @@ class PopupModifyHarvest{
 		var content=lines.join('\r\n');
 
 		saveData(content, 'harvest_links.csv');
+	}
+
+	insertImportData(dataset){
+		this.gridImport.insert(dataset);
+		this.setRowStyle();
 	}
 }

@@ -30,7 +30,7 @@ class ImportModifyHarvestProcessor{
 		}
 
 		node.url=node.targetUrl;
-		node.progress=1;
+		node.uploadedFlag=true;
 		
 		$('#tab-btn-import').trigger('click');
 		if(this.tobeReplaceNode){
@@ -121,24 +121,40 @@ class ImportModifyHarvestProcessor{
 
 		var reader = new FileReader();
 		reader.addEventListener("loadend", function () {
+			var dataset=[];
 			var text=reader.result;
-			console.log(text);
+			var columnSeparator=$('#bulk-import-column-separator').val();
+			if(columnSeparator==='Tab'){
+				columnSeparator='\t';
+			}
 
 			var lines=text.split('\n');
 			for(var i=0;i<lines.length;i++){
 				var line=lines[i].trim();
-				var columns=line.split('\t'); //Type, Target, Source, Datetime
+
+				console.log(line);
+
+				var columns=line.split(columnSeparator); //Type, Target, Source, Datetime
 				if(columns.length!==4){
 					alert("Invalid metadata format");
 					return;
 				}
 
-				var type=columns[0], target=columns[1], source=columns[2], modifydatetime=columns[3];
+				var type=columns[0].trim(), target=columns[1].trim(), source=columns[2].trim(), modifydatetime=columns[3].trim();
+				var node={
+					option: type,
+					targetUrl: target,
+					srcName: source,
+					srcLastModified: modifydatetime,
+					uploadedFlag: false
+				}
+
 				if(type.toLowerCase()==="file"){
 					if(!target.toLowerCase().startsWith("http://")){
 						alert("You must specify a valid target URL at line:" + (i+1) + ". URL starts with: http://");
 						return;
 					}
+					dataset.push(node);
 				}else if(type.toLowerCase()==='url'){
 					if(!target.toLowerCase().startsWith("http://") &&
 						!target.toLowerCase().startsWith("https://")){
@@ -151,13 +167,36 @@ class ImportModifyHarvestProcessor{
 						alert("You must specify a valid source URL at line:" + (i+1));
 						return;
 					}
+					dataset.push(node);
 				}else{
-					alert("Import type must be 'file' or 'url' at line: " + (i+1));
+					//alert("Import type must be 'file' or 'url' at line: " + (i+1));
+					//return;
+					console.log('Skip invalid line: ' + line);
+				}
+
+				var d=new Date(modifydatetime);
+				if(!d){
+					alert("Invalid modification datetime at line: " + (i+1));
 					return;
 				}
 
-				
+				node.srcLastModified=d.getTime();
 			}
+
+
+			var that=this;
+			fetch("/curator/tools/check-files", { 
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify(dataset)
+			}).then((response) => {
+				return response.json();
+			}).then((response) => {
+				$('#popup-window-bulk-import').hide();
+				$('#tab-btn-import').trigger('click');
+				gPopupModifyHarvest.insertImportData(response);
+			});
+
 		});
 
 		// reader.readAsDataURL(file);

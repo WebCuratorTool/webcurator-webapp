@@ -349,15 +349,11 @@ var gridOptionsImport={
        var dt=new Date(row.data.srcLastModified);
        return dt.toLocaleDateString() + " " + dt.toLocaleTimeString();
     }},
-    {headerName: "Progress", field: "progress", width: 80, pinned: "right", cellRenderer:  (row) => {
-          if(row.data.progress===1){
-            return '<i class="fas fa-check text-success"></i>';
-          }
-          if(row.data.seedType===-1){
-            return '<i class="fas fa-times text-danger"></i>';
-          }
-          if(row.data.seedType===0){
-            return '-';
+    {headerName: "#", field: "uploadedFlag", width: 50, pinned: "right", cellClass: "import-result", cellRenderer:  (row) => {
+          if(row.data.uploadedFlag){
+            return '<i class="fas fa-check text-info"></i>';
+          }else{
+            return '<i class="fas fa-times text-danger"></i>';            
           }
       }}
   ],
