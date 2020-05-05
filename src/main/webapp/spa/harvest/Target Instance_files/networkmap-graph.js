@@ -449,17 +449,10 @@ class NetworkMapGraph{
   }
 
   save2image(){
-    var canvas=$(this.containerName + ' canvas')[0];
-    var image=canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-    // var imageData=image.replace("data:image/octet-stream;base64,", "");
-    // var rawData=window.atob(imageData);
-    // var image=canvas.data;
-    // saveData(rawData, "networkmap.png");
-    var link = document.createElement("a");
-
-    link.setAttribute("href", image);
-    link.setAttribute("download", "networkmap.png");
-    link.click();
+    var canvas=$(this.containerName + ' canvas')[0].getContext('2d');
+    // var image=canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+    var image=canvas.data;
+    saveData(image, "networkmap.png");
   }
 }
 

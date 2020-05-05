@@ -40,9 +40,9 @@ to get the desired effect
     <!-- Left Button Group -->
     <div class="btn-group" style="position: absolute; left: 3px; top: 5px; z-index: 1000;">
       <button type="button" class="btn btn-default" onclick="networkmap.graph.reload();">Reload</button>
-      <button type="button" class="btn btn-default" onclick="networkmap.graph.reset();">Reset</button>
+      <!-- <button type="button" class="btn btn-default" onclick="networkmap.graph.reset();">Reset</button> -->
       <button type="button" class="btn btn-default" onclick="networkmap.graph.collapseAll();">Collapse All</button>
-      <!-- <button type="button" class="btn btn-default" onclick="hierarchy();"><i class="fab fa-think-peaks"></i> &nbsp; Check URL</button> -->
+      <button type="button" class="btn btn-default" onclick="networkmap.graph.save2image();">Screenshot</button>
       <button type="button" class="btn btn-default" onclick="javascript: $('#popup-window-modify-harvest').show();"><i class="fas fa-edit"></i> &nbsp; Modify Harvest</button>
     </div>
 
@@ -80,7 +80,7 @@ to get the desired effect
                 <!-- <li class="nav-divider"></li> -->
                 <li class="nav-item">
                   <div class="btn-group">
-                    <button type="button" class="btn btn-info text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                    <button type="button" class="btn btn-primary text-light dropdown-toggle dropdown-icon" data-toggle="dropdown">
                       Action
                       <span class="sr-only">Toggle Dropdown</span>
                       <div class="dropdown-menu" role="menu">
@@ -89,10 +89,10 @@ to get the desired effect
                         <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-link text-primary"></i> &nbsp;Inspect Starting URLs</a>
                         <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadInvalidUrls();"><i class="fas fa-link text-warning"></i> &nbsp;Inspect Invalid URLs</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.showImport();"><i class="fas fa-file-upload text-primary"></i> &nbsp; Single Import</a>
-                        <a class="dropdown-item" href="#" onclick="$('#popup-window-bulk-import').show();"><i class="fas fa-file-import text-warning"></i> &nbsp; Bulk Import</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-file-upload text-success"></i> &nbsp;Upload File</a>
+                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.showImport();"><i class="fas fa-file-import text-primary"></i> &nbsp; Single Import</a>
+                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.processorImport.nextBulkImportTab(1); $('#popup-window-bulk-import').show();"><i class="fas fa-file-import text-warning"></i> &nbsp; Bulk Import</a>
+                        <!-- <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.loadSeedUrls();"><i class="fas fa-file-upload text-success"></i> &nbsp;Upload File</a> -->
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="#" onclick="gPopupModifyHarvest.gridCandidate.clearAll();"><i class="far fa-trash-alt"></i> &nbsp; Clear</a>
                       </div>
@@ -160,8 +160,8 @@ to get the desired effect
               <ul class="navbar-nav">
                 <li class="nav-item">
                   <div class="btn-group btn-nav-tab">
-                    <button type="button" class="btn btn-info text-light" for="prune" id="tab-btn-prune">To Be Pruned</button>
-                    <button type="button" class="btn btn-outline-info text-light" for="import" id="tab-btn-import">To Be Imported</button>
+                    <button type="button" class="btn btn-primary text-light" for="prune" id="tab-btn-prune">To Be Pruned</button>
+                    <button type="button" class="btn btn-outline-primary text-light" for="import" id="tab-btn-import">To Be Imported</button>
                   </div>
                 </li>         
               </ul>
@@ -294,6 +294,7 @@ to get the desired effect
     <!-- /.card-tools -->
   </div>  <!-- /.card-header -->
   <div class="card-body">
+    <div class="tab-bulk-import" id="tab-bulk-import-0">
       <div class="form-group">
         <label for="specifyTargetUrlInput">Please upload a METADATA file:</label>
         <div class="custom-file">
@@ -309,25 +310,19 @@ to get the desired effect
           <option>|</option>
         </select>
       </div>
+    </div>
 
-     <!-- <div class="form-group">
-                <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-                    <input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1"/>
-                    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
-                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                    </div>
-                </div>
-            </div>
- -->
 
-      <!-- <div class="ag-theme-balham" id="grid-bulk-import-prepare" style="width: 100%; height: 30vh;"> </div>
-      <div class="form-group">
-        <label for="specifyTargetUrlInput">Please upload a METADATA file:</label>
-        <div class="custom-file">
-          <input type="file" class="custom-file-input" id="bulkImportContentFile" name="sourceFile" multiple>
-          <label class="custom-file-label" for="bulkImportContentFile" id="label-bulk-import-content-file">Choose file</label>
-        </div>
-      </div> -->
+    <div class="tab-bulk-import hidden" id="tab-bulk-import-1">
+      <div id="grid-bulk-import-prepare" class="ag-theme-balham grid-modify-harvest" style="width: 100%; height: 30vh;"> </div>
+      <br/>
+      <p id="tip-bulk-import-prepare">All rows are valid.</p>
+      <p id="tip-bulk-import-prepare-invalid" class="hidden">Please upload relevant files <a href="javascript:$('#bulkImportContentFile').trigger('click');">Choose content files</a></p>
+
+
+      <input type="file" class="hidden" id="bulkImportContentFile" onchange="gPopupModifyHarvest.processorImport.bulkUploadFiles();" multiple>
+    </div>
+
   </div>  <!-- /.card-body -->
 
   <div class="card-footer">
@@ -339,7 +334,7 @@ to get the desired effect
         </div>
       </div>
       <div class="col-2">
-          <button type="button" class="btn btn-block btn-primary" onclick="gPopupModifyHarvest.processorImport.bulkImport();">Re-crawl</button>
+          <button type="button" class="btn btn-block btn-primary" id="btn-bulk-import-submit" step="0">Next</button>
       </div>
       <div class="col-2">
           <button type="button" class="btn btn-block btn-secondary" onclick="$('#popup-window-bulk-import').hide();">Close</button>
@@ -450,7 +445,7 @@ to get the desired effect
     var gPopupModifyHarvest=new PopupModifyHarvest(jobId, harvestResultNumber);
     // var hierarchyTree=new HierarchyTree("#hierachy-tree", jobId, harvestResultNumber);
     
-    $(function(){
+    $(function(){        
         bsCustomFileInput.init();
 
         // document.addEventListener('contextmenu', event => event.preventDefault());
@@ -494,14 +489,19 @@ to get the desired effect
               $(".networkmap-insight").hide();
               $("#networkmap-side-table-group-by-content-type").show();
             }
+            $('a[name="summary"]').attr('status', 'on');
+            $('a[name="summary"]').addClass('bg-black');
+            $('#network-map-canvas').width('75vw');
+            $('#networkmap-side-container').show();
           }
+
         });
 
         $(".btn-nav-tab button").on("click", function(e){
-          $(".btn-nav-tab button").removeClass("btn-info");
-          $(".btn-nav-tab button").addClass("btn-outline-info");
-          $(this).removeClass("btn-outline-info");
-          $(this).addClass("btn-info");
+          $(".btn-nav-tab button").removeClass("btn-primary");
+          $(".btn-nav-tab button").addClass("btn-outline-primary");
+          $(this).removeClass("btn-outline-primary");
+          $(this).addClass("btn-primary");
 
           var tab=$(this).attr("for");
           $("#grid-tobe-modified .grid-modify-harvest").hide();
@@ -526,21 +526,28 @@ to get the desired effect
         });
 
         $("#datetimepicker1").datetimepicker();
+
+        $('#btn-bulk-import-submit').on('click', function(e){
+          var step=$(this).attr('step');
+          if (step==='0') {
+            gPopupModifyHarvest.processorImport.bulkImportStep0();            
+          }else{
+            gPopupModifyHarvest.processorImport.bulkImportStep1();
+          }
+        });
     });
 
-    function hierarchy(){
-      $('#popup-window-hierarchy').show();
-    }
+    
 
-    function spHierarchy(){
-      if($('#checkbox-tree-view').prop('checked')===true){
-        $('#grid-modify-candidate').hide();
-        $('#hierachy-tree').show();
-      }else{
-        $('#hierachy-tree').hide();
-        $('#grid-modify-candidate').show();
-      }
-    }
+    // function spHierarchy(){
+    //   if($('#checkbox-tree-view').prop('checked')===true){
+    //     $('#grid-modify-candidate').hide();
+    //     $('#hierachy-tree').show();
+    //   }else{
+    //     $('#hierachy-tree').hide();
+    //     $('#grid-modify-candidate').show();
+    //   }
+    // }
 
     function useTargetURL(){
       var url=$("#specifyTargetUrlInput").val();

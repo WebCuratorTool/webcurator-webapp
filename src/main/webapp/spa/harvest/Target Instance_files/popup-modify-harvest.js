@@ -211,7 +211,6 @@ class PopupModifyHarvest{
 		this.gridCandidate=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-candidate', gridOptionsCandidate, contextMenuItemsUrlBasic);
 		this.gridPrune=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-prune', gridOptionsPrune, contextMenuItemsPrune);
 		this.gridImport=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-modify-import', gridOptionsImport, contextMenuItemsImport);
-		this.gridImportPrepare=new CustomizedAgGrid(jobId, harvestResultNumber, '#grid-bulk-import-prepare', gridOptionsImportPrepare, contextMenuItemsImport);
 		this.processorImport=new ImportModifyHarvestProcessor(jobId, harvestResultNumber);
 		this.uriSeedUrl="/curator/networkmap/get/root/urls?job=" + this.jobId + "&harvestResultNumber=" + this.harvestResultNumber;
 		this.uriInvalidUrl="/curator/networkmap/get/malformed/urls?job=" + this.jobId + "&harvestResultNumber=" + this.harvestResultNumber;
@@ -268,18 +267,32 @@ class PopupModifyHarvest{
 	}
 
 	pruneHarvestByUrls(dataset){
-		var searchCondition={
-          "domainNames": [],
-          "contentTypes": [],
-          "statusCodes": [],
-          "urlNames": []
-        }
+		var map={};
+		for(var i=0; i<dataset.length; i++){
+			var url=dataset[i].url;
+			map[url]=dataset[i];
+		}
 
-        for(var i=0; i<dataset.length; i++){
-        	searchCondition.urlNames.push(dataset[i].targetUrl);
-        }
+		this.gridCandidate.gridOptions.api.forEachNode(function(row, index){
+			var url=row.data.url;
+			if(map[url]){
+				map[url]=row.data;
+				row.data.flag='new';
+			}else{
+				row.data.flag='normal';
+			}
+		});
 
-        this.checkUrls(searchCondition, 'import-prune');
+		map=JSON.parse(JSON.stringify(map));
+		dataset=[];
+		for(var key in map){
+			var node=map[key];
+			node.flag='new';
+			dataset.push(node);
+		}
+
+		this.gridPrune.gridOptions.api.updateRowData({ add: dataset});
+		this.setRowStyle();
 	}
 
 	pruneHarvest(data){
@@ -418,35 +431,40 @@ class PopupModifyHarvest{
 			return;
 		}
 
-		$('#popup-window-loading').show();
-		var that=this;
-		var sourceUrl="/curator/networkmap/search/urls?job=" + this.jobId + "&harvestResultNumber=" + this.harvestResultNumber;
-		fetch(sourceUrl, {
-			method: 'POST',
-			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify(searchCondition)
-		}).then((response) => {
-			return response.json();
-		}).then((rawData) => {
-			var data=formatStringArrayToJsonArray(rawData);
-			if(flag==='prune'){
-				that.pruneHarvest(data);
-			}else if(flag==='inspect'){
-				that.inspectHarvest(data);
-			}else if(flag==='import-prune'){
-				that.pruneHarvest(data);
-				$('#tab-btn-import').trigger('click');
-			}
-			$('#popup-window-loading').hide();
-			$('#popup-window-modify-harvest').show();
-		});
+		// $('#popup-window-loading').show();
+		// var that=this;
+		// var sourceUrl="/curator/networkmap/search/urls?job=" + this.jobId + "&harvestResultNumber=" + this.harvestResultNumber;
+		// fetch(sourceUrl, {
+		// 	method: 'POST',
+		// 	headers: {'Content-Type': 'application/json'},
+		// 	body: JSON.stringify(searchCondition)
+		// }).then((response) => {
+		// 	return response.json();
+		// }).then((rawData) => {
+		// 	var data=formatStringArrayToJsonArray(rawData);
+		// 	if(flag==='prune'){
+		// 		that.pruneHarvest(data);
+		// 	}else if(flag==='inspect'){
+		// 		that.inspectHarvest(data);
+		// 	}
+		// 	$('#popup-window-loading').hide();
+		// 	$('#popup-window-modify-harvest').show();
+		// });
+		var data=formatStringArrayToJsonArray(urls);
+		if(flag==='prune'){
+			this.pruneHarvest(data);
+		}else if(flag==='inspect'){
+			this.inspectHarvest(data);
+		}
+		$('#popup-window-modify-harvest').show();
+
 	}
 
 	loadUrls(uri){
-		// var decision=confirm("The current candidates will be removed before loading URL. \n Please confirm you want to load data?");
-		// if(!decision){
-		// 	return;
-		// }
+		var decision=confirm("The current candidates will be removed before loading URL. \n Please confirm you want to load data?");
+		if(!decision){
+			return;
+		}
 
 		$('#popup-window-loading').show();
 		var that=this;
@@ -457,13 +475,8 @@ class PopupModifyHarvest{
 			return response.json();
 		}).then((rawData) => {
 			var data=formatStringArrayToJsonArray(rawData);
-			if(data.length===0){
-				$('#popup-window-loading').hide();	
-				alert('No data found!');
-			}else{
-				that.gridCandidate.setRowData(data);
-				$('#popup-window-loading').hide();
-			}
+			that.gridCandidate.setRowData(data);
+			$('#popup-window-loading').hide();
 		});
 	}
 
@@ -528,32 +541,6 @@ class PopupModifyHarvest{
 
 	insertImportData(dataset){
 		this.gridImport.insert(dataset);
-		// this.setRowStyle();
-	}
-
-	//Save and reindexing
-	apply(){
-		var dataset=this.gridImport.getAllNodes();
-		var pruned=this.gridPrune.getAllNodes();
-		for(var i=0; i<pruned.length; i++){
-			var node={
-				option: 'prune',
-				targetUrl: pruned[i].url
-			}
-			dataset.push(node);
-		}
-
-		$('#popup-window-loading').show();
-		var that=this;
-		var sourceUrl="/curator/tools/apply?job=" + this.jobId + "&harvestResultNumber=" + this.harvestResultNumber;
-		fetch(sourceUrl, {
-			method: 'POST',
-			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify(dataset)
-		}).then((response) => {
-			return response.json();
-		}).then((rawData) => {
-			
-		});
+		this.setRowStyle();
 	}
 }

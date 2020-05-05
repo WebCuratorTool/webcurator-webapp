@@ -5,7 +5,7 @@ public class ModifyHarvestImportItemCommand {
     private String targetUrl;
     private String srcName;
     private long srcLastModified;
-    private boolean uploadedFlag;
+    private int uploadedFlag;
 
     public String getOption() {
         return option;
@@ -39,11 +39,11 @@ public class ModifyHarvestImportItemCommand {
         this.srcLastModified = srcLastModified;
     }
 
-    public boolean isUploadedFlag() {
+    public int getUploadedFlag() {
         return uploadedFlag;
     }
 
-    public void setUploadedFlag(boolean uploadedFlag) {
+    public void setUploadedFlag(int uploadedFlag) {
         this.uploadedFlag = uploadedFlag;
     }
 }

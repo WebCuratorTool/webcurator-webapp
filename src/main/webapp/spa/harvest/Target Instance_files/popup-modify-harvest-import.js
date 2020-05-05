@@ -4,27 +4,25 @@ class ImportModifyHarvestProcessor{
 		this.harvestResultNumber=harvestResultNumber;
 	}
 
-	uploadFile(cmd, file, callback){
-		var that=this;
-		var reader = new FileReader();
-		reader.addEventListener("loadend", function () {
-			var url="/curator/tools/upload-file-stream?fileName="+cmd.srcName+"&replaceFlag=true";
-			fetch(url, { 
-				method: 'POST',
-				headers: {'Content-Type': 'application/octet-stream'},
-				body: reader.result
-			}).then((response) => {
-				return response.json();
-			}).then((response) => {
-				callback(response);
-			});
-		});
+	// setNode(node){
+	// 	this.targetNode=JSON.parse(JSON.stringify(node));
+	// }
 
-		// reader.readAsDataURL(file);
-		reader.readAsArrayBuffer(file);
+	uploadFile(cmd, content){
+		var url="../../curator/tools/upload-file-stream?fileName="+cmd.srcName+"&replaceFlag=true";
+		var that=this;
+		fetch(url, { 
+			method: 'POST',
+			headers: {'Content-Type': 'application/octet-stream'},
+			body: content
+		}).then((response) => {
+			return response.json();
+		}).then((response) => {
+			that.callback(response, cmd);
+		});
 	}
 
-	singleImport(resp, node){
+	callback(resp, node){
 		//Check result
 		if(resp && resp.respCode!=0){
 			alert(resp.respMsg);
@@ -32,7 +30,7 @@ class ImportModifyHarvestProcessor{
 		}
 
 		node.url=node.targetUrl;
-		node.uploadedFlag=1;
+		node.uploadedFlag=true;
 		
 		$('#tab-btn-import').trigger('click');
 		if(this.tobeReplaceNode){
@@ -86,10 +84,14 @@ class ImportModifyHarvestProcessor{
 			node.srcLastModified=file.lastModified;
 			// reqBody.file=file;
 
-			var that=this;
-			this.uploadFile(node, file, function(resp){
-				that.singleImport(resp, node);
+			var reader = new FileReader();
+			reader.addEventListener("loadend", function () {
+				// reqBody.content=reader.result;
+				that.uploadFile(node, reader.result);
 			});
+
+			// reader.readAsDataURL(file);
+			reader.readAsArrayBuffer(file);
 		}else{
 			if(!node.targetUrl.toLowerCase().startsWith("http://") &&
 				!node.targetUrl.toLowerCase().startsWith("https://")){
@@ -105,63 +107,18 @@ class ImportModifyHarvestProcessor{
 			}
 
 			// that.uploadFile(cmd);
-			this.singleImport(null, node);
+			this.callback(null, node);
 		}
 	}
 
 
-	bulkUploadFiles(){
-		var that=this;
-		var dataset=gPopupModifyHarvest.gridImportPrepare.getAllNodes();
-
-		var files=$('#bulkImportContentFile')[0].files;
-		for(var i=0; i<files.length; i++){
-			var file=files[i];
-			var cmd={srcName: file.name};
-			this.uploadFile(cmd, file, function(response){
-				if(response.respCode!=0){
-					alert(respMsg);
-					return;
-				}
-
-				var unUploadedNumber=0;
-
-				for(var j=0; j<dataset.length; j++){
-					var node=dataset[j];
-					if(node.srcName === file.name){
-						// node.srcName=file.name;
-						node.srcSize=file.size;
-						node.srcType=file.type;
-						node.srcLastModified=file.lastModified;
-						node.uploadedFlag=1;
-					}
-
-					if (node.uploadedFlag!=1) {
-						unUploadedNumber++;
-					}
-				}
-
-				gPopupModifyHarvest.gridImportPrepare.gridOptions.api.redrawRows(true);
-
-				if(unUploadedNumber>0){
-					var html=$('#tip-bulk-import-prepare-invalid').html();
-					$('#tip-bulk-import-prepare').html(html);
-				}else{
-					$('#tip-bulk-import-prepare').html('All rows are valid.');
-				}
-			});
-		}
-
-		$('#bulkImportContentFile').val(null);
-	}
-
-	bulkImportStep0(){
+	bulkImport(){
 		var file=$('#bulkImportMetadataFile')[0].files[0];
 		if(!file){
 			alert("You must specify a metadata file name to import.");
 			return;
 		}
-		var that=this;
+
 		var reader = new FileReader();
 		reader.addEventListener("loadend", function () {
 			var dataset=[];
@@ -189,18 +146,16 @@ class ImportModifyHarvestProcessor{
 					targetUrl: target,
 					srcName: source,
 					srcLastModified: modifydatetime,
-					uploadedFlag: -1
+					uploadedFlag: false
 				}
 
 				if(type.toLowerCase()==="file"){
-					node.option="File";
 					if(!target.toLowerCase().startsWith("http://")){
 						alert("You must specify a valid target URL at line:" + (i+1) + ". URL starts with: http://");
 						return;
 					}
 					dataset.push(node);
 				}else if(type.toLowerCase()==='url'){
-					node.option='URL';
 					if(!target.toLowerCase().startsWith("http://") &&
 						!target.toLowerCase().startsWith("https://")){
 						alert("You must specify a valid target URL at line:" + (i+1));
@@ -229,9 +184,17 @@ class ImportModifyHarvestProcessor{
 			}
 
 
-			that.checkFilesExistAtServerSide(dataset, function(unUploadedNumber, response){
-				that.nextBulkImportTab(0);
-				gPopupModifyHarvest.gridImportPrepare.setRowData(response);
+			var that=this;
+			fetch("/curator/tools/check-files", { 
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify(dataset)
+			}).then((response) => {
+				return response.json();
+			}).then((response) => {
+				$('#popup-window-bulk-import').hide();
+				$('#tab-btn-import').trigger('click');
+				gPopupModifyHarvest.insertImportData(response);
 			});
 
 		});
@@ -240,73 +203,4 @@ class ImportModifyHarvestProcessor{
 		reader.readAsText(file);
 
 	}
-
-	bulkImportStep1(){
-		var that=this;
-		var dataset=gPopupModifyHarvest.gridImportPrepare.getAllNodes();
-		this.checkFilesExistAtServerSide(dataset, function(unUploadedNumber, response){
-			if(unUploadedNumber>0){
-				gPopupModifyHarvest.gridImportPrepare.setRowData(response);
-				alert('Some files are missing. Can not proceed.');
-				return;
-			}else{
-				$('#popup-window-bulk-import').hide();
-				$('#tab-btn-import').trigger('click');
-				that.nextBulkImportTab(1);
-				gPopupModifyHarvest.insertImportData(response);
-				var pruneFlag=$("#checkbox-prune-of-bulk-import").is(":checked");
-				if(pruneFlag){
-					gPopupModifyHarvest.pruneHarvestByUrls(response);					
-				}
-			}
-		});
-		
-	}
-
-
-	checkFilesExistAtServerSide(dataset, callback){
-		var that=this;
-		fetch("/curator/tools/check-files", { 
-			method: 'POST',
-			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify(dataset)
-		}).then((response) => {
-			return response.json();
-		}).then((response) => {
-			var unUploadedNumber=0;
-			for(var i=0; i<response.length; i++){
-				var element=response[i];
-				if(element.uploadedFlag!==1){
-					unUploadedNumber++;
-					break;
-				}
-			}
-			if(unUploadedNumber>0){
-				var html=$('#tip-bulk-import-prepare-invalid').html();
-				$('#tip-bulk-import-prepare').html(html);
-			}else{
-				$('#tip-bulk-import-prepare').html('All rows are valid.');
-			}
-
-			callback(unUploadedNumber, response);
-			
-		});
-	}
-
-	nextBulkImportTab(step){
-      step=(step+1) % 2;
-      $('.tab-bulk-import').hide();
-      $('#tab-bulk-import-'+step).show();
-      $('#btn-bulk-import-submit').attr('step', step);
-      if(step===0){
-        $('#bulkImportMetadataFile').val(null);
-        $('#label-bulk-import-metadata-file').html('Choose file');
-        $('#bulkImportContentFile').val(null);
-        $('#btn-bulk-import-submit').html('Next');        
-      }else{
-        $('#btn-bulk-import-submit').html('Re-crawl');
-        $('#btn-bulk-import-submit').attr('status', 'recrawl');
-      }
-    }
-
 }

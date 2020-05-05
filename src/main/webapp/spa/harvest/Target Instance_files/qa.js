@@ -350,47 +350,10 @@ var gridOptionsImport={
        return dt.toLocaleDateString() + " " + dt.toLocaleTimeString();
     }},
     {headerName: "#", field: "uploadedFlag", width: 50, pinned: "right", cellClass: "import-result", cellRenderer:  (row) => {
-          if(row.data.uploadedFlag && row.data.uploadedFlag===1){
-            return '<i class="fas fa-check-circle text-success"></i>';
-          }else if(row.data.uploadedFlag && row.data.uploadedFlag===-1){
-            return '<i class="fas fa-times-circle text-danger"></i>';            
+          if(row.data.uploadedFlag){
+            return '<i class="fas fa-check text-info"></i>';
           }else{
-            return '<i class="fas fa-cloud-upload-alt text-info"></i>'
-          }
-      }}
-  ],
-  // getRowClass: formatModifyHavestGridRow
-  getRowClass: formatModifyHavestGridRow
-};
-
-var gridOptionsImportPrepare={
-  suppressRowClickSelection: true,
-  rowSelection: 'multiple',
-  defaultColDef: {
-    resizable: true,
-    filter: true,
-    sortable: true
-  },
-  rowData: [],
-  components: {
-    renderImportOption: renderImportOption
-  },
-  columnDefs: [
-    {headerName: "", width:45, pinned: "left", headerCheckboxSelection: true, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: true},
-    {headerName: "Option", field: "option", width:80, cellClass: function(params) { return (params.value==='File'?'text-primary':'text-danger');}},
-    {headerName: "Target", field: "targetUrl", width: 400},
-    {headerName: "Source", field: "srcName", width: 400},
-    {headerName: "ModifyDate", field: "srcLastModified", width: 160, cellRenderer:  (row) => {
-       var dt=new Date(row.data.srcLastModified);
-       return dt.toLocaleDateString() + " " + dt.toLocaleTimeString();
-    }},
-    {headerName: "#", field: "uploadedFlag", width: 50, pinned: "right", cellClass: "import-result", cellRenderer:  (row) => {
-          if(row.data.uploadedFlag && row.data.uploadedFlag===1){
-            return '<i class="fas fa-check-circle text-success"></i>';
-          }else if(row.data.uploadedFlag && row.data.uploadedFlag===-1){
-            return '<i class="fas fa-times-circle text-danger"></i>';            
-          }else{
-            return '<i class="fas fa-cloud-upload-alt text-info"></i>'
+            return '<i class="fas fa-times text-danger"></i>';            
           }
       }}
   ],
