@@ -111,39 +111,61 @@ class ImportModifyHarvestProcessor{
 
 
 	bulkUploadFiles(){
-		var that=this;
 		var dataset=gPopupModifyHarvest.gridImportPrepare.getAllNodes();
+		var bulkFileNameMap={};
+		for(var j=0; j<dataset.length; j++){
+			var node=dataset[j];
+			if(node.option.toLowerCase()!=='file'){
+				continue;
+			}
+			var ary=bulkFileNameMap[node.srcName];
+			if(!ary){
+				ary=[node];
+				bulkFileNameMap[node.srcName]=ary;
+			}else{
+				ary.push(node);
+			}
+		}
 
+		var that=this;
 		var files=$('#bulkImportContentFile')[0].files;
 		for(var i=0; i<files.length; i++){
 			var file=files[i];
 			var cmd={srcName: file.name};
+
+			var ary=bulkFileNameMap[cmd.srcName];
+			if(!ary){
+				console.log("Selected file not match any item to be bulk imported. Selected file name: " + cmd.srcName);
+				continue;
+			}
+
+			for(var j=0; j<ary.length; j++){
+				ary[j].srcSize=file.size;
+				ary[j].srcType=file.type;
+				ary[j].srcLastModified=file.lastModified;
+				ary[j].uploadedFlag=0;
+			}
+
 			this.uploadFile(cmd, file, function(response){
 				if(response.respCode!=0){
 					alert(respMsg);
 					return;
 				}
 
-				var unUploadedNumber=0;
-
-				for(var j=0; j<dataset.length; j++){
-					var node=dataset[j];
-					if(node.srcName === file.name){
-						// node.srcName=file.name;
-						node.srcSize=file.size;
-						node.srcType=file.type;
-						node.srcLastModified=file.lastModified;
-						node.uploadedFlag=1;
-					}
-
-					if (node.uploadedFlag!=1) {
-						unUploadedNumber++;
-					}
+				var ary=bulkFileNameMap[response.srcName];
+				if(!ary){
+					console.log("Response srcName not match any item to be bulk imported. Selected file name: " + response.srcName);
+					return;
 				}
 
+				for(var j=0; j<ary.length; j++){
+					ary[j].uploadedFlag=1;
+				}
 				gPopupModifyHarvest.gridImportPrepare.gridOptions.api.redrawRows(true);
 
-				if(unUploadedNumber>0){
+				delete bulkFileNameMap[response.srcName];
+				
+				if(bulkFileNameMap.length>0){
 					var html=$('#tip-bulk-import-prepare-invalid').html();
 					$('#tip-bulk-import-prepare').html(html);
 				}else{
@@ -152,6 +174,7 @@ class ImportModifyHarvestProcessor{
 			});
 		}
 
+		gPopupModifyHarvest.gridImportPrepare.gridOptions.api.redrawRows(true);
 		$('#bulkImportContentFile').val(null);
 	}
 
@@ -164,6 +187,7 @@ class ImportModifyHarvestProcessor{
 		var that=this;
 		var reader = new FileReader();
 		reader.addEventListener("loadend", function () {
+			var newBulkTargetUrlMap={}; //Using a map to check duplicated target urls;
 			var dataset=[];
 			var text=reader.result;
 			var columnSeparator=$('#bulk-import-column-separator').val();
@@ -191,6 +215,14 @@ class ImportModifyHarvestProcessor{
 					srcLastModified: modifydatetime,
 					uploadedFlag: -1
 				}
+
+				if(newBulkTargetUrlMap[target]){
+					alert("Duplicated target URL at line: " + (i+1));
+					return;
+				}else{
+					newBulkTargetUrlMap[target]=i;
+				}
+
 
 				if(type.toLowerCase()==="file"){
 					node.option="File";

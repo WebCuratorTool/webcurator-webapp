@@ -56,6 +56,7 @@ public class ModifyHarvestController {
     @RequestMapping(path = "/curator/tools/upload-file-stream", method = RequestMethod.POST)
     public ModifyHarvestCommand uploadFileStream(@RequestParam String fileName, @RequestParam boolean replaceFlag, @RequestBody byte[] doc) {
         ModifyHarvestCommand cmd = new ModifyHarvestCommand();
+        cmd.setSrcName(fileName);
         File uploadedFilePath = new File(treeToolControllerAttribute.uploadedFilesDir, fileName);
         if (uploadedFilePath.exists()) {
             if (replaceFlag) {
